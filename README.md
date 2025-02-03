@@ -141,7 +141,7 @@ Thank you for your interest in contributing to **Scriptium**! Your contributions
 ### 🚀 **How to Contribute**
 
 1. **Check for Existing Issues:**  
-   Before starting to work on something, check the [Issues](https://github.com/scriptium-project/scriptium-frontend/issues) to see if the problem has already been reported or if someone else is working on it.
+   Before starting to work on something, check the [Issues](https://github.com/kaanoz1/scriptium-frontend/issues) to see if the problem has already been reported or if someone else is working on it.
 
    - **If the issue exists:** Feel free to join the discussion.
    - **If not:** Open a new issue to describe the problem or feature request.
@@ -152,7 +152,7 @@ Thank you for your interest in contributing to **Scriptium**! Your contributions
    - Clone your forked repository to your local machine:
 
      ```bash
-     git clone https://github.com/scriptium-project/scriptium-frontend.git
+     git clone https://github.com/kaanoz1/scriptium-frontend.git
      ```
 
 3. **Create a Branch:**
