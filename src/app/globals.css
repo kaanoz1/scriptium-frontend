@@ -3,8 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-inter: "Inter", sans-serif;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=David+Libre:wght@400;700&display=swap");
+
+body {
+  font-family: var(--font-inter);
+  transition: background-color 0.5s, color 0.5s;
+  overflow-x: hidden;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -12,12 +19,6 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {

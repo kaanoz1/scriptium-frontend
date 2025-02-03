@@ -1,101 +1,131 @@
-import Image from "next/image";
+"use client";
+
+import SearchBar from "@/components/UI/SearchBar";
+import UIWrapper from "@/components/UI/UIWrapper";
+import { PROJECT_NAME, TOOL_TIP_CLASS_NAMES } from "@/util/utils";
+import { Link } from "@heroui/link";
+import { Tooltip } from "@heroui/tooltip";
+import { useState, useEffect, useRef } from "react";
+import { HiQuestionMarkCircle } from "react-icons/hi";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [displayedName, setDisplayedName] = useState("");
+  const currentIndex = useRef(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (currentIndex.current < PROJECT_NAME.length) {
+        setDisplayedName(
+          (prev) => prev + PROJECT_NAME.charAt(currentIndex.current)
+        );
+        currentIndex.current++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 150);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <UIWrapper>
+      <div className="flex flex-col items-center justify-start bg-white dark:bg-dark p-6">
+        <main className="relative text-center mt-6 mb-6">
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-extralight tracking-widest text-gray-800 whitespace-nowrap border-r-4 border-gray-800 pr-4 dark:text-white">
+            {displayedName}
+          </h1>
+        </main>
+
+        <div className="w-full max-w-2xl mx-auto flex flex-col gap-6 items-center mt-4 mb-6">
+          <SearchBar />
+
+          <div className="flex gap-6 text-gray-700 dark:text-white">
+            <Link
+              href="/about"
+              className="hover:underline text-base md:text-lg font-medium "
+            >
+              What is {PROJECT_NAME}?
+            </Link>
+
+            <Tooltip
+              offset={25}
+              delay={250}
+              closeDelay={5}
+              placement="bottom"
+              classNames={TOOL_TIP_CLASS_NAMES}
+              content={
+                <div className="flex flex-col gap-2">
+                  <span>
+                    There is a format for querying which {PROJECT_NAME}{" "}
+                    recognizes.
+                  </span>
+                  <div>Examples:</div>
+                  <div className="ps-5">
+                    <div className="flex flex-col gap-2">
+                      <span>
+                        {" "}
+                        t 1 1 1 =&gt; Torah, Section 1, Chapter 1, Verse 1.
+                      </span>
+                      <span>
+                        {" "}
+                        t/2/3/19 =&gt; Torah, Section 2, Chapter 3, Verse 19.
+                      </span>
+                      <span>
+                        t:28/31.30 =&gt; Torah, Section 28, Chapter 31, Verse
+                        30.
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    Valid separators are : . , | \ / = - (or whitespace).
+                  </div>
+                  <div>
+                    Otherwise, the server will search for the most relevant
+                    verses.
+                  </div>
+                </div>
+              }
+            >
+              <span className="flex items-center gap-1 cursor-pointer text-blue-500 hover:underline">
+                How to query? <HiQuestionMarkCircle size={19} />
+              </span>
+            </Tooltip>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        <div className="text-center text-lg font-semibold text-gray-700">
+          <p className="mb-6 dark:text-white">
+            Click to read one of the Scriptures:
+          </p>
+          <div className="flex gap-6">
+            <Link
+              href="/t"
+              className="bg-white dark:bg-dark shadow-md hover:shadow-xl rounded-md flex flex-col items-center justify-center transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 border border-gray-300 p-2"
+            >
+              <div className="flex flex-col items-center p-6 gap-1">
+                <span className="text-4xl font-bold text-gray-900 dark:text-white">
+                  Torah
+                </span>
+                <p className="text-2xl text-gray-500 dark:text-white">
+                  תּוֹרָה
+                </p>
+
+                <p className="text-sm text-gray-500 dark:text-white">
+                  The holy Scripture of Judaism
+                </p>
+                <div>
+                  <Link
+                    href="https://en.wikipedia.org/wiki/Torah"
+                    isExternal
+                    showAnchorIcon
+                  >
+                    What is Torah?
+                  </Link>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </UIWrapper>
   );
 }
