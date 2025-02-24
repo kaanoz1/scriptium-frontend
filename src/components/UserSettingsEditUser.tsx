@@ -163,7 +163,7 @@ const UserSettingsEditUser: NextPage<Props> = ({
                 message:
                   "Something went wrong. This might has to do something with server.",
               });
-              return; //TODO: Add toast.
+              return;
           }
         case TOO_MANY_REQUEST_RESPONSE_CODE:
           setError(TOO_MANY_REQUEST_RESPONSE_CODE);
@@ -243,6 +243,12 @@ const UserSettingsEditUser: NextPage<Props> = ({
 
   //TODO: Implement crop model.
 
+  // @ts-ignore
+  // @ts-ignore
+  // @ts-ignore
+  // @ts-ignore
+  // @ts-ignore
+  // @ts-ignore
   return (
     <Fragment>
       <main className="flex flex-col items-center py-10 px-4 min-h-screen">

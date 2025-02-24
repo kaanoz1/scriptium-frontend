@@ -8,7 +8,7 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
     "./src/util/**/*.{js,ts,jsx,tsx}",
-    "./node_modules/@heroui/theme/dist/components/(accordion|autocomplete|avatar|breadcrumbs|button|card|checkbox|divider|dropdown|form|input|kbd|link|modal|navbar|pagination|radio|select|skeleton|spinner|toggle|table|tabs|popover|user|ripple|listbox|scroll-shadow|menu|spacer).js",
+    "./node_modules/@heroui/theme/dist/components/(accordion|autocomplete|avatar|breadcrumbs|button|card|checkbox|divider|dropdown|form|input|kbd|link|modal|navbar|pagination|radio|select|skeleton|spinner|toggle|table|tabs|toast|popover|user|ripple|listbox|scroll-shadow|menu|spacer).js"
   ],
   theme: {
     extend: {

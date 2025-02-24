@@ -13,7 +13,7 @@ import {
   INTERNAL_SERVER_ERROR_RESPONSE_CODE,
   NOT_FOUND_RESPONSE_CODE,
   OK_RESPONSE_CODE,
-  PROJECT_URL,
+  PROJECT_URL, SOMETHING_WENT_WRONG_TOAST,
   TOO_MANY_REQUEST_RESPONSE_CODE,
 } from "@/util/utils";
 import axios from "axios";
@@ -28,6 +28,7 @@ import ServerError from "@/components/UI/ServerError";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
 import ScripturePageNotFoundComponent from "@/components/ScripturePageNotFoundComponent";
 import ScripturePageSectionBlockComponent from "@/components/ScripturePageSectionBlockComponent";
+import {addToast} from "@heroui/toast";
 
 interface Props {}
 
@@ -68,7 +69,7 @@ const Page: NextPage<Props> = ({}) => {
           return null;
       }
     } catch (error) {
-      //TODO: Add toast.
+      addToast(SOMETHING_WENT_WRONG_TOAST);
       console.error(error);
       setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
       return null;

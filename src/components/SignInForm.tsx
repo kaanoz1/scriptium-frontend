@@ -77,7 +77,6 @@ const SignInForm: FC = () => {
         setFormError("password", {
           message: response.data.message,
         });
-        //TODO: Add toast.
         return;
 
       default:

@@ -129,7 +129,7 @@ const SignUpForm: NextPage = () => {
               message:
                 "Something went wrong. This might has to do something with server.",
             });
-            return; //TODO: Add toast.
+            return;
         }
       case TOO_MANY_REQUEST_RESPONSE_CODE:
         setError(429);

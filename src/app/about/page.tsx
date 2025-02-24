@@ -26,7 +26,7 @@ import {
   PROJECT_INSTAGRAM_ADDRESS,
   PROJECT_X_ADDRESS,
   PROJECT_NAME,
-  NOT_FOUND_RESPONSE_CODE,
+  NOT_FOUND_RESPONSE_CODE, SOMETHING_WENT_WRONG_TOAST,
 } from "@/util/utils";
 import { useState } from "react";
 import axiosNoCredentialInstance from "@/client/axiosNoCredentialInstance";
@@ -40,6 +40,7 @@ import { FaNodeJs } from "react-icons/fa";
 import { VscGithubAlt } from "react-icons/vsc";
 import { motion, Variants } from "framer-motion";
 import { MdOutlineEmail } from "react-icons/md";
+import {addToast} from "@heroui/toast";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0, y: 15 },
@@ -96,7 +97,7 @@ const Page: NextPage<Props> = () => {
             return null;
         }
       } catch (error) {
-        // TODO: Add toast.
+        addToast(SOMETHING_WENT_WRONG_TOAST);
         console.error(error);
         setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
         return null;

@@ -1,123 +1,124 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { NoteDTOExtended, User } from "@/types/types";
+import {NoteDTOExtended, User} from "@/types/types";
 import {
-  OK_RESPONSE_CODE,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
-  INTERNAL_SERVER_ERROR_RESPONSE_CODE,
+    OK_RESPONSE_CODE,
+    TOO_MANY_REQUEST_RESPONSE_CODE,
+    INTERNAL_SERVER_ERROR_RESPONSE_CODE, displayErrorToast,
 } from "@/util/utils";
-import { Button } from "@heroui/button";
-import { useQuery } from "@tanstack/react-query";
-import { NextPage } from "next";
-import { useState } from "react";
-import { IoIosInformationCircleOutline } from "react-icons/io";
+import {Button} from "@heroui/button";
+import {useQuery} from "@tanstack/react-query";
+import {NextPage} from "next";
+import {useState} from "react";
+import {IoIosInformationCircleOutline} from "react-icons/io";
 import EditNoteComponent from "./UI/EditNoteComponent";
 import NoteInformationModal from "./NoteInformationModal";
 import ServerErrorComponent from "./UI/ServerErrorComponent";
 import TooManyRequestComponent from "./UI/TooManyRequestComponent";
 import LoadingSpinner from "./UI/LoadingSpinner";
 import Note from "./UI/Note";
-import { AuthenticationRequestErrorCode, Response } from "@/types/response";
+import {AuthenticationRequestErrorCode, Response} from "@/types/response";
 
 interface Props {
-  user: User;
+    user: User;
 }
 
-const UserSettingsNote: NextPage<Props> = ({ user }) => {
-  const [error, setError] = useState<
-    AuthenticationRequestErrorCode | undefined
-  >(undefined);
+const UserSettingsNote: NextPage<Props> = ({user}) => {
+    const [error, setError] = useState<
+        AuthenticationRequestErrorCode | undefined
+    >(undefined);
 
-  const [isInformationModalOpen, setIsInformationModalOpen] =
-    useState<boolean>(false);
+    const [isInformationModalOpen, setIsInformationModalOpen] =
+        useState<boolean>(false);
 
-  const [editNote, setEditNote] = useState<NoteDTOExtended | null>(null);
+    const [editNote, setEditNote] = useState<NoteDTOExtended | null>(null);
 
-  const {
-    data: notes = [],
-    isLoading,
-    refetch,
-  } = useQuery<Array<NoteDTOExtended>>({
-    queryKey: ["notes"],
-    queryFn: async () => await fetchNotes(),
-  });
+    const {
+        data: notes = [],
+        isLoading,
+        refetch,
+    } = useQuery<Array<NoteDTOExtended>>({
+        queryKey: ["notes"],
+        queryFn: async () => await fetchNotes(),
+    });
 
-  const fetchNotes = async () => {
-    try {
-      const response = await axiosCredentialInstance.get<
-        Response<NoteDTOExtended[]>
-      >(`/note/notes`);
+    const fetchNotes = async () => {
+        try {
+            const response = await axiosCredentialInstance.get<
+                Response<NoteDTOExtended[]>
+            >(`/note/notes`);
 
-      switch (response.status) {
-        case OK_RESPONSE_CODE:
-          setError(undefined);
+            switch (response.status) {
+                case OK_RESPONSE_CODE:
+                    setError(undefined);
 
-          return response.data.data;
-        default:
-          setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-          return [];
-      }
-    } catch (error) {
-      console.error(error);
-      //TODO: Add toast.
-      return [];
-    }
-  };
+                    return response.data.data;
+                default:
+                    setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+                    return [];
+            }
+        } catch (error) {
+            console.error(error);
 
-  if (isLoading) return <LoadingSpinner />;
+            displayErrorToast(error);
+            return [];
+        }
+    };
 
-  if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
-    return <TooManyRequestComponent />;
+    if (isLoading) return <LoadingSpinner/>;
 
-  if (error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE)
-    return <ServerErrorComponent />;
+    if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
+        return <TooManyRequestComponent/>;
 
-  return (
-    <main className="space-y-6 w-full">
-      <h2 className="font-semibold text-base mb-4 flex justify-between">
-        Notes
-        <div className="flex gap-2">
-          <Button
-            isIconOnly
-            variant="light"
-            color="primary"
-            onPress={() => setIsInformationModalOpen(true)}
-          >
-            <IoIosInformationCircleOutline size={19} />
-          </Button>
-        </div>
-      </h2>
+    if (error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE)
+        return <ServerErrorComponent/>;
 
-      {editNote && (
-        <EditNoteComponent
-          editNote={editNote}
-          stateControlFunctionOfEditNote={setEditNote}
-          user={user}
-          refetchDataFunction={refetch}
-        />
-      )}
+    return (
+        <main className="space-y-6 w-full">
+            <h2 className="font-semibold text-base mb-4 flex justify-between">
+                Notes
+                <div className="flex gap-2">
+                    <Button
+                        isIconOnly
+                        variant="light"
+                        color="primary"
+                        onPress={() => setIsInformationModalOpen(true)}
+                    >
+                        <IoIosInformationCircleOutline size={19}/>
+                    </Button>
+                </div>
+            </h2>
 
-      {notes.length === 0 && (
-        <div className="flex justify-center items-center text-sm py-10">
-          No notes yet.
-        </div>
-      )}
+            {editNote && (
+                <EditNoteComponent
+                    editNote={editNote}
+                    stateControlFunctionOfEditNote={setEditNote}
+                    user={user}
+                    refetchDataFunction={refetch}
+                />
+            )}
 
-      {notes.map((n) => (
-        <Note
-          key={`note-${n.id}`}
-          note={n}
-          user={user}
-          refetch={refetch}
-          stateFunctionForEditNote={setEditNote}
-        />
-      ))}
+            {notes.length === 0 && (
+                <div className="flex justify-center items-center text-sm py-10">
+                    No notes yet.
+                </div>
+            )}
 
-      <NoteInformationModal
-        isModalOpen={isInformationModalOpen}
-        setIsModalOpen={setIsInformationModalOpen}
-      />
-    </main>
-  );
+            {notes.map((n) => (
+                <Note
+                    key={`note-${n.id}`}
+                    note={n}
+                    user={user}
+                    refetch={refetch}
+                    stateFunctionForEditNote={setEditNote}
+                />
+            ))}
+
+            <NoteInformationModal
+                isModalOpen={isInformationModalOpen}
+                setIsModalOpen={setIsInformationModalOpen}
+            />
+        </main>
+    );
 };
 
 export default UserSettingsNote;

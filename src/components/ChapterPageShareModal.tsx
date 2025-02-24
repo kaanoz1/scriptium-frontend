@@ -12,13 +12,13 @@ import { Dispatch, FC, SetStateAction } from "react";
 import { BsTwitterX } from "react-icons/bs";
 import { FaThreads } from "react-icons/fa6";
 import { LuCopy } from "react-icons/lu";
+import {handleCopy} from "@/util/utils";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   shareText: string;
   stateControlFunctionOfShareText: Dispatch<SetStateAction<string>>;
-  handleCopyFunction: () => Promise<void>;
   handleShareFunction: (platform: string) => void;
 }
 
@@ -27,7 +27,6 @@ const ChapterPageShareModal: FC<Props> = ({
   setIsModalOpen,
   shareText,
   stateControlFunctionOfShareText,
-  handleCopyFunction,
   handleShareFunction,
 }) => {
   return (
@@ -50,7 +49,7 @@ const ChapterPageShareModal: FC<Props> = ({
                 />
                 <div
                   className="absolute top-2 right-2 cursor-pointer text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-                  onClick={handleCopyFunction}
+                  onClick={() => handleCopy(shareText)}
                 >
                   <LuCopy size={20} />
                 </div>
