@@ -2,7 +2,6 @@
 
 import { NextPage } from "next";
 import {
-  AvailableLanguages,
   CONFLICT_RESPONSE_CODE,
   getFormattedNameAndSurnameFromString,
   INTERNAL_SERVER_ERROR_RESPONSE_CODE,
@@ -10,6 +9,7 @@ import {
   PROJECT_URL,
   SIGN_IN_URL,
   TOO_MANY_REQUEST_RESPONSE_CODE,
+  ValidSystemLanguages,
 } from "@/util/utils";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
@@ -25,7 +25,6 @@ import { Modal, ModalBody, ModalFooter, ModalHeader } from "@heroui/modal";
 import { Input, Textarea } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { User } from "@/types/types";
 import ServerError from "./UI/ServerError";
 import TooManyRequest from "./UI/TooManyRequest";
 import { RefetchOptions, QueryObserverResult } from "@tanstack/react-query";
@@ -33,11 +32,14 @@ import {
   NoAuthenticationRequestErrorCode,
   ResponseMessage,
 } from "@/types/response";
+import { UserOwnDTO } from "@/types/classes/User";
 
 type Props = {
-  user: User;
-  setUser: (user: User | null) => void;
-  fetchUser: (options?: RefetchOptions) => Promise<QueryObserverResult<User>>;
+  user: UserOwnDTO;
+  setUser: (user: UserOwnDTO | null) => void;
+  fetchUser: (
+    options?: RefetchOptions
+  ) => Promise<QueryObserverResult<UserOwnDTO>>;
 };
 
 interface IUserUpdateProfile {
@@ -100,13 +102,13 @@ const UserSettingsEditUser: NextPage<Props> = ({
 
   useEffect(() => {
     if (user) {
-      setNameValue(user.name);
-      setSurnameValue(user.surname ?? undefined);
-      setUsernameValue(user.username ?? undefined);
-      setEmailValue(user.email ?? undefined);
-      setBiographyValue(user.biography ?? undefined);
-      setGenderValue(user.gender ?? undefined);
-      setLanguageValue(user.langId);
+      setNameValue(user.getName());
+      setSurnameValue(user.getSurname() ?? undefined);
+      setUsernameValue(user.getUsername() ?? undefined);
+      setEmailValue(user.getEmail() ?? undefined);
+      setBiographyValue(user.getBiography() ?? undefined);
+      setGenderValue(user.getGender() ?? undefined);
+      setLanguageValue(user.getLangId());
     }
   }, [user, setUser]);
 
@@ -115,19 +117,19 @@ const UserSettingsEditUser: NextPage<Props> = ({
 
     const data = new FormData();
 
-    if (nameValue !== undefined && nameValue !== user.name)
+    if (nameValue !== undefined && nameValue !== user.getName())
       data.append("name", nameValue);
-    if (surnameValue !== undefined && surnameValue !== user.surname)
+    if (surnameValue !== undefined && surnameValue !== user.getSurname())
       data.append("surname", surnameValue);
-    if (usernameValue !== undefined && usernameValue !== user.username)
+    if (usernameValue !== undefined && usernameValue !== user.getUsername())
       data.append("username", usernameValue);
-    if (emailValue !== undefined && emailValue !== user.email)
+    if (emailValue !== undefined && emailValue !== user.getEmail())
       data.append("email", emailValue);
-    if (biographyValue !== undefined && biographyValue !== user.biography)
+    if (biographyValue !== undefined && biographyValue !== user.getBiography())
       data.append("biography", biographyValue);
-    if (genderValue !== undefined && genderValue !== user.gender)
+    if (genderValue !== undefined && genderValue !== user.getGender())
       data.append("gender", genderValue);
-    if (languageValue !== undefined && languageValue !== user.langId)
+    if (languageValue !== undefined && languageValue !== user.getLangId())
       data.append("languageId", languageValue.toString());
 
     if (originalFile) data.append("image", originalFile);
@@ -144,7 +146,7 @@ const UserSettingsEditUser: NextPage<Props> = ({
       switch (response.status) {
         case OK_RESPONSE_CODE:
           await fetchUser();
-          router.push(user ? `user/${user.username}` : SIGN_IN_URL);
+          router.push(user ? `user/${user.getUsername()}` : SIGN_IN_URL);
           return;
         case CONFLICT_RESPONSE_CODE:
           switch (response.data.message) {
@@ -187,7 +189,7 @@ const UserSettingsEditUser: NextPage<Props> = ({
   ) => {
     const file = e.target.files?.[0];
     if (!file) {
-      setProfilePicture(user?.image ?? undefined);
+      setProfilePicture(user.getImage());
       setOriginalFile(null);
       return;
     }
@@ -237,18 +239,14 @@ const UserSettingsEditUser: NextPage<Props> = ({
     return <ServerError />;
 
   const formattedName = getFormattedNameAndSurnameFromString(
-    nameValue ?? user.name,
+    nameValue ?? user.getName(),
     surnameValue
   );
 
   //TODO: Implement crop model.
 
-  // @ts-ignore
-  // @ts-ignore
-  // @ts-ignore
-  // @ts-ignore
-  // @ts-ignore
-  // @ts-ignore
+  const langId = user.getLangId();
+
   return (
     <Fragment>
       <main className="flex flex-col items-center py-10 px-4 min-h-screen">
@@ -258,7 +256,7 @@ const UserSettingsEditUser: NextPage<Props> = ({
             <div className="flex items-center justify-between">
               <UserComponent
                 avatarProps={{
-                  src: profilePicture || (user.image ?? undefined),
+                  src: profilePicture || user.getImage(),
                   name: formattedName,
                   className: "h-20 w-20",
                 }}
@@ -266,12 +264,12 @@ const UserSettingsEditUser: NextPage<Props> = ({
                 description={
                   <Link
                     href={`${PROJECT_URL}/user/${
-                      usernameValue ?? user.username
+                      usernameValue ?? user.getUsername()
                     }`}
                     isExternal
                     size="sm"
                   >
-                    @{usernameValue || user.username}
+                    @{usernameValue || user.getUsername()}
                   </Link>
                 }
                 classNames={{
@@ -442,8 +440,8 @@ const UserSettingsEditUser: NextPage<Props> = ({
                   placeholder="Select your language"
                   variant="bordered"
                   selectedKeys={[
-                    user.langId
-                      ? AvailableLanguages[user.langId].toString()
+                    langId in ValidSystemLanguages
+                      ? ValidSystemLanguages[langId].toString()
                       : "1",
                   ]}
                   description="Sets the default language for the content available to you."

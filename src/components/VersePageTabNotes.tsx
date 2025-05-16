@@ -1,11 +1,10 @@
 import { Button } from "@heroui/button";
 import { NextPage } from "next";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { GoPlusCircle } from "react-icons/go";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import NoteInformationModal from "./NoteInformationModal";
 import CreateNoteComponent from "./UI/CreateNoteComponent";
-import { NoteDTO, NoteDTOExtended, User, VerseDTO } from "@/types/types";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import {
   OK_RESPONSE_CODE,
@@ -17,13 +16,41 @@ import { AuthenticationRequestErrorCode, Response } from "@/types/response";
 import ServerErrorComponent from "./UI/ServerErrorComponent";
 import TooManyRequestComponent from "./UI/TooManyRequestComponent";
 import LoadingSpinner from "./UI/LoadingSpinner";
-import Note from "./UI/Note";
-import EditNoteComponent from "./UI/EditNoteComponent";
+import { NoteOwnerDTO } from "@/types/classes/Note";
+import { VerseBaseDTO, VerseBothDTO } from "@/types/classes/Verse";
+import { UserOwnDTO } from "@/types/classes/User";
+import NoteOwner from "./UI/NoteOwner";
 
 interface Props {
-  verse: VerseDTO;
-  user: User;
+  verse: VerseBothDTO;
+  user: UserOwnDTO;
 }
+
+const fetchNotes = async (
+  verse: VerseBaseDTO,
+  setStateActionFunctionForError: Dispatch<
+    SetStateAction<AuthenticationRequestErrorCode | undefined>
+  >
+) => {
+  try {
+    const response = await axiosCredentialInstance.get<
+      Response<NoteOwnerDTO[]>
+    >(`/note/${verse.getId()}`);
+
+    switch (response.status) {
+      case OK_RESPONSE_CODE:
+        setStateActionFunctionForError(undefined);
+
+        return response.data.data;
+      default:
+        setStateActionFunctionForError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+        return [];
+    }
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
 
 const VersePageTabNotes: NextPage<Props> = ({ verse, user }) => {
   const [error, setError] = useState<
@@ -35,45 +62,14 @@ const VersePageTabNotes: NextPage<Props> = ({ verse, user }) => {
   const [isInformationModalOpen, setIsInformationModalOpen] =
     useState<boolean>(false);
 
-  const [editNote, setEditNote] = useState<NoteDTO | null>(null);
-
   const {
     data: notes = [],
     isLoading,
     refetch,
-  } = useQuery<NoteDTOExtended[]>({
-    queryKey: ["notes", verse.id],
-    queryFn: async () => await fetchNotes(),
+  } = useQuery<NoteOwnerDTO[]>({
+    queryKey: ["notes", verse.getId()],
+    queryFn: async () => await fetchNotes(verse, setError),
   });
-
-  const fetchNotes = async () => {
-    try {
-      const response = await axiosCredentialInstance.get<Response<NoteDTO[]>>(
-        `/note/${verse.id}`
-      );
-
-      switch (response.status) {
-        case OK_RESPONSE_CODE:
-          setError(undefined);
-
-          const noteDTOExtendedArr: NoteDTOExtended[] = [];
-
-          for (const noteDTO of response.data.data)
-            noteDTOExtendedArr.push({
-              ...noteDTO,
-              verse,
-            } satisfies NoteDTOExtended);
-
-          return noteDTOExtendedArr;
-        default:
-          setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-          return [];
-      }
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-  };
 
   if (isLoading) return <LoadingSpinner />;
 
@@ -116,15 +112,6 @@ const VersePageTabNotes: NextPage<Props> = ({ verse, user }) => {
         />
       )}
 
-      {editNote && (
-        <EditNoteComponent
-          editNote={editNote}
-          stateControlFunctionOfEditNote={setEditNote}
-          user={user}
-          refetchDataFunction={refetch}
-        />
-      )}
-
       {notes.length === 0 && (
         <div className="flex justify-center items-center text-sm py-10">
           No notes yet.
@@ -132,13 +119,7 @@ const VersePageTabNotes: NextPage<Props> = ({ verse, user }) => {
       )}
 
       {notes.map((n) => (
-        <Note
-          key={`note-${n.id}`}
-          note={n}
-          user={user}
-          refetch={refetch}
-          stateFunctionForEditNote={setEditNote}
-        />
+        <NoteOwner key={`note-${n.getId()}`} note={n} />
       ))}
 
       <NoteInformationModal

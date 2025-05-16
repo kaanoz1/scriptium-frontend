@@ -11,7 +11,7 @@ import { Switch } from "@heroui/switch";
 import { NextPage } from "next";
 import VocalizationSwitch from "./UI/VocalizationSwitch";
 import { Dispatch, SetStateAction } from "react";
-import { VerseTextVariation } from "@/types/types";
+import { T_ScriptureTextVariationKey } from "@/types/types";
 
 interface Props {
   isSettingsModelOpen: boolean;
@@ -26,8 +26,8 @@ interface Props {
   textSimplifiedSymbol: string;
   textWithoutVowelSymbol: string;
   preferredFont: string;
-  textVariation: VerseTextVariation;
-  setTextVariation: Dispatch<SetStateAction<VerseTextVariation>>;
+  textVariation: T_ScriptureTextVariationKey;
+  setTextVariation: Dispatch<SetStateAction<T_ScriptureTextVariationKey>>;
   showFootnotes: boolean;
   setShowFootnotes: Dispatch<SetStateAction<boolean>>;
 }
@@ -97,7 +97,7 @@ const VerseAndChapterPageSettingsModel: NextPage<Props> = ({
               <div className="flex flex-row justify-evenly">
                 <VocalizationSwitch
                   font={preferredFont}
-                  onClick={() => setTextVariation("text")}
+                  onClick={() => setTextVariation("usual")}
                   variation={textVariation}
                   required="text"
                 >
@@ -105,7 +105,7 @@ const VerseAndChapterPageSettingsModel: NextPage<Props> = ({
                 </VocalizationSwitch>
                 <VocalizationSwitch
                   font={preferredFont}
-                  onClick={() => setTextVariation("textSimplified")}
+                  onClick={() => setTextVariation("simplified")}
                   variation={textVariation}
                   required="textSimplified"
                 >
@@ -113,7 +113,7 @@ const VerseAndChapterPageSettingsModel: NextPage<Props> = ({
                 </VocalizationSwitch>
                 <VocalizationSwitch
                   font={preferredFont}
-                  onClick={() => setTextVariation("textWithoutVowel")}
+                  onClick={() => setTextVariation("withoutVowel")}
                   variation={textVariation}
                   required="textWithoutVowel"
                 >

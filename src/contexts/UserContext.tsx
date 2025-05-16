@@ -1,8 +1,6 @@
 "use client";
 
 import { Response } from "@/types/response";
-import { ImageObject, User } from "@/types/types";
-import { arrangeImageAndReturns } from "@/util/utils";
 import axios from "axios";
 import React, { createContext, ReactNode } from "react";
 import {
@@ -12,13 +10,16 @@ import {
   useQueryClient,
   UseQueryResult,
 } from "@tanstack/react-query";
+import { UserOwnDTO } from "@/types/classes/User";
 
 type UserContextType = {
-  user: User | null;
+  user: UserOwnDTO | null;
   userError: Error | null;
-  setUser: (user: User | null) => void;
-  fetchUser: (options?: RefetchOptions) => Promise<QueryObserverResult<User>>;
-  isLoading: boolean;
+  setUser: (user: UserOwnDTO | null) => void;
+  fetchUser: (
+    options?: RefetchOptions
+  ) => Promise<QueryObserverResult<UserOwnDTO>>;
+  isUserLoading: boolean;
   isFetched: boolean;
 };
 
@@ -27,7 +28,7 @@ const UserContext = createContext<UserContextType | null>(null);
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
 
-  const setUser = (updatedUser: User | null) => {
+  const setUser = (updatedUser: UserOwnDTO | null) => {
     queryClient.setQueryData(["user"], () =>
       updatedUser
         ? {
@@ -43,16 +44,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     isLoading,
     refetch,
     isFetched,
-  }: UseQueryResult<User> = useQuery({
+  }: UseQueryResult<UserOwnDTO> = useQuery({
     queryKey: ["user"],
     queryFn: () =>
       axios
-        .get<Response<User>>(`/user/me`, {
+        .get<Response<UserOwnDTO>>(`/user/me`, {
           withCredentials: true,
         })
-        .then((response) =>
-          arrangeImageAndReturns(response.data.data as ImageObject)
-        ),
+        .then((response) => response),
     staleTime: 1000 * 60 * 60,
     refetchInterval: 1000 * 60 * 60,
   });
@@ -64,7 +63,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setUser,
         userError: error as Error | null,
         fetchUser: refetch,
-        isLoading,
+        isUserLoading: isLoading,
         isFetched,
       }}
     >

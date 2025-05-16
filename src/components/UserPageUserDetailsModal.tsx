@@ -1,4 +1,4 @@
-import { UserFetched } from "@/types/types";
+import { UserFetchedDTO } from "@/types/classes/User";
 import { formatDateDMY } from "@/util/utils";
 import { Divider } from "@heroui/divider";
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
@@ -14,7 +14,7 @@ import {
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  userToBeInformedWith: UserFetched;
+  userToBeInformedWith: UserFetchedDTO;
 }
 
 const UserPageUserDetailsModal: FC<Props> = ({
@@ -22,6 +22,12 @@ const UserPageUserDetailsModal: FC<Props> = ({
   setIsModalOpen,
   userToBeInformedWith,
 }) => {
+  const createdAt: Readonly<Date> = userToBeInformedWith.getCreatedAt();
+  const updateCount: number = userToBeInformedWith.getUpdateCount();
+  const suggestionCount: number = userToBeInformedWith.getSuggestionCount();
+  const privateFrom: Readonly<Date> | null =
+    userToBeInformedWith.getPrivateFrom();
+
   return (
     <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <ModalContent>
@@ -46,7 +52,7 @@ const UserPageUserDetailsModal: FC<Props> = ({
                 Joined At
               </strong>
               <span className="text-sm text-gray-600 dark:text-gray-100">
-                {formatDateDMY(userToBeInformedWith.createdAt)}
+                {formatDateDMY(createdAt)}
               </span>
             </div>
           </div>
@@ -58,7 +64,7 @@ const UserPageUserDetailsModal: FC<Props> = ({
                 Update Count
               </strong>
               <span className="text-sm text-gray-600 dark:text-gray-100">
-                {userToBeInformedWith.updateAccountCount} updates.
+                {updateCount} updates.
               </span>
             </div>
           </div>
@@ -70,13 +76,12 @@ const UserPageUserDetailsModal: FC<Props> = ({
                 Suggestion Count
               </strong>
               <span className="text-sm text-gray-600 dark:text-gray-100">
-                {userToBeInformedWith.suggestionCount} suggestions made by this
-                user.
+                {suggestionCount} suggestions made by this user.
               </span>
             </div>
           </div>
 
-          {userToBeInformedWith.privateFrom && (
+          {privateFrom && (
             <div className="flex items-center gap-3 pb-3">
               <IoInformationCircleOutline className="text-xl text-red-600" />
               <div>
@@ -84,8 +89,7 @@ const UserPageUserDetailsModal: FC<Props> = ({
                   Private From
                 </strong>
                 <span className="text-sm text-gray-600 dark:text-gray-100">
-                  This account became private on{" "}
-                  {formatDateDMY(userToBeInformedWith.privateFrom)}.
+                  This account became private on {formatDateDMY(privateFrom)}.
                 </span>
               </div>
             </div>

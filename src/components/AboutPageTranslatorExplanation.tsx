@@ -1,18 +1,18 @@
-import { InformationalTranslatorsDTO } from "@/types/types";
+import { TranslationWithScriptureDTODTO } from "@/types/classes/Translation";
 import { PROJECT_NAME } from "@/util/utils";
 import { Link } from "@heroui/link";
 import { Tooltip } from "@heroui/tooltip";
 import { FC } from "react";
 
 interface Props {
-  translation: InformationalTranslatorsDTO;
+  translation: TranslationWithScriptureDTODTO;
 }
 
 const AboutPageTranslatorExplanation: FC<Props> = ({ translation }) => {
   return (
     <section className="border border-gray-200 rounded-md p-4 shadow-sm hover:shadow-md transition">
       <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
-        <strong>{translation.name}</strong>
+        <strong>{translation.getName()}</strong>
       </h3>
       <div className="mb-2">
         <Tooltip
@@ -24,10 +24,10 @@ const AboutPageTranslatorExplanation: FC<Props> = ({ translation }) => {
         </Tooltip>
         <span
           className={`px-2 py-1 rounded text-sm text-white ${
-            translation.isEager ? "bg-green-500" : "bg-red-500"
+            translation.getIsEager() ? "bg-green-500" : "bg-red-500"
           }`}
         >
-          <em>{translation.isEager ? "Yes" : "No"}</em>
+          <em>{translation.getIsEager() ? "Yes" : "No"}</em>
         </span>
       </div>
       <div className="mb-2">
@@ -35,7 +35,8 @@ const AboutPageTranslatorExplanation: FC<Props> = ({ translation }) => {
           Language:
         </span>{" "}
         <span className="text-gray-800 dark:text-gray-100">
-          {translation.language.langOwn} ({translation.language.langEnglish})
+          {translation.getLanguage().getLangOwn()} (
+          {translation.getLanguage().getLangEnglish()})
         </span>
       </div>
       <div>
@@ -43,17 +44,17 @@ const AboutPageTranslatorExplanation: FC<Props> = ({ translation }) => {
           Translators:
         </span>
         <ul className="list-disc list-inside ml-4 mt-1">
-          {translation.translators.map((t, i) => (
+          {translation.getTranslators().map((t, i) => (
             <li
-              key={`translator-${t.name}-${i}`}
+              key={`translator-${t.getName()}-${i}`}
               className="text-gray-800 dark:text-gray-100"
             >
-              {t.url ? (
-                <Link href={t.url} isExternal showAnchorIcon>
-                  <strong>{t.name}</strong>
+              {t.getUrl() ? (
+                <Link href={t.getUrl()!} isExternal showAnchorIcon>
+                  <strong>{t.getName()}</strong>
                 </Link>
               ) : (
-                <span>{t.name}</span>
+                <span>{t.getName()}</span>
               )}
             </li>
           ))}

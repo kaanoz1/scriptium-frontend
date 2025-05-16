@@ -1,20 +1,19 @@
 import { motion } from "framer-motion";
-import {
-  TranslationTextSimpleDTO,
-  VerseOptions,
-  ConfinedVerseDTO,
-  VerseTextVariation,
-} from "@/types/types";
+import { T_ScriptureTextVariationKey, VerseOptions } from "@/types/types";
 import { FiExternalLink } from "react-icons/fi";
 import { GrShareOption } from "react-icons/gr";
 import { Dispatch, FC, SetStateAction } from "react";
 import { DEFAULT_LANG_CODE, PROJECT_NAME } from "@/util/utils";
 import { Link } from "@heroui/link";
 import TranslatedTextWithFootnotes from "./TranslatedTextWithFootnotes";
+import { VerseLowerDTO } from "@/types/classes/Verse";
+import { TranslationTextDTO } from "@/types/classes/TranslationText";
+import { TranslationDTO } from "@/types/classes/Translation";
+import { ScriptureDetails } from "@/types/classes/Scripture";
 
 type VerseOperations = {
-  setShareText: Dispatch<SetStateAction<string>>;
-  setIsShareModalOpen: Dispatch<SetStateAction<boolean>>;
+  setStateActionFunctionForShareTextControl: Dispatch<SetStateAction<string>>;
+  setStateActionFunctionForShareModelControl: Dispatch<SetStateAction<boolean>>;
 };
 
 type VerseDetails = {
@@ -25,14 +24,14 @@ type VerseDetails = {
   sectionNumber: number;
   sectionMeaning: string;
   chapterNumber: number;
-  translationName: string;
-  variation: VerseTextVariation;
+  variation: T_ScriptureTextVariationKey;
+  selectedTranslation: Readonly<TranslationDTO> | undefined;
+  scriptureDetails: Readonly<ScriptureDetails>;
 };
 
 interface Props {
-  verse: ConfinedVerseDTO;
-  translationText: TranslationTextSimpleDTO;
-  verseOptions: VerseOptions;
+  verse: VerseLowerDTO;
+  options: VerseOptions;
   operations: VerseOperations;
   verseDetails: VerseDetails;
   font: string;
@@ -41,9 +40,15 @@ interface Props {
 const ChapterVerse: FC<Props> = ({
   verse,
   font,
-  translationText,
-  verseOptions: { showOriginalText, showTranslation, showTransliteration },
-  operations: { setIsShareModalOpen, setShareText },
+  options: {
+    stateIsOrignalTextShown,
+    stateIsTranslationShown,
+    stateIsTransliterationShown,
+  },
+  operations: {
+    setStateActionFunctionForShareModelControl,
+    setStateActionFunctionForShareTextControl,
+  },
   verseDetails: {
     scriptureCode,
     scriptureNameInOwnLanguage,
@@ -52,19 +57,36 @@ const ChapterVerse: FC<Props> = ({
     sectionNameInOwnLanguage,
     sectionMeaning,
     chapterNumber,
-    translationName,
     variation,
+    scriptureDetails,
+    selectedTranslation,
   },
 }) => {
-  const verseText: string = verse[variation] ?? verse.text;
-
-  const transliteration: string | JSX.Element = verse.transliterations.find(
-    (t) => t.language.langCode === DEFAULT_LANG_CODE
-  )?.transliteration ?? (
+  const transliteration: string | JSX.Element = verse
+    .getTransliterations()
+    .find((t) => t.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
+    ?.getTransliteration() ?? (
     <span className="italic">No transliteration available.</span>
   );
 
-  const verseNumber: number = verse.number;
+  const verseNumber: number = verse.getNumber();
+  const verseText: string =
+    verse.getVariation().getTextWithVariation(variation) ??
+    verse.getVariation().getUsual();
+
+  const translationText: TranslationTextDTO =
+    verse
+      .getTranslationTexts()
+      .find(
+        (t) => t.getTranslation().getId() == selectedTranslation?.getId()
+      ) ??
+    verse
+      .getTranslationTexts()
+      .find(
+        (t) =>
+          t.getTranslation().getId() ==
+          scriptureDetails.getDefaultTranslationId()
+      )!;
 
   return (
     <motion.section
@@ -88,9 +110,13 @@ const ChapterVerse: FC<Props> = ({
             size={19}
             className="cursor-pointer hover:text-blue-500 transition-colors"
             onClick={() => {
-              setIsShareModalOpen(true);
-              setShareText(
-                `${PROJECT_NAME},\n${scriptureMeaning}(${scriptureNameInOwnLanguage}), ${sectionMeaning} (${sectionNameInOwnLanguage}), Chapter: ${chapterNumber}, Verse: ${verseNumber}\n\n ${translationName}\n ${translationText.text}\n ${verseText}  \n\n${window.location.href}/${verseNumber}`
+              setStateActionFunctionForShareModelControl(true);
+              setStateActionFunctionForShareTextControl(
+                `${PROJECT_NAME},\n${scriptureMeaning}(${scriptureNameInOwnLanguage}), ${sectionMeaning} (${sectionNameInOwnLanguage}), Chapter: ${chapterNumber}, Verse: ${verseNumber}\n\n ${translationText
+                  .getTranslation()
+                  .getName()}\n ${translationText.getText()}\n ${verseText}  \n\n${
+                  window.location.href
+                }/${verseNumber}`
               );
             }}
           />
@@ -104,24 +130,24 @@ const ChapterVerse: FC<Props> = ({
         </motion.span>
       </div>
 
-      {showTranslation && (
+      {stateIsTranslationShown && (
         <div className="text-base font-light leading-relaxed">
           <TranslatedTextWithFootnotes
             translationText={{
-              text: translationText.text,
-              footnotes: translationText.footNotes,
+              text: translationText.getText(),
+              footnotes: translationText.getFootNotes(),
             }}
           />
         </div>
       )}
 
-      {showOriginalText && (
+      {stateIsOrignalTextShown && (
         <div className={`text-3xl text-right leading-relaxed ${font}`}>
           {verseText}
         </div>
       )}
 
-      {showTransliteration && (
+      {stateIsTransliterationShown && (
         <div className="text-sm font-light italic text-gray-700 dark:text-gray-400">
           {transliteration}
         </div>

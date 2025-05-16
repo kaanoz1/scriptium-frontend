@@ -1,5 +1,9 @@
-import { AvailableScriptureKey, VerseTextVariation } from "@/types/types";
-import { AvailableScriptures } from "@/util/utils";
+import { ScriptureDetails } from "@/types/classes/Scripture";
+import {
+  T_ScriptureTextVariationKey,
+  T_ValidScriptureCode,
+} from "@/types/types";
+import { ValidScriptures } from "@/util/utils";
 import {
   createContext,
   Dispatch,
@@ -9,37 +13,54 @@ import {
   useState,
 } from "react";
 
-type ScriptureObject = {
-  -readonly [K in AvailableScriptureKey]: {
-    preferredTranslationIdSingle: Set<Key>;
-    preferredTranslationIdsMultiple: Set<Key>;
-    preferredScriptureFont: string;
-    preferredScriptureVerseTextVariation: VerseTextVariation;
+export interface T_ScripturePreference {
+  preferredTranslationIdSingle: Set<Key>;
+  preferredTranslationIdsMultiple: Set<Key>;
+  preferredScriptureFont: string;
+  preferredScriptureVerseTextVariation: T_ScriptureTextVariationKey;
+}
+
+export interface T_PreferredScriptureSettings {
+  readonly preferencesByScripture: {
+    [K in T_ValidScriptureCode]: T_ScripturePreference;
   };
-};
+
+  getDefaultTranslationIdSingle(key: T_ValidScriptureCode): number;
+}
 
 type ScriptureObjectContextType = {
-  preferredScriptureContext: ScriptureObject;
-  setPreferredScriptureContext: Dispatch<SetStateAction<ScriptureObject>>;
+  preferredScriptureContext: T_PreferredScriptureSettings;
+  setPreferredScriptureContext: Dispatch<
+    SetStateAction<T_PreferredScriptureSettings>
+  >;
 };
 
 const ScriptureProviderContext = createContext<
   ScriptureObjectContextType | undefined
 >(undefined);
 
-const createScriptureObject = (): ScriptureObject => {
-  const scriptureObject = {} as ScriptureObject;
+const createScriptureObject = (): T_PreferredScriptureSettings => {
+  const scriptureObject = {
+    preferencesByScripture: {} as {
+      [K in T_ValidScriptureCode]: T_ScripturePreference;
+    },
+    getDefaultTranslationIdSingle: (key: T_ValidScriptureCode) =>
+      Array.from(
+        scriptureObject.preferencesByScripture[key].preferredTranslationIdSingle
+      )[0] as number,
+  };
 
-  for (const code of Object.keys(
-    AvailableScriptures
-  ) as Array<AvailableScriptureKey>) {
-    const { defaultTranslationId, defaultScriptureFont } =
-      AvailableScriptures[code];
+  for (const code of Object.keys(ValidScriptures) as T_ValidScriptureCode[]) {
+    const scripture: Readonly<ScriptureDetails> = ValidScriptures[code];
+    const defaultTranslationId = scripture.getDefaultTranslationId();
+    const defaultScriptureFont = scripture.getDefaultTranslationFont();
 
-    scriptureObject[code] = {
+    scriptureObject.preferencesByScripture[code] = {
       preferredTranslationIdSingle: new Set([defaultTranslationId.toString()]),
-      preferredTranslationIdsMultiple: new Set([defaultTranslationId.toString()]),
-      preferredScriptureVerseTextVariation: "text",
+      preferredTranslationIdsMultiple: new Set([
+        defaultTranslationId.toString(),
+      ]),
+      preferredScriptureVerseTextVariation: "usual",
       preferredScriptureFont: defaultScriptureFont,
     };
   }
@@ -49,7 +70,7 @@ const createScriptureObject = (): ScriptureObject => {
 
 export const ScriptureProvider = ({ children }: { children: ReactNode }) => {
   const [preferredScriptureContext, setPreferredScriptureContext] =
-    useState<ScriptureObject>(createScriptureObject());
+    useState<T_PreferredScriptureSettings>(createScriptureObject());
 
   return (
     <ScriptureProviderContext.Provider

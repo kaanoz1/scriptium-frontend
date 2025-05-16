@@ -1,6 +1,6 @@
-import { TranslationTextDTO } from "@/types/types";
 import { NextPage } from "next";
 import TranslatedTextWithFootnotes from "./UI/TranslatedTextWithFootnotes";
+import { TranslationTextDTO } from "@/types/classes/TranslationText";
 
 interface Props {
   translationText: TranslationTextDTO;
@@ -11,9 +11,11 @@ const VersePageTabTranslationsRow: NextPage<Props> = ({
   translationText,
   showFootnotes,
 }) => {
-  const translationName = translationText.translation.name;
-  const translatorNamesGathered = translationText.translation.translators
-    .map((t) => t.name)
+  const translationName = translationText.getTranslation().getName();
+  const translatorNamesGathered = translationText
+    .getTranslation()
+    .getTranslators()
+    .map((t) => t.getName())
     .join(", ");
 
   return (
@@ -29,8 +31,8 @@ const VersePageTabTranslationsRow: NextPage<Props> = ({
       <div className="leading-relaxed">
         <TranslatedTextWithFootnotes
           translationText={{
-            text: translationText.text,
-            footnotes: translationText.footNotes,
+            text: translationText.getText(),
+            footnotes: translationText.getFootNotes(),
           }}
           showFootnotes={showFootnotes}
         />

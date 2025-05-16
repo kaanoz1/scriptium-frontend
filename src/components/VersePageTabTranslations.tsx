@@ -1,9 +1,9 @@
-import { TranslationTextDTO } from "@/types/types";
 import { NextPage } from "next";
 import VersePageTabTranslationsRow from "./VersePageTabTranslationsRow";
+import { TranslationTextDTO } from "@/types/classes/TranslationText";
 
 interface Props {
-  translationTexts: TranslationTextDTO[];
+  readonly translationTexts: ReadonlyArray<TranslationTextDTO>;
   showFootnotes: boolean;
 }
 

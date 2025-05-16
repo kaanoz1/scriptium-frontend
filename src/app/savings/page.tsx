@@ -10,10 +10,10 @@ import { motion } from "framer-motion";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
 
 const Page: NextPage = () => {
-  const { user, isLoading } = useUser();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
 
-  if (isLoading) return <LoadingSpinnerFullH />;
+  if (isUserLoading) return <LoadingSpinnerFullH />;
 
   if (!user) {
     router.push(SIGN_IN_URL);

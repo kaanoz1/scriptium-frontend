@@ -36,7 +36,7 @@ import {
   ResponseMessage,
 } from "@/types/response";
 
-export type TPasswordStrength = "Too Weak" | "Weak" | "Medium" | "Strong";
+export type T_PasswordStrength = "Too Weak" | "Weak" | "Medium" | "Strong";
 
 interface ISignUpForm {
   email: string;
@@ -53,9 +53,9 @@ const SignUpForm: NextPage = () => {
   const [name, setName] = useState<string | undefined>();
   const [surname, setSurname] = useState<string | undefined>();
   const [password, setPassword] = useState<string | undefined>();
-  const [profilePicture, setProfilePicture] = useState<string | undefined>();
+  const [profilePicture, setProfilePicture] = useState<string>("");
   const [passwordStrength, setPasswordStrength] = useState<
-    TPasswordStrength | undefined
+    T_PasswordStrength | undefined
   >();
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const { user, fetchUser } = useUser();
@@ -68,7 +68,7 @@ const SignUpForm: NextPage = () => {
   useEffect(() => {
     if (password ?? false)
       setPasswordStrength(
-        checkPasswordStrength(password ?? "").value as TPasswordStrength
+        checkPasswordStrength(password ?? "").value as T_PasswordStrength
       );
   }, [password]);
 
@@ -82,7 +82,7 @@ const SignUpForm: NextPage = () => {
   const handleProfilePictureChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) setProfilePicture(URL.createObjectURL(file));
-    else setProfilePicture(undefined);
+    else setProfilePicture("");
   };
 
   const toggleVisibility = () => setIsPasswordVisible(!isPasswordVisible);
@@ -110,7 +110,7 @@ const SignUpForm: NextPage = () => {
     switch (response.status) {
       case OK_RESPONSE_CODE:
         await fetchUser();
-        router.push(user ? `user/${user.username}` : SIGN_IN_URL);
+        router.push(user ? `user/${user.getUsername()}` : SIGN_IN_URL);
         return;
       case CONFLICT_RESPONSE_CODE:
         switch (response.data.message) {
@@ -376,7 +376,7 @@ const SignUpForm: NextPage = () => {
                     </Tooltip>
                   </div>
                   <div className="flex justify-center items-center">
-                    {password == undefined || password.length === 0 || (
+                    {passwordStrength == undefined || (
                       <PasswordStrengthMeter strength={passwordStrength} />
                     )}
                   </div>
@@ -472,7 +472,7 @@ const SignUpForm: NextPage = () => {
                   }
                   description={`@${username || "username"}`}
                   avatarProps={{
-                    src: profilePicture || undefined,
+                    src: profilePicture,
                   }}
                 />
               </div>

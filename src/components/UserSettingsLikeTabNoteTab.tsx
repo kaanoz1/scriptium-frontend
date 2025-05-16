@@ -1,6 +1,5 @@
-import { LikedNoteDTO, RefetchDataFunctionType, User } from "@/types/types";
+import { Column, RefetchDataFunctionType } from "@/types/types";
 import { NextPage } from "next";
-import LikedNote from "./UI/LikedNote";
 import {
   Table,
   TableHeader,
@@ -10,12 +9,14 @@ import {
   TableCell,
 } from "@heroui/table";
 import { Key, useCallback } from "react";
-import { Column } from "@/util/utils";
+import { UserOwnDTO } from "@/types/classes/User";
+import NoteOwn from "./UI/NoteOwn";
+import { NoteOwnDTO } from "@/types/classes/Note";
 
 interface Props {
-  notes: LikedNoteDTO[];
+  notes: NoteOwnDTO[];
   refetch: RefetchDataFunctionType;
-  user: User;
+  user: UserOwnDTO;
 }
 
 const UserSettingsLikeTabNoteTab: NextPage<Props> = ({
@@ -24,12 +25,12 @@ const UserSettingsLikeTabNoteTab: NextPage<Props> = ({
   refetch,
 }) => {
   const renderCell = useCallback(
-    (item: LikedNoteDTO, columnKey: Key) => {
+    (item: NoteOwnDTO, columnKey: Key) => {
+      const note = item;
+
       switch (columnKey) {
         case "like":
-          return (
-            <LikedNote refetchFunction={refetch} user={user} note={item} />
-          );
+          return <NoteOwn note={note} owner={user} refetch={refetch} />;
 
         default:
           return <></>;
@@ -53,8 +54,8 @@ const UserSettingsLikeTabNoteTab: NextPage<Props> = ({
         items={notes}
         emptyContent="You did not liked any reflections"
       >
-        {(item: LikedNoteDTO) => (
-          <TableRow key={item.id}>
+        {(item: NoteOwnDTO) => (
+          <TableRow key={item.getId()}>
             {(columnKey) => (
               <TableCell>{renderCell(item, columnKey)}</TableCell>
             )}

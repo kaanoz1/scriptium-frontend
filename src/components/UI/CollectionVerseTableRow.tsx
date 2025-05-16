@@ -1,20 +1,20 @@
 import { motion, Variants } from "framer-motion";
 import { GoBookmarkFill } from "react-icons/go";
 import { FC, useState } from "react";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { OK_RESPONSE_CODE, DEFAULT_LANG_CODE, PROJECT_URL } from "@/util/utils";
+import { DEFAULT_LANG_CODE, PROJECT_URL } from "@/util/utils";
 import { BreadcrumbItem, Breadcrumbs } from "@heroui/breadcrumbs";
 import { FiExternalLink } from "react-icons/fi";
 import { Link } from "@heroui/link";
 import TranslatedTextWithFootnotes from "./TranslatedTextWithFootnotes";
+import { CollectionDTO } from "@/types/classes/Collection";
+import { VerseUpperDTO } from "@/types/classes/Verse";
+import { TranslationTextDTO } from "@/types/classes/TranslationText";
 import {
-  AvailableScriptureKey,
-  CollectionDTO,
   RefetchDataFunctionType,
-  TranslationTextSimpleDTO,
-  VerseCollectionDTO,
-  VerseTextVariation,
+  T_ScriptureTextVariationKey,
+  T_ValidScriptureCode,
 } from "@/types/types";
+import { handleUnsaveClick } from "./CollectionComponent";
 
 const containerVariants: Variants = {
   initial: {
@@ -38,10 +38,10 @@ const iconContainerVariants: Variants = {
 
 interface Props {
   collection: CollectionDTO;
-  verse: VerseCollectionDTO;
-  translationText: TranslationTextSimpleDTO;
+  verse: VerseUpperDTO;
+  translationText: TranslationTextDTO;
   font: string;
-  variation: VerseTextVariation;
+  variation: T_ScriptureTextVariationKey;
   refetchDataFunction: RefetchDataFunctionType;
 }
 
@@ -49,53 +49,56 @@ const CollectionVerseTableRow: FC<Props> = ({
   verse,
   font,
   translationText,
-  variation,
   refetchDataFunction,
   collection,
+  variation,
 }) => {
-  //TODO: Add react hook form.
-
   const [isUnsaveLoading, setIsUnsaveLoading] = useState(false);
 
-  const verseText: string = verse[variation] ?? verse.text;
-
+  const verseText: string =
+    verse.getVariation().getTextWithVariation(variation) ??
+    verse.getVariation().getUsual();
   const scriptureMeaning: string =
-    verse.section.scripture.meanings.find(
-      (e) => e.language.langCode === DEFAULT_LANG_CODE
-    )?.meaning ?? "Scripture";
+    verse
+      .getChapter()
+      .getSection()
+      .getScripture()
+      .getMeanings()
+      .find((e) => e.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
+      ?.getText() ?? "Scripture";
 
   const sectionMeaning: string =
-    verse.section.meanings.find(
-      (e) => e.language.langCode === DEFAULT_LANG_CODE
-    )?.meaning ?? "Section";
+    verse
+      .getChapter()
+      .getSection()
+      .getMeanings()
+      .find((e) => e.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
+      ?.getText() ?? "Section";
 
-  const transliteration: string | JSX.Element = verse.transliterations.find(
-    (t) => t.language.langCode === DEFAULT_LANG_CODE
-  )?.transliteration ?? (
+  const transliteration: string | JSX.Element = verse
+    .getTransliterations()
+    .find((t) => t.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
+    ?.getTransliteration() ?? (
     <span className="italic">No transliteration available.</span>
   );
 
-  const scriptureCode: AvailableScriptureKey = verse.section.scripture.code;
-  const scriptureNameInOwnLanguage: string = verse.section.scripture.name;
-  const sectionNumber: number = verse.section.number;
-  const sectionNameInOwnLanguage: string = verse.section.name;
-  const chapterNumber: number = verse.chapterNumber;
-  const verseNumber: number = verse.number;
-
-  const handleUnsaveClick = async () => {
-    try {
-      setIsUnsaveLoading(true);
-      const response = await axiosCredentialInstance.delete(`/saving/unsave`, {
-        data: { verseId: verse.id, collectionNames: [collection.name] },
-      });
-
-      if (response.status === OK_RESPONSE_CODE) {
-        await refetchDataFunction();
-      }
-    } finally {
-      setIsUnsaveLoading(false);
-    }
-  };
+  const scriptureCode: T_ValidScriptureCode = verse
+    .getChapter()
+    .getSection()
+    .getScripture()
+    .getCode();
+  const scriptureNameInOwnLanguage: string = verse
+    .getChapter()
+    .getSection()
+    .getScripture()
+    .getName();
+  const sectionNumber: number = verse.getChapter().getSection().getNumber();
+  const sectionNameInOwnLanguage: string = verse
+    .getChapter()
+    .getSection()
+    .getName();
+  const chapterNumber: number = verse.getChapter().getNumber();
+  const verseNumber: number = verse.getNumber();
 
   return (
     <motion.div
@@ -131,7 +134,14 @@ const CollectionVerseTableRow: FC<Props> = ({
             whileHover={{ scale: 1.3 }}
             whileTap={{ scale: 0.9 }}
             disabled={isUnsaveLoading}
-            onClick={handleUnsaveClick}
+            onClick={async () =>
+              await handleUnsaveClick(
+                verse,
+                collection,
+                refetchDataFunction,
+                setIsUnsaveLoading
+              )
+            }
             className="group flex items-center justify-center w-9 h-9 rounded-full bg-transparent cursor-pointer text-violet-700 dark:text-violet-400"
           >
             <GoBookmarkFill size={17} />
@@ -156,8 +166,8 @@ const CollectionVerseTableRow: FC<Props> = ({
       <div className="text-base font-light leading-relaxed">
         <TranslatedTextWithFootnotes
           translationText={{
-            text: translationText.text,
-            footnotes: translationText.footNotes,
+            text: translationText.getText(),
+            footnotes: translationText.getFootNotes(),
           }}
         />
       </div>

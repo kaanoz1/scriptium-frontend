@@ -1,12 +1,13 @@
-import { AvailableScriptureKey, SectionWithMeaningDTO } from "@/types/types";
+import { SectionDTO } from "@/types/classes/Section";
+import { T_ValidScriptureCode } from "@/types/types";
 import { DEFAULT_LANG_CODE } from "@/util/utils";
 import { Link } from "@heroui/link";
 import { motion } from "framer-motion";
 import { FC } from "react";
 
 interface Props {
-  scriptureCode: AvailableScriptureKey;
-  section: SectionWithMeaningDTO;
+  scriptureCode: T_ValidScriptureCode;
+  section: SectionDTO;
   index: number;
 }
 
@@ -16,10 +17,12 @@ const ScripturePageSectionBlockComponent: FC<Props> = ({
   index: i,
 }) => {
   const sectionMeaning: string =
-    section.meanings.find((s) => (s.language.langCode = DEFAULT_LANG_CODE))
-      ?.meaning ?? "Section";
+    section
+      .getMeanings()
+      .find((s) => s.getLanguage().getLangCode() == DEFAULT_LANG_CODE)
+      ?.getText() ?? "Section";
 
-  const sectionNameInOwnLanguage: string = section.name;
+  const sectionNameInOwnLanguage: string = section.getName();
 
   return (
     <motion.div

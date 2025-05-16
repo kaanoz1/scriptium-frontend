@@ -1,4 +1,4 @@
-import { TranslationTextDTO } from "@/types/types";
+import { TranslationTextDTO } from "@/types/classes/TranslationText";
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -15,7 +15,7 @@ import { Dispatch, Key, SetStateAction } from "react";
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  translationTexts: TranslationTextDTO[];
+  readonly translationTexts: ReadonlyArray<TranslationTextDTO>;
   preferredTranslationIds: Set<Key>;
   setPreferredTranslationIds: Dispatch<SetStateAction<Set<Key>>>;
 }
@@ -55,9 +55,11 @@ const VersePageTranslationModal: NextPage<Props> = ({
               onChange={handleSelectionChange}
             >
               {translationTexts.map((t) => (
-                <SelectItem key={t.translation.id}>
-                  {`${t.translation.name} / ${t.translation.translators
-                    .map((e) => e.name)
+                <SelectItem key={t.getTranslation().getId()}>
+                  {`${t.getTranslation().getName()} / ${t
+                    .getTranslation()
+                    .getTranslators()
+                    .map((e) => e.getName())
                     .join(", ")}`}
                 </SelectItem>
               ))}

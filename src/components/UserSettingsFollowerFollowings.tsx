@@ -5,10 +5,10 @@ import FollowerTable from "./FollowerTable";
 import FollowingTable from "./FollowingTable";
 import SentRequestTable from "./SentRequestTable";
 import ReceivedRequestTable from "./ReceivedRequestTable";
-import { User } from "@/types/types";
+import { UserOwnDTO } from "@/types/classes/User";
 
 interface Props {
-  user: User;
+  user: UserOwnDTO;
 }
 
 const UserSettingsFollowerFollowings: NextPage<Props> = ({ user }) => {
@@ -55,7 +55,7 @@ const UserSettingsFollowerFollowings: NextPage<Props> = ({ user }) => {
           >
             <SentRequestTable />
           </Tab>
-          {user?.privateFrom ? (
+          {user.getPrivateFrom() ? (
             <Tab
               key="receivedPending"
               title={

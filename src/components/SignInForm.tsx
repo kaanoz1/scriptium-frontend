@@ -53,7 +53,7 @@ const SignInForm: FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<SignInForm>();
 
-  const { isLoading, fetchUser } = useUser();
+  const { isUserLoading, fetchUser } = useUser();
 
   const router = useRouter();
 
@@ -85,7 +85,7 @@ const SignInForm: FC = () => {
     }
   });
 
-  if (isLoading) return <LoadingSpinnerFullH />;
+  if (isUserLoading) return <LoadingSpinnerFullH />;
 
   if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
     return <TooManyRequest />;

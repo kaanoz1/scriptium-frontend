@@ -1,51 +1,71 @@
 "use client";
-import {
-  RootSimpleDTO,
-  TranslationDTO,
-  TranslationTextSimpleDTO,
-  VerseExpendedWordDTO,
-  VerseTextVariation,
-} from "@/types/types";
+
 import { DEFAULT_LANG_CODE } from "@/util/utils";
 import { NextPage } from "next";
 import TranslatedTextWithFootnotes from "./TranslatedTextWithFootnotes";
+import { TranslationTextDTO } from "@/types/classes/TranslationText";
+import { WordUpperDTO } from "@/types/classes/Word";
+import { Key } from "react";
+import { ScriptureDetails } from "@/types/classes/Scripture";
+import { T_ScriptureTextVariationKey } from "@/types/types";
 
 interface Props {
-  translationText: TranslationTextSimpleDTO;
-  translation: TranslationDTO;
-  verse: VerseExpendedWordDTO;
-  verseTextVariation: VerseTextVariation;
+  word: WordUpperDTO;
+  variation: T_ScriptureTextVariationKey;
   showTranslation: boolean;
   showFootnotes: boolean;
   showOriginalText: boolean;
   showTransliteration: boolean;
   preferredFont: string;
-  root: RootSimpleDTO;
+  preferredTranslationId: Set<Key>;
+  scriptureDetails: Readonly<ScriptureDetails>;
 }
 
 const Root: NextPage<Props> = ({
-  verse,
-  translationText,
-  translation,
-  verseTextVariation: variation,
+  word,
+  variation,
+  scriptureDetails,
+  preferredTranslationId,
+
   showFootnotes,
   showOriginalText,
   showTranslation,
   showTransliteration,
+
   preferredFont,
 }) => {
-  const verseText: string = verse[variation] ?? verse.text;
+  const verse = word.getVerse();
 
-  const transliteration: string | JSX.Element = verse.transliterations.find(
-    (t) => t.language.langCode === DEFAULT_LANG_CODE
-  )?.transliteration ?? (
+  const verseText: string =
+    verse.getVariation().getTextWithVariation(variation) ??
+    verse.getVariation().getUsual();
+
+  const transliteration: string | JSX.Element = verse
+    .getTransliterations()
+    .find((t) => t.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
+    ?.getTransliteration() ?? (
     <span className="italic">No transliteration available.</span>
   );
 
-  const translationName: string = translation.name;
+  const translationText: TranslationTextDTO =
+    verse
+      .getTranslationTexts()
+      .find((tt) => preferredTranslationId.has(tt.getTranslation().getId())) ??
+    verse
+      .getTranslationTexts()
+      .find(
+        (tt) =>
+          tt.getTranslation().getId() ===
+          scriptureDetails.getDefaultTranslationId()
+      )!;
 
-  const translatorNamesGathered: string = translation.translators
-    .map((t) => t.name)
+  const translation = translationText.getTranslation();
+
+  const translationName: string = translation.getName();
+
+  const translatorNamesGathered: string = translation
+    .getTranslators()
+    .map((t) => t.getName())
     .join(", ");
 
   return (
@@ -58,8 +78,8 @@ const Root: NextPage<Props> = ({
           <div className="py-2 px-3 w-full leading-relaxed">
             <TranslatedTextWithFootnotes
               translationText={{
-                text: translationText.text,
-                footnotes: translationText.footNotes,
+                text: translationText.getText(),
+                footnotes: translationText.getFootNotes(),
               }}
               showFootnotes={showFootnotes}
             />

@@ -1,9 +1,9 @@
-import { TPasswordStrength } from "../SignUpForm";
 import { motion } from "framer-motion";
 import { FC } from "react";
+import { T_PasswordStrength } from "../SignUpForm";
 
 interface Props {
-  strength?: TPasswordStrength;
+  strength?: T_PasswordStrength;
 }
 
 const PasswordStrengthMeter: FC<Props> = ({ strength }) => {

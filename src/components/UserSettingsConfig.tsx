@@ -16,7 +16,7 @@ import {
 } from "@heroui/modal";
 import { useForm } from "react-hook-form";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { User } from "@/types/types";
+import { UserOwnDTO } from "@/types/classes/User";
 
 type ChangePasswordForm = {
   oldPassword: string;
@@ -25,8 +25,8 @@ type ChangePasswordForm = {
 };
 
 type Props = {
-  user: User;
-  setUser: (user: User | null) => void;
+  user: UserOwnDTO;
+  setUser: (user: UserOwnDTO | null) => void;
 };
 
 type FreezeAccountForm = {

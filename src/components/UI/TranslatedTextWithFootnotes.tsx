@@ -1,4 +1,4 @@
-import { FootNoteDTO } from "@/types/types";
+import { FootNoteDTO } from "@/types/classes/FootNote";
 import { TOOL_TIP_CLASS_NAMES } from "@/util/utils";
 import { Tooltip } from "@heroui/tooltip";
 import { FC } from "react";
@@ -6,7 +6,7 @@ import { FC } from "react";
 interface Props {
   translationText: {
     text: string;
-    footnotes: FootNoteDTO[];
+    footnotes: readonly FootNoteDTO[];
   };
 
   showFootnotes?: boolean;
@@ -18,13 +18,16 @@ const TranslatedTextWithFootnotes: FC<Props> = ({
 }) => {
   if (!showFootnotes) return <div className="text-medium">{text}</div>;
 
-  const sortedFootnotes = [...footnotes].sort((a, b) => a.index - b.index);
+  const sortedFootnotes = [...footnotes].sort(
+    (a, b) => a.getIndex() - b.getIndex()
+  );
 
   const elements = [];
   let lastIndex = 0;
 
   sortedFootnotes.forEach((footnote, i) => {
-    const { index, text: footnoteText } = footnote;
+    const index = footnote.getIndex();
+    const footnoteText = footnote.getText();
 
     const precedingText = text.substring(lastIndex, index);
     if (precedingText) elements.push(precedingText);

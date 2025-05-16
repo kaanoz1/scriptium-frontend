@@ -1,4 +1,4 @@
-import { CollectionDTO, RefetchDataFunctionType } from "@/types/types";
+import { RefetchDataFunctionType } from "@/types/types";
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -26,6 +26,7 @@ import {
 } from "@/util/utils";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { ResponseMessage } from "@/types/response";
+import { CollectionDTO } from "@/types/classes/Collection";
 
 interface Props {
   isModalOpen: boolean;
@@ -62,8 +63,8 @@ const CollectionUpdateModal: FC<Props> = ({
     if (!isModalOpen || !collection) return;
 
     reset({
-      newCollectionName: collection.name ?? null,
-      newCollectionDescription: collection.description ?? null,
+      newCollectionName: collection.getName(),
+      newCollectionDescription: collection.getDescription(),
     });
     setHasChanges(false);
   }, [collection, isModalOpen, reset]);
@@ -78,8 +79,8 @@ const CollectionUpdateModal: FC<Props> = ({
     const trimmedName = (newCollectionName ?? "").trim();
     const trimmedDesc = (newCollectionDescription ?? "").trim();
 
-    const originalName = (collection.name ?? "").trim();
-    const originalDesc = (collection.description ?? "").trim();
+    const originalName = (collection.getName() ?? "").trim();
+    const originalDesc = (collection.getDescription() ?? "").trim();
 
     if (
       (trimmedName == originalName && trimmedDesc == originalDesc) ||
@@ -91,17 +92,17 @@ const CollectionUpdateModal: FC<Props> = ({
 
   const onSubmit = async (data: UpdateCollectionForm) => {
     const formData = {} as UpdateCollectionForm;
-    if (collection.name != data.newCollectionName)
+    if (collection.getName() != data.newCollectionName)
       formData.newCollectionName = data.newCollectionName;
 
-    if (collection.description != data.newCollectionDescription)
+    if (collection.getDescription() != data.newCollectionDescription)
       formData.newCollectionDescription = data.newCollectionDescription;
 
     try {
       const response = await axiosCredentialInstance.put<ResponseMessage>(
         `/collection/update`,
         {
-          collectionId: collection.id,
+          collectionId: collection.getId(),
           ...formData,
         }
       );
@@ -153,7 +154,7 @@ const CollectionUpdateModal: FC<Props> = ({
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {`Update collection ${collection.name}`}
+          {`Update collection ${collection.getName()}`}
         </ModalHeader>
         <ModalBody>
           {errors.root?.message && (

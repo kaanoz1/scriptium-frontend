@@ -1,25 +1,21 @@
 "use client";
 
 import { NoAuthenticationRequestErrorCode, Response } from "@/types/response";
-import {
-  AvailableScriptureKey,
-  ScripturePageParams,
-  ScriptureDTO,
-  ScriptureDetails,
-} from "@/types/types";
+import { T_ScripturePageParams, T_ValidScriptureCode } from "@/types/types";
 import {
   DEFAULT_LANG_CODE,
-  getScripture,
+  getScriptureIfCodeIsValid,
   INTERNAL_SERVER_ERROR_RESPONSE_CODE,
   NOT_FOUND_RESPONSE_CODE,
   OK_RESPONSE_CODE,
-  PROJECT_URL, SOMETHING_WENT_WRONG_TOAST,
+  PROJECT_URL,
+  SOMETHING_WENT_WRONG_TOAST,
   TOO_MANY_REQUEST_RESPONSE_CODE,
 } from "@/util/utils";
 import axios from "axios";
 import { NextPage } from "next";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Breadcrumbs, BreadcrumbItem } from "@heroui/breadcrumbs";
@@ -28,7 +24,49 @@ import ServerError from "@/components/UI/ServerError";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
 import ScripturePageNotFoundComponent from "@/components/ScripturePageNotFoundComponent";
 import ScripturePageSectionBlockComponent from "@/components/ScripturePageSectionBlockComponent";
-import {addToast} from "@heroui/toast";
+import { addToast } from "@heroui/toast";
+import {
+  ScriptureDetails,
+  ScriptureOneLevelLowerDTO,
+} from "@/types/classes/Scripture";
+
+const fetchScripture = async (
+  scripture: Readonly<ScriptureDetails> | null,
+  setStateActionFunctionForSetError: Dispatch<
+    SetStateAction<NoAuthenticationRequestErrorCode | undefined>
+  >
+) => {
+  if (scripture == null) {
+    setStateActionFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+    return null;
+  }
+
+  try {
+    const response = await axios.get<Response<ScriptureOneLevelLowerDTO>>(
+      `/verse/${scripture.getNumber()}`
+    );
+
+    switch (response.status) {
+      case OK_RESPONSE_CODE:
+        setStateActionFunctionForSetError(undefined);
+        return response.data.data;
+      case NOT_FOUND_RESPONSE_CODE:
+        setStateActionFunctionForSetError(NOT_FOUND_RESPONSE_CODE);
+        return null;
+      case TOO_MANY_REQUEST_RESPONSE_CODE:
+        setStateActionFunctionForSetError(TOO_MANY_REQUEST_RESPONSE_CODE);
+        return null;
+      default:
+        setStateActionFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+        return null;
+    }
+  } catch (error) {
+    addToast(SOMETHING_WENT_WRONG_TOAST);
+    console.error(error);
+    setStateActionFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+    return null;
+  }
+};
 
 interface Props {}
 
@@ -38,48 +76,15 @@ const Page: NextPage<Props> = ({}) => {
   >(undefined);
 
   const { scriptureCode: scriptureCodeParam } =
-    useParams<ScripturePageParams>();
+    useParams<T_ScripturePageParams>();
 
-  const scripture: ScriptureDetails | undefined =
-    getScripture(scriptureCodeParam);
-
-  const fetchScripture = async () => {
-    if (scripture == undefined) {
-      setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-      return null;
-    }
-
-    try {
-      const response = await axios.get<Response<ScriptureDTO>>(
-        `/verse/${scripture.number}`
-      );
-
-      switch (response.status) {
-        case OK_RESPONSE_CODE:
-          setError(undefined);
-          return response.data.data;
-        case NOT_FOUND_RESPONSE_CODE:
-          setError(NOT_FOUND_RESPONSE_CODE);
-          return null;
-        case TOO_MANY_REQUEST_RESPONSE_CODE:
-          setError(TOO_MANY_REQUEST_RESPONSE_CODE);
-          return null;
-        default:
-          setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-          return null;
-      }
-    } catch (error) {
-      addToast(SOMETHING_WENT_WRONG_TOAST);
-      console.error(error);
-      setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-      return null;
-    }
-  };
+  const scripture: Readonly<ScriptureDetails> | null =
+    getScriptureIfCodeIsValid(scriptureCodeParam);
 
   const { data: scriptureFetched = null, isLoading } =
-    useQuery<ScriptureDTO | null>({
+    useQuery<ScriptureOneLevelLowerDTO | null>({
       queryKey: ["scripture-page", scriptureCodeParam],
-      queryFn: async () => await fetchScripture(),
+      queryFn: async () => await fetchScripture(scripture, setError),
       refetchOnWindowFocus: false,
       staleTime: Infinity,
     });
@@ -101,15 +106,17 @@ const Page: NextPage<Props> = ({}) => {
   if (error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE)
     return <ServerError />;
 
-  const scriptureCode: AvailableScriptureKey = scripture.code;
+  const scriptureCode: T_ValidScriptureCode = scripture.getCode();
 
   const scriptureMeaning: string =
-    scriptureFetched.meanings.find(
-      (e) => e.language.langCode == DEFAULT_LANG_CODE
-    )?.meaning ?? "Torah";
+    scriptureFetched
+      .getMeanings()
+      .find((e) => e.getLanguage().getLangCode() == DEFAULT_LANG_CODE)
+      ?.getText() ?? "Torah";
 
-  const scriptureNameInOwnLanguage = scriptureFetched.name;
+  const scriptureNameInOwnLanguage = scriptureFetched.getName();
 
+  const sections = scriptureFetched.getSections();
   return (
     <motion.div
       initial={{ opacity: 0, x: 30 }}
@@ -156,7 +163,7 @@ const Page: NextPage<Props> = ({}) => {
             },
           }}
         >
-          {scriptureFetched.sections.map((section, i) => (
+          {sections.map((section, i) => (
             <ScripturePageSectionBlockComponent
               key={`section-${i}`}
               index={i}

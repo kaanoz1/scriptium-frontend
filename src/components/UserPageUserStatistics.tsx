@@ -1,40 +1,35 @@
-import { UserFetched } from "@/types/types";
+import { UserFetchedDTO } from "@/types/classes/User";
 import { NextPage } from "next";
 import { Fragment } from "react";
 
 interface Props {
-  statisticsOfUser: UserFetched;
+  statisticsOfUser: UserFetchedDTO;
 }
 
 const UserPageUserStatistics: NextPage<Props> = ({ statisticsOfUser }) => {
+  const reflectionCountOfUser = statisticsOfUser.getReflectionCount();
+  const noteCountOfUser = statisticsOfUser.getNoteCount();
+  const followerCountOfUser = statisticsOfUser.getFollowerCount();
+  const followedCountOfUser = statisticsOfUser.getFollowedCount();
   return (
     <Fragment>
       <div className="flex mt-4 space-x-6">
-        {statisticsOfUser.reflectionCount && (
+        {reflectionCountOfUser && (
           <span>
-            <span className="font-semibold">
-              {statisticsOfUser.reflectionCount}
-            </span>{" "}
+            <span className="font-semibold">{reflectionCountOfUser}</span>{" "}
             Reflections
           </span>
         )}
-        {statisticsOfUser.noteCount && (
+        {noteCountOfUser && (
           <span>
-            <span className="font-semibold">{statisticsOfUser.noteCount}</span>{" "}
-            Notes
+            <span className="font-semibold">{noteCountOfUser}</span> Notes
           </span>
         )}
         <span>
-          <span className="font-semibold">
-            {statisticsOfUser.followerCount}
-          </span>{" "}
-          Followers
+          <span className="font-semibold">{followerCountOfUser}</span> Followers
         </span>
         <span>
-          <span className="font-semibold">
-            {statisticsOfUser.followingCount}
-          </span>{" "}
-          Following
+          <span className="font-semibold">{followedCountOfUser}</span> Following
         </span>
       </div>
     </Fragment>

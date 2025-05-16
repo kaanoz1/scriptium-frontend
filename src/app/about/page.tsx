@@ -8,10 +8,6 @@ import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
 import ServerError from "@/components/UI/ServerError";
 import TooManyRequest from "@/components/UI/TooManyRequest";
 import {
-  AvailableScriptureKey,
-  InformationalTranslatorsDTO,
-} from "@/types/types";
-import {
   TOO_MANY_REQUEST_RESPONSE_CODE,
   INTERNAL_SERVER_ERROR_RESPONSE_CODE,
   OK_RESPONSE_CODE,
@@ -26,9 +22,10 @@ import {
   PROJECT_INSTAGRAM_ADDRESS,
   PROJECT_X_ADDRESS,
   PROJECT_NAME,
-  NOT_FOUND_RESPONSE_CODE, SOMETHING_WENT_WRONG_TOAST,
+  NOT_FOUND_RESPONSE_CODE,
+  SOMETHING_WENT_WRONG_TOAST,
 } from "@/util/utils";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import axiosNoCredentialInstance from "@/client/axiosNoCredentialInstance";
 import { NoAuthenticationRequestErrorCode, Response } from "@/types/response";
 import AboutPageTranslatorExplanation from "@/components/AboutPageTranslatorExplanation";
@@ -40,7 +37,9 @@ import { FaNodeJs } from "react-icons/fa";
 import { VscGithubAlt } from "react-icons/vsc";
 import { motion, Variants } from "framer-motion";
 import { MdOutlineEmail } from "react-icons/md";
-import {addToast} from "@heroui/toast";
+import { addToast } from "@heroui/toast";
+import { TranslationWithScriptureDTODTO } from "@/types/classes/Translation";
+import { T_ValidScriptureCode } from "@/types/types";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0, y: 15 },
@@ -68,6 +67,38 @@ const iconHover = {
   rotate: 15,
 };
 
+const fetchTranslators = async (
+  setStateActionFunctionForSetError: Dispatch<
+    SetStateAction<NoAuthenticationRequestErrorCode | undefined>
+  >
+): Promise<Array<TranslationWithScriptureDTODTO>> => {
+  try {
+    const response = await axiosNoCredentialInstance.get<
+      Response<Array<TranslationWithScriptureDTODTO>>
+    >(`/translations/`);
+
+    switch (response.status) {
+      case OK_RESPONSE_CODE:
+        setStateActionFunctionForSetError(undefined);
+        return response.data.data;
+      case NOT_FOUND_RESPONSE_CODE:
+        setStateActionFunctionForSetError(NOT_FOUND_RESPONSE_CODE);
+        return [];
+      case TOO_MANY_REQUEST_RESPONSE_CODE:
+        setStateActionFunctionForSetError(TOO_MANY_REQUEST_RESPONSE_CODE);
+        return [];
+      default:
+        setStateActionFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+        return [];
+    }
+  } catch (error) {
+    addToast(SOMETHING_WENT_WRONG_TOAST);
+    console.error(error);
+    setStateActionFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+    return [];
+  }
+};
+
 interface Props {}
 
 const Page: NextPage<Props> = () => {
@@ -75,39 +106,10 @@ const Page: NextPage<Props> = () => {
     NoAuthenticationRequestErrorCode | undefined
   >(undefined);
 
-  const fetchTranslators =
-    async (): Promise<Array<InformationalTranslatorsDTO> | null> => {
-      try {
-        const response = await axiosNoCredentialInstance.get<
-          Response<Array<InformationalTranslatorsDTO>>
-        >(`/translations/`);
-
-        switch (response.status) {
-          case OK_RESPONSE_CODE:
-            setError(undefined);
-            return response.data.data;
-          case NOT_FOUND_RESPONSE_CODE:
-            setError(NOT_FOUND_RESPONSE_CODE);
-            return null;
-          case TOO_MANY_REQUEST_RESPONSE_CODE:
-            setError(TOO_MANY_REQUEST_RESPONSE_CODE);
-            return null;
-          default:
-            setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-            return null;
-        }
-      } catch (error) {
-        addToast(SOMETHING_WENT_WRONG_TOAST);
-        console.error(error);
-        setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-        return null;
-      }
-    };
-
-  const { data = null, isLoading } =
-    useQuery<Array<InformationalTranslatorsDTO> | null>({
+  const { data = [], isLoading } =
+    useQuery<Array<TranslationWithScriptureDTODTO> | null>({
       queryKey: ["about-translations"],
-      queryFn: fetchTranslators,
+      queryFn: async () => await fetchTranslators(setError),
       staleTime: Infinity,
     });
 
@@ -120,7 +122,7 @@ const Page: NextPage<Props> = () => {
     return <ServerError />;
 
   //For now, this is the only scripture key.
-  const torahCode: AvailableScriptureKey = "t";
+  const torahCode: T_ValidScriptureCode = "t";
 
   return (
     <UIWrapper>
@@ -214,7 +216,7 @@ const Page: NextPage<Props> = () => {
 
             <div className="grid grid-cols-1 gap-4 mt-4">
               {data
-                .filter((t) => t.scripture.code === torahCode)
+                .filter((t) => t.getScripture().getCode() === torahCode)
                 .map((t, i) => (
                   <AboutPageTranslatorExplanation key={i} translation={t} />
                 ))}

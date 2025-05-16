@@ -1,7 +1,5 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { useUser } from "@/hooks/useUser";
 import { AuthenticationRequestErrorCode, Response } from "@/types/response";
-import { CollectionWithVerseSavedInformationDTO, User } from "@/types/types";
 import {
   CONFLICT_RESPONSE_CODE,
   INTERNAL_SERVER_ERROR_RESPONSE_CODE,
@@ -31,19 +29,55 @@ import VerseCollectionCard from "./VerseCollectionCard";
 import { Link } from "@heroui/link";
 import CreateCollectionCard from "./UI/CreateCollectionCard";
 import LoadingSpinner from "./UI/LoadingSpinner";
+import { CollectionWithVerseSavedInformationDTO } from "@/types/classes/Collection";
+import { UserOwnDTO } from "@/types/classes/User";
+import { VerseBaseDTO } from "@/types/classes/Verse";
 
 interface Props {
   isCollectionModalOpen: boolean;
   setIsCollectionModalOpen: Dispatch<SetStateAction<boolean>>;
-  verseId: number;
+  verse: VerseBaseDTO;
   setIsSaved: Dispatch<SetStateAction<boolean>>;
+  user: UserOwnDTO;
 }
+
+const fetchCollections = async (
+  verse: VerseBaseDTO,
+  setStateFunctionForSetError: Dispatch<
+    SetStateAction<AuthenticationRequestErrorCode | undefined>
+  >
+) => {
+  try {
+    const response = await axiosCredentialInstance.get<
+      Response<CollectionWithVerseSavedInformationDTO[]>
+    >(`/collection/verse/${verse.getId()}`);
+
+    switch (response.status) {
+      case OK_RESPONSE_CODE:
+        setStateFunctionForSetError(undefined);
+        return response.data.data;
+      case NOT_FOUND_RESPONSE_CODE:
+        setStateFunctionForSetError(NOT_FOUND_RESPONSE_CODE);
+        return [];
+      case TOO_MANY_REQUEST_RESPONSE_CODE:
+        setStateFunctionForSetError(TOO_MANY_REQUEST_RESPONSE_CODE);
+        return [];
+      default:
+        setStateFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+        return [];
+    }
+  } catch (err) {
+    setStateFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+    return [];
+  }
+};
 
 const CollectionModal: NextPage<Props> = ({
   isCollectionModalOpen,
   setIsCollectionModalOpen,
   setIsSaved,
-  verseId,
+  verse,
+  user,
 }) => {
   const [error, setError] = useState<
     AuthenticationRequestErrorCode | undefined
@@ -53,51 +87,21 @@ const CollectionModal: NextPage<Props> = ({
     Set<string>
   >(new Set<string>([]));
 
-  const { user, isLoading: isUserLoading } = useUser();
-
-  const fetchCollections = async (user: User | null) => {
-    if (!user) return [];
-
-    try {
-      const response = await axiosCredentialInstance.get<
-        Response<CollectionWithVerseSavedInformationDTO[]>
-      >(`/collection/verse/${verseId}`);
-
-      switch (response.status) {
-        case OK_RESPONSE_CODE:
-          setError(undefined);
-          return response.data.data;
-        case NOT_FOUND_RESPONSE_CODE:
-          setError(NOT_FOUND_RESPONSE_CODE);
-          return null;
-        case TOO_MANY_REQUEST_RESPONSE_CODE:
-          setError(TOO_MANY_REQUEST_RESPONSE_CODE);
-          return null;
-        default:
-          setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-          return null;
-      }
-    } catch (err) {
-      setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-      return [];
-    }
-  };
-
   const {
     data: collections,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["collections-verse", user?.id, verseId],
-    queryFn: () => fetchCollections(user),
+    queryKey: ["collections-verse", user.getId(), verse.getId()],
+    queryFn: async () => await fetchCollections(verse, setError),
     refetchOnWindowFocus: false,
     staleTime: Infinity,
   });
 
-  const saveVerseToCollection = async () => {
+  const saveVerseToCollection = async (verse: VerseBaseDTO) => {
     const response = await axiosCredentialInstance.post(`/saving/save`, {
       collectionNames: [...Array.from(selectedCollectionNames)],
-      verseId,
+      verseId: verse.getId(),
     });
 
     switch (response.status) {
@@ -114,7 +118,7 @@ const CollectionModal: NextPage<Props> = ({
     }
   };
 
-  if (isLoading || isUserLoading) return <LoadingSpinner />;
+  if (isLoading) return <LoadingSpinner />;
 
   if (error && error == TOO_MANY_REQUEST_RESPONSE_CODE)
     return <TooManyRequestComponent />;
@@ -199,7 +203,7 @@ const CollectionModal: NextPage<Props> = ({
               <Button
                 variant="light"
                 color="success"
-                onPress={saveVerseToCollection}
+                onPress={() => saveVerseToCollection(verse)}
               >
                 Save
               </Button>

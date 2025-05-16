@@ -3,17 +3,19 @@ import VersePageTabTranslations from "./VersePageTabTranslations";
 import VersePageTabComments from "./VersePageTabComments";
 import VersePageTabNotes from "./VersePageTabNotes";
 
-import { TranslationTextDTO, User, VerseDTO } from "@/types/types";
 import { Tab, Tabs } from "@heroui/tabs";
 import { IoBookOutline } from "react-icons/io5";
 import { CiStickyNote } from "react-icons/ci";
 import { BiCommentDetail } from "react-icons/bi";
+import { TranslationTextDTO } from "@/types/classes/TranslationText";
+import { VerseBothDTO } from "@/types/classes/Verse";
+import { UserOwnDTO } from "@/types/classes/User";
 
 interface Props {
-  translationTexts: TranslationTextDTO[];
+  readonly translationTexts: ReadonlyArray<TranslationTextDTO>;
   showFootnotes: boolean;
-  verse: VerseDTO;
-  user: User | null;
+  verse: VerseBothDTO;
+  user: UserOwnDTO | null;
 }
 
 const VersePageTabs: NextPage<Props> = ({

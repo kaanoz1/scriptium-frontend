@@ -2,15 +2,15 @@ import { Tab, Tabs } from "@heroui/tabs";
 import { FaRegLightbulb, FaRegStickyNote } from "react-icons/fa";
 import { GoBookmark } from "react-icons/go";
 import UserProfileSavingTab from "./UserSavingComponent";
-import { User, UserFetched } from "@/types/types";
 import UserPageReflectionsTab from "./UserPageReflectionsTab";
 import UserPageNotesTab from "./UserPageNotesTab";
 import { FC } from "react";
+import { UserFetchedDTO, UserOwnDTO } from "@/types/classes/User";
 
 interface Props {
   isOwnProfile: boolean;
-  userInspected: UserFetched;
-  user: User;
+  userInspected: UserFetchedDTO;
+  user: UserOwnDTO;
 }
 
 const UserProfileTabs: FC<Props> = ({ isOwnProfile, user, userInspected }) => {

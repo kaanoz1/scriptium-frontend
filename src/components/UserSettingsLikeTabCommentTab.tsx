@@ -1,5 +1,5 @@
 "use client";
-import { LikedCommentDTO, RefetchDataFunctionType, User } from "@/types/types";
+import { Column, RefetchDataFunctionType } from "@/types/types";
 import {
   Table,
   TableBody,
@@ -10,14 +10,13 @@ import {
 } from "@heroui/table";
 import { NextPage } from "next";
 import { Key, useCallback } from "react";
-import LikedComment from "./UI/LikedComment";
-import { Column } from "@/util/utils";
+import { UserOwnDTO } from "@/types/classes/User";
 
 interface Props {
   comments: LikedCommentDTO[];
   refetch: RefetchDataFunctionType;
 
-  user: User;
+  user: UserOwnDTO;
 }
 
 const UserSettingsLikeTabCommentTab: NextPage<Props> = ({

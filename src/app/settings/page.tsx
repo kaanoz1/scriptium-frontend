@@ -22,10 +22,10 @@ import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
 interface Props {}
 
 const Page: NextPage<Props> = ({}) => {
-  const { user, isLoading, setUser, fetchUser } = useUser();
+  const { user, isUserLoading, setUser, fetchUser } = useUser();
   const router = useRouter();
 
-  if (isLoading) return <LoadingSpinnerFullH />;
+  if (isUserLoading) return <LoadingSpinnerFullH />;
 
   if (!user) {
     router.push(SIGN_UP_URL);

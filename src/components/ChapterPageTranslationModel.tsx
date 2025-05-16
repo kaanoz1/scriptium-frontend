@@ -1,4 +1,4 @@
-import { TranslationWithMultiTextDTO } from "@/types/types";
+import { TranslationTextDTO } from "@/types/classes/TranslationText";
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -18,7 +18,7 @@ interface Props {
   stateControlFunctionOfPreferredTranslationId: Dispatch<
     SetStateAction<Set<Key>>
   >;
-  translations: TranslationWithMultiTextDTO[];
+  translations: readonly TranslationTextDTO[];
 }
 
 const ChapterPageTranslationModel: FC<Props> = ({
@@ -58,9 +58,11 @@ const ChapterPageTranslationModel: FC<Props> = ({
               }}
             >
               {translations.map((t) => (
-                <SelectItem key={`${t.translation.id}`}>
-                  {` ${t.translation.name} / ${t.translation.translators
-                    .map((e) => e.name)
+                <SelectItem key={`${t.getTranslation().getId()}`}>
+                  {` ${t.getTranslation().getName()} / ${t
+                    .getTranslation()
+                    .getTranslators()
+                    .map((e) => e.getName())
                     .join(", ")}`}
                 </SelectItem>
               ))}

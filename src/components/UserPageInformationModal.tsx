@@ -1,4 +1,3 @@
-import { User, UserFetched } from "@/types/types";
 import { getFormattedNameAndSurname } from "@/util/utils";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
@@ -8,16 +7,19 @@ import { Dispatch, SetStateAction } from "react";
 import { FaBan } from "react-icons/fa";
 import { FaCircleInfo } from "react-icons/fa6";
 import UserPageFollowStatusButton from "./UserPageFollowStatusButton";
+import { UserFetchedDTO, UserOwnDTO } from "@/types/classes/User";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  userToBeInformedWith: UserFetched;
-  stateControlFunctionOfUserToBeInformedWith: Dispatch<
-    SetStateAction<UserFetched | null>
-  >;
+  userToBeInformedWith: UserFetchedDTO;
+  stateControlFunctionOfUserToBeInformedWith: (
+    updater:
+      | UserFetchedDTO
+      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+  ) => void;
   isOwnProfile?: boolean;
-  user: User;
+  user: UserOwnDTO;
   stateControlFunctionOfUserDetailModal: Dispatch<SetStateAction<boolean>>;
   stateControlFunctionOfBlockUserConfirmationModal: Dispatch<
     SetStateAction<boolean>
@@ -53,10 +55,18 @@ const UserPageInformationModal: NextPage<Props> = ({
     stateControlFunctionOfUnblockUserConfirmationModal(false);
     stateControlFunctionOfBlockUserConfirmationModal(false);
 
-    if (userToBeInformedWith.isUserInspectedBlocked)
+    if (userToBeInformedWith.getIsUserInspectedBlocked())
       stateControlFunctionOfUnblockUserConfirmationModal(true);
     else stateControlFunctionOfBlockUserConfirmationModal(true);
   };
+
+  const imagePath = userToBeInformedWith.getImage();
+
+  const usernameOfuserToBeInformedWith: string =
+    userToBeInformedWith.getUsername();
+
+  const isUserInspectedBlocked =
+    userToBeInformedWith.getIsUserInspectedBlocked();
 
   return (
     <Modal size="lg" isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -67,12 +77,12 @@ const UserPageInformationModal: NextPage<Props> = ({
               className="h-24 w-24 mb-2"
               size="lg"
               name={formattedName}
-              src={userToBeInformedWith.image ?? undefined}
+              src={imagePath}
             />
 
             <h2 className="text-xl font-semibold">{formattedName}</h2>
 
-            <p className="text-gray-500">@{userToBeInformedWith.username}</p>
+            <p className="text-gray-500">@{usernameOfuserToBeInformedWith}</p>
           </div>
           {!isOwnProfile && user && (
             <div className="">
@@ -103,20 +113,13 @@ const UserPageInformationModal: NextPage<Props> = ({
                 about this user
               </Button>
               <Button
-                color={
-                  userToBeInformedWith.isUserInspectedBlocked
-                    ? "success"
-                    : "danger"
-                }
+                color={isUserInspectedBlocked ? "success" : "danger"}
                 variant="light"
                 className="w-full"
                 onPress={blockProcessDecider}
               >
                 <FaBan size={18} className="mr-2" />
-                {userToBeInformedWith.isUserInspectedBlocked
-                  ? "Unblock"
-                  : "Block"}{" "}
-                this user
+                {isUserInspectedBlocked ? "Unblock" : "Block"} this user
               </Button>
             </div>
           )}
