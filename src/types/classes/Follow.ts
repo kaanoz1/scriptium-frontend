@@ -1,41 +1,71 @@
-import { UserDTO } from "./User";
+import {T_UserDTOConstructorParametersJSON, UserDTO} from "./User";
+
+
+type T_FollowUserDTOConstructorParameters = { occurredAt: Date }
+type T_FollowUserDTOConstructorParametersJSON = T_FollowUserDTOConstructorParameters;
 
 export abstract class FollowUserDTO {
-  constructor(protected occurredAt: Date) {}
+    protected readonly occurredAt: Date
 
-  getOccurredAt(): Date {
-    return this.occurredAt;
-  }
+    constructor(data: T_FollowUserDTOConstructorParameters) {
+        this.occurredAt = new Date(data.occurredAt) // Since some times TS cannot convert C# DateTime object into TS Date object.
+    }
 
-  setOccurredAt(date: Date): void {
-    this.occurredAt = date;
-  }
+    getOccurredAt(): Date {
+        return this.occurredAt;
+    }
+
 }
+
+export type T_FollowerUserDTOConstructorParameters = T_FollowUserDTOConstructorParameters & { followerUser: UserDTO }
+export type T_FollowerUserDTOConstructorParametersJSON = T_FollowUserDTOConstructorParametersJSON & {
+    followerUser: T_UserDTOConstructorParametersJSON
+}
+
 
 export class FollowerUserDTO extends FollowUserDTO {
-  constructor(occurredAt: Date, private followerUser: UserDTO) {
-    super(occurredAt);
-  }
+    private readonly followerUser: UserDTO;
 
-  getFollowerUser(): UserDTO {
-    return this.followerUser;
-  }
+    constructor(data: T_FollowerUserDTOConstructorParameters) {
+        super({...data});
 
-  setFollowerUser(user: UserDTO): void {
-    this.followerUser = user;
-  }
+        this.followerUser = data.followerUser
+    }
+
+    static createFromJSON(data: T_FollowerUserDTOConstructorParametersJSON) {
+        const followerUser = UserDTO.createFromJSON(data.followerUser)
+        return new FollowerUserDTO({...data, followerUser});
+    }
+
+    getFollowerUser(): Readonly<UserDTO> {
+        return this.followerUser;
+    }
+
+
 }
 
+export type T_FollowedUserDTOParams = T_FollowUserDTOConstructorParameters & { followedUser: UserDTO }
+export type T_FollowedUserDTOConstructorParametersJSON = T_FollowUserDTOConstructorParametersJSON & {
+    followedUser: T_UserDTOConstructorParametersJSON
+}
+
+
 export class FollowedUserDTO extends FollowUserDTO {
-  constructor(occurredAt: Date, private followedUser: UserDTO) {
-    super(occurredAt);
-  }
+    private readonly followedUser: Readonly<UserDTO>
 
-  getFollowedUser(): UserDTO {
-    return this.followedUser;
-  }
+    constructor(data: T_FollowedUserDTOParams) {
+        super({...data});
+        this.followedUser = data.followedUser;
+    }
 
-  setFollowedUser(user: UserDTO): void {
-    this.followedUser = user;
-  }
+    static createFromJSON(data: T_FollowedUserDTOConstructorParametersJSON): FollowedUserDTO {
+        const followedUser = UserDTO.createFromJSON(data.followedUser)
+        return new FollowedUserDTO({...data, followedUser})
+    }
+
+    getFollowedUser(): Readonly<UserDTO> {
+        return this.followedUser;
+    }
+
+
 }

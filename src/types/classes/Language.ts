@@ -1,34 +1,78 @@
-export class LanguageDTO {
-  constructor(
-    private readonly langCode: string,
-    private readonly langOwn: string,
-    private readonly langEnglish: string
-  ) {}
+import {T_SystemLanguageCode} from "@/types/types";
 
-  getLangCode(): string {
-    return this.langCode;
-  }
 
-  getLangOwn(): string {
-    return this.langOwn;
-  }
-
-  getLangEnglish(): string {
-    return this.langEnglish;
-  }
+export type T_LanguageDTOConstructorParams = {
+    langCode: T_SystemLanguageCode,
+    langOwn: string,
+    langEnglish: string,
 }
 
-export abstract class Meaning {
-  constructor(
-    protected readonly text: string,
-    protected readonly language: Readonly<LanguageDTO>
-  ) {}
+export type T_LanguageDTOConstructorParamsJSON = T_LanguageDTOConstructorParams;
 
-  getText(): string {
-    return this.text;
-  }
+export class LanguageDTO {
+    private readonly langCode: T_SystemLanguageCode
+    private readonly langOwn: string
+    private readonly langEnglish: string
 
-  getLanguage(): Readonly<LanguageDTO> {
-    return this.language;
-  }
+    constructor(
+        data: T_LanguageDTOConstructorParams
+    ) {
+        this.langCode = data.langCode;
+        this.langOwn = data.langOwn;
+        this.langEnglish = data.langEnglish;
+    }
+
+    static createFromJSON(data: T_LanguageDTOConstructorParamsJSON): LanguageDTO
+    {
+        return new LanguageDTO({...data});
+    }
+
+    getLangCode(): string {
+        return this.langCode;
+    }
+
+    getLangOwn(): string {
+        return this.langOwn;
+    }
+
+    getLangEnglish(): string {
+        return this.langEnglish;
+    }
+
+
+    static createFromParams(data: T_LanguageDTOConstructorParamsJSON): LanguageDTO {
+        return new LanguageDTO({...data});
+    }
+}
+
+export type T_MeaningConstructorParameters = {
+    text: string; language: LanguageDTO
+}
+export type T_MeaningConstructorParametersJSON = {
+    text: string; language: T_LanguageDTOConstructorParams
+}
+
+export class Meaning {
+    protected readonly text: string;
+    protected readonly language: Readonly<LanguageDTO>;
+
+    constructor(
+        data: T_MeaningConstructorParameters,
+    ) {
+        this.text = data.text;
+        this.language = data.language
+    }
+
+    static createFromJSON(data: T_MeaningConstructorParametersJSON): Meaning {
+        const language = LanguageDTO.createFromParams(data.language);
+        return new Meaning({...data, language});
+    }
+
+    getText(): string {
+        return this.text;
+    }
+
+    getLanguage(): Readonly<LanguageDTO> {
+        return this.language;
+    }
 }

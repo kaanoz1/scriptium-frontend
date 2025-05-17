@@ -1,250 +1,479 @@
-import { T_ScriptureTextVariationKey } from "../types";
 import {
-  ChapterUpperDTO,
-  ChapterDTO,
-  ChapterUpperConfinedDTO,
-  ChapterUpperMeanDTO,
+    ChapterUpperDTO,
+    ChapterDTO,
+    ChapterUpperConfinedDTO,
+    ChapterUpperMeanDTO,
+    T_ChapterUpperDTOConstructorParametersJSON,
+    T_ChapterOneLevelUpperDTOConstructorParametersJSON,
+    ChapterOneLevelUpperDTO,
+    T_ChapterUpperConfinedDTOConstructorParametersJSON
 } from "./Chapter";
-import { TranslationTextDTO } from "./TranslationText";
-import { TransliterationDTO } from "./Transliteration";
-import { WordDTO, WordLowerDTO, WordLowerConfinedDTO } from "./Word";
+import {T_TranslationTextDTOConstructorParametersJSON, TranslationTextDTO} from "./TranslationText";
+import {T_TransliterationDTOConstructorParametersJSON, TransliterationDTO} from "./Transliteration";
+import {
+    WordDTO,
+    WordLowerDTO,
+    WordLowerConfinedDTO,
+    T_WordDTOConstructorParametersJSON,
+    T_WordLowerDTOConstructorParametersJSON, T_WordLowerConfinedDTOConstructorParametersJSON
+} from "./Word";
+import {T_OriginalScriptureTextVariationKey} from "@/types/types";
+
+
+export type T_TextVariationDTOConstructorParameters = {
+    usual: string,
+    simplified: string | null,
+    withoutVowel: string | null
+}
+export type T_TextVariationDTOConstructorParametersJSON = T_TextVariationDTOConstructorParameters;
+
 
 export class TextVariationDTO {
-  constructor(
-    private readonly usual: string,
-    private readonly simplified: string | null,
+
+    private readonly usual: string
+    private readonly simplified: string | null
     private readonly withoutVowel: string | null
-  ) {}
 
-  getUsual(): string {
-    return this.usual;
-  }
+    constructor(
+        data: T_TextVariationDTOConstructorParameters
+    ) {
+        this.usual = data.usual;
+        this.simplified = data.simplified;
+        this.withoutVowel = data.withoutVowel;
+    }
 
-  getSimplified(): string | null {
-    return this.simplified;
-  }
+    static createFromJSON(data: T_TextVariationDTOConstructorParametersJSON): TextVariationDTO {
+        return new TextVariationDTO({...data});
+    }
 
-  getWithoutVowel(): string | null {
-    return this.withoutVowel;
-  }
+    getUsual(): string {
+        return this.usual;
+    }
 
-  getTextWithVariation(key: T_ScriptureTextVariationKey): string | null {
-    return this[key];
-  }
+    getSimplified(): string | null {
+        return this.simplified;
+    }
+
+    getWithoutVowel(): string | null {
+        return this.withoutVowel;
+    }
+
+    getTextWithVariation(key: T_OriginalScriptureTextVariationKey): string | null {
+        return this[key];
+    }
 }
+
+
+export type T_VerseBaseDTOConstructorParameters = {
+    id: number;
+    number: number,
+    variation: TextVariationDTO
+}
+
+export type T_VerseBaseDTOConstructorParametersJSON = {
+    id: number;
+    number: number,
+    variation: T_TextVariationDTOConstructorParametersJSON
+}
+
 export abstract class VerseBaseDTO {
-  constructor(
-    protected readonly id: number,
-    protected readonly number: number,
-    protected readonly variation: Readonly<TextVariationDTO>
-  ) {}
+    protected readonly id: number
+    protected readonly number: number
+    protected readonly variation: TextVariationDTO
 
-  getId(): number {
-    return this.id;
-  }
+    constructor(
+        data: T_VerseBaseDTOConstructorParameters
+    ) {
+        this.id = data.id;
+        this.number = data.number;
+        this.variation = data.variation;
+    }
 
-  getNumber(): number {
-    return this.number;
-  }
 
-  getTextVarition(): Readonly<TextVariationDTO> {
-    return this.variation;
-  }
+    getId(): number {
+        return this.id;
+    }
+
+    getNumber(): number {
+        return this.number;
+    }
+
+    getTextVariation(): Readonly<TextVariationDTO> {
+        return this.variation;
+    }
+}
+
+export type T_VerseSimpleDTOConstructorParameters = T_VerseBaseDTOConstructorParameters & {
+    transliterations: Array<TransliterationDTO>,
+    translationTexts: Array<TranslationTextDTO>,
+    isSaved: boolean
+}
+export type T_VerseSimpleDTOConstructorParametersJSON = T_VerseBaseDTOConstructorParametersJSON & {
+    transliterations: Array<T_TransliterationDTOConstructorParametersJSON>,
+    translationTexts: Array<T_TranslationTextDTOConstructorParametersJSON>,
+    isSaved: boolean
 }
 
 export abstract class VerseSimpleDTO extends VerseBaseDTO {
-  constructor(
-    id: number,
-    number: number,
-    variation: Readonly<TextVariationDTO>,
-    protected readonly transliterations: ReadonlyArray<TransliterationDTO> = [],
-    protected readonly translationTexts: ReadonlyArray<TranslationTextDTO> = [],
-    protected readonly isSaved: boolean = false
-  ) {
-    super(id, number, variation);
-  }
+    protected readonly _transliterations: ReadonlyArray<TransliterationDTO>
+    protected readonly _translationTexts: ReadonlyArray<TranslationTextDTO>
+    protected readonly _isSaved: boolean
 
-  getVariation(): Readonly<TextVariationDTO> {
-    return Object.freeze(this.variation);
-  }
+    constructor(
+        data: T_VerseSimpleDTOConstructorParameters,
+    ) {
+        super({...data});
 
-  getTransliterations(): ReadonlyArray<TransliterationDTO> {
-    return Object.freeze([...this.transliterations]);
-  }
+        this._transliterations = data.transliterations;
+        this._translationTexts = data.translationTexts;
+        this._isSaved = data.isSaved;
+    }
 
-  getTranslationTexts(): ReadonlyArray<TranslationTextDTO> {
-    return Object.freeze([...this.translationTexts]);
-  }
+    getVariation(): Readonly<TextVariationDTO> {
+        return Object.freeze(this.variation);
+    }
 
-  getIsSaved(): boolean {
-    return this.isSaved;
-  }
+    getTransliterations(): ReadonlyArray<TransliterationDTO> {
+        return Object.freeze([...this._transliterations]);
+    }
+
+    getTranslationTexts(): ReadonlyArray<TranslationTextDTO> {
+        return Object.freeze([...this._translationTexts]);
+    }
+
+    getIsSaved(): boolean {
+        return this._isSaved;
+    }
 }
-export class VerseDTO extends VerseSimpleDTO {}
+
+export type T_VerseDTOConstructorParameters = T_VerseSimpleDTOConstructorParameters;
+export type T_VerseDTOConstructorParametersJSON = T_VerseSimpleDTOConstructorParametersJSON;
+
+export class VerseDTO extends VerseSimpleDTO {
+    constructor(data: T_VerseDTOConstructorParameters) {
+        super({...data});
+    }
+
+    static createFromJSON(data: T_VerseDTOConstructorParametersJSON): VerseDTO {
+        const variation = TextVariationDTO.createFromJSON(data.variation);
+        const transliterations = data.transliterations.map(TransliterationDTO.createFromJSON);
+        const translationTexts = data.translationTexts.map(TranslationTextDTO.createFromJSON);
+        return new VerseDTO({...data, variation, transliterations, translationTexts});
+    }
+}
+
+export type T_VerseUpperDTOConstructorParameters = T_VerseSimpleDTOConstructorParameters & { chapter: ChapterUpperDTO }
+export type T_VerseUpperDTOConstructorParametersJSON = T_VerseSimpleDTOConstructorParametersJSON & {
+    chapter: T_ChapterUpperDTOConstructorParametersJSON
+}
+
 
 export class VerseUpperDTO extends VerseDTO {
-  constructor(
-    id: number,
-    number: number,
-    variation: Readonly<TextVariationDTO>,
-    transliterations: ReadonlyArray<TransliterationDTO>,
-    translationTexts: ReadonlyArray<TranslationTextDTO>,
-    isSaved: boolean,
-    private readonly chapter: Readonly<ChapterUpperDTO>
-  ) {
-    super(id, number, variation, transliterations, translationTexts, isSaved);
-  }
+    private readonly _chapter: ChapterUpperDTO
 
-  getChapter(): Readonly<ChapterUpperDTO> {
-    return Object.freeze(this.chapter);
-  }
+
+    constructor(
+        data: T_VerseUpperDTOConstructorParameters
+    ) {
+        super({...data});
+
+        this._chapter = data.chapter;
+    }
+
+    static override createFromJSON(data: T_VerseUpperDTOConstructorParametersJSON): VerseUpperDTO {
+        const variation = TextVariationDTO.createFromJSON(data.variation);
+        const chapter = ChapterUpperDTO.createFromJSON(data.chapter);
+        const transliterations = data.transliterations.map(TransliterationDTO.createFromJSON);
+        const translationTexts = data.translationTexts.map(TranslationTextDTO.createFromJSON);
+        return new VerseUpperDTO({...data, variation, chapter, transliterations, translationTexts});
+    }
+
+    getChapter(): Readonly<ChapterUpperDTO> {
+        return Object.freeze(this._chapter);
+    }
 }
 
-export class VerseOneLevelUpperDTO extends VerseDTO {
-  constructor(
-    id: number,
-    number: number,
-    variation: Readonly<TextVariationDTO>,
-    transliterations: ReadonlyArray<TransliterationDTO>,
-    translationTexts: ReadonlyArray<TranslationTextDTO>,
-    isSaved: boolean,
-    private readonly chapter: Readonly<ChapterDTO>
-  ) {
-    super(id, number, variation, transliterations, translationTexts, isSaved);
-  }
+export type T_VerseOneLevelUpperDTOConstructorParameters = T_VerseDTOConstructorParameters & { chapter: ChapterDTO };
+export type T_VerseOneLevelUpperDTOConstructorParametersJSON = T_VerseDTOConstructorParametersJSON & {
+    chapter: T_ChapterOneLevelUpperDTOConstructorParametersJSON
+};
 
-  getChapter(): Readonly<ChapterDTO> {
-    return Object.freeze(this.chapter);
-  }
+export class VerseOneLevelUpperDTO extends VerseDTO {
+    private readonly _chapter: ChapterDTO
+
+
+    constructor(
+        data: T_VerseOneLevelUpperDTOConstructorParameters,
+    ) {
+        super({...data});
+        this._chapter = data.chapter;
+    }
+
+    static override createFromJSON(data: T_VerseOneLevelUpperDTOConstructorParametersJSON): VerseOneLevelUpperDTO {
+        const variation = TextVariationDTO.createFromJSON(data.variation);
+        const chapter = ChapterOneLevelUpperDTO.createFromJSON(data.chapter);
+        const transliterations = data.transliterations.map(TransliterationDTO.createFromJSON);
+        const translationTexts = data.translationTexts.map(TranslationTextDTO.createFromJSON);
+        return new VerseOneLevelUpperDTO({...data, variation, transliterations, translationTexts, chapter});
+    }
+
+    getChapter(): Readonly<ChapterDTO> {
+        return Object.freeze(this._chapter);
+    }
+}
+
+export type T_VerseOneLevelLowerDTOConstructorParameters = T_VerseDTOConstructorParameters & { words: Array<WordDTO> }
+export type T_VerseOneLevelLowerDTOConstructorParametersJSON = T_VerseDTOConstructorParametersJSON & {
+    words: Array<T_WordDTOConstructorParametersJSON>
 }
 
 export class VerseOneLevelLowerDTO extends VerseDTO {
-  constructor(
-    id: number,
-    number: number,
-    variation: Readonly<TextVariationDTO>,
-    transliterations: ReadonlyArray<TransliterationDTO>,
-    translationTexts: ReadonlyArray<TranslationTextDTO>,
-    isSaved: boolean,
-    private readonly words: ReadonlyArray<WordDTO>
-  ) {
-    super(id, number, variation, transliterations, translationTexts, isSaved);
-  }
+    private readonly _words: Array<WordDTO>
 
-  getWords(): ReadonlyArray<WordDTO> {
-    return Object.freeze([...this.words]);
-  }
+    constructor(
+        data: T_VerseOneLevelLowerDTOConstructorParameters,
+    ) {
+        super({...data});
+
+        this._words = data.words;
+    }
+
+    static override createFromJSON(data: T_VerseOneLevelLowerDTOConstructorParametersJSON): VerseOneLevelLowerDTO {
+        const variation = TextVariationDTO.createFromJSON(data.variation);
+        const words = data.words.map(w => WordDTO.createFromJSON(w));
+        const transliterations = data.transliterations.map(TransliterationDTO.createFromJSON);
+        const translationTexts = data.translationTexts.map(TranslationTextDTO.createFromJSON);
+        return new VerseOneLevelLowerDTO({...data, words, variation, transliterations, translationTexts});
+    }
+
+    getWords(): ReadonlyArray<WordDTO> {
+        return Object.freeze([...this._words]);
+    }
+}
+
+export type T_VerseLowerDTOConstructorParameters = T_VerseDTOConstructorParameters & { words: Array<WordLowerDTO> }
+export type T_VerseLowerDTOConstructorParametersJSON = T_VerseDTOConstructorParametersJSON & {
+    words: Array<T_WordLowerDTOConstructorParametersJSON>
 }
 
 export class VerseLowerDTO extends VerseDTO {
-  constructor(
-    id: number,
-    number: number,
-    variation: Readonly<TextVariationDTO>,
-    transliterations: ReadonlyArray<TransliterationDTO>,
-    translationTexts: ReadonlyArray<TranslationTextDTO>,
-    isSaved: boolean,
-    private readonly words: ReadonlyArray<WordLowerDTO>
-  ) {
-    super(id, number, variation, transliterations, translationTexts, isSaved);
-  }
+    private readonly _words: Array<WordLowerDTO>
 
-  getWords(): ReadonlyArray<WordLowerDTO> {
-    return Object.freeze([...this.words]);
-  }
+
+    constructor(
+        data: T_VerseLowerDTOConstructorParameters
+    ) {
+        super({...data});
+        this._words = data.words;
+    }
+
+    static override createFromJSON(data: T_VerseLowerDTOConstructorParametersJSON): VerseLowerDTO {
+        const variation = TextVariationDTO.createFromJSON(data.variation);
+        const words = data.words.map(w => WordLowerDTO.createFromJSON(w));
+        const transliterations = data.transliterations.map(TransliterationDTO.createFromJSON);
+        const translationTexts = data.translationTexts.map(TranslationTextDTO.createFromJSON);
+        return new VerseLowerDTO({...data, words, variation, transliterations, translationTexts});
+    }
+
+    getWords(): ReadonlyArray<WordLowerDTO> {
+        return Object.freeze([...this._words]);
+    }
 }
+
+export type T_VerseBothDTOConstructorParameters = T_VerseDTOConstructorParameters & {
+    chapter: ChapterUpperDTO,
+    words: Array<WordLowerDTO>
+};
+export type T_VerseBothDTOConstructorParametersJSON = T_VerseDTOConstructorParametersJSON & {
+    chapter: T_ChapterUpperDTOConstructorParametersJSON,
+    words: Array<T_WordLowerDTOConstructorParametersJSON>
+};
 
 export class VerseBothDTO extends VerseDTO {
-  constructor(
-    id: number,
-    number: number,
-    variation: Readonly<TextVariationDTO>,
-    transliterations: ReadonlyArray<TransliterationDTO>,
-    translationTexts: ReadonlyArray<TranslationTextDTO>,
-    isSaved: boolean,
-    private readonly chapter: Readonly<ChapterUpperDTO>,
-    private readonly words: ReadonlyArray<WordLowerDTO>
-  ) {
-    super(id, number, variation, transliterations, translationTexts, isSaved);
-  }
+    private readonly chapter: ChapterUpperDTO
+    private readonly _words: Array<WordLowerDTO>
 
-  getChapter(): Readonly<ChapterUpperDTO> {
-    return Object.freeze(this.chapter);
-  }
 
-  getWords(): ReadonlyArray<WordLowerDTO> {
-    return Object.freeze([...this.words]);
-  }
+    constructor(
+        data: T_VerseBothDTOConstructorParameters,
+    ) {
+        super({...data});
+
+        this.chapter = data.chapter;
+        this._words = data.words;
+    }
+
+    static override createFromJSON(data: T_VerseBothDTOConstructorParametersJSON): VerseBothDTO {
+        const variation = TextVariationDTO.createFromJSON(data.variation);
+        const words = data.words.map(w => WordLowerDTO.createFromJSON(w));
+        const chapter = ChapterUpperDTO.createFromJSON(data.chapter);
+        const transliterations = data.transliterations.map(TransliterationDTO.createFromJSON);
+        const translationTexts = data.translationTexts.map(TranslationTextDTO.createFromJSON);
+        return new VerseBothDTO({...data, variation, words, chapter, transliterations, translationTexts});
+    }
+
+    getChapter(): Readonly<ChapterUpperDTO> {
+        return Object.freeze(this.chapter);
+    }
+
+    getWords(): ReadonlyArray<WordLowerDTO> {
+        return Object.freeze([...this._words]);
+    }
 }
+
+export type T_VerseConfinedDTOConstructorParameters = T_VerseBaseDTOConstructorParameters;
+export type T_VerseConfinedDTOConstructorParametersJSON = T_VerseDTOConstructorParametersJSON;
+
 
 export abstract class VerseConfinedDTO extends VerseBaseDTO {
-  constructor(id: number, number: number, variation: TextVariationDTO) {
-    super(id, number, variation);
-  }
+    constructor(data: T_VerseConfinedDTOConstructorParameters) {
+        super({...data});
+    }
 }
+
+export type T_VerseUpperConfinedDTOConstructorParameters = T_VerseConfinedDTOConstructorParameters & {
+    chapter: ChapterUpperConfinedDTO
+};
+export type T_VerseUpperConfinedDTOConstructorParametersJSON = T_VerseConfinedDTOConstructorParametersJSON & {
+    chapter: T_ChapterUpperConfinedDTOConstructorParametersJSON
+};
+
 
 export class VerseUpperConfinedDTO extends VerseConfinedDTO {
-  constructor(
-    id: number,
-    number: number,
-    variation: TextVariationDTO,
-    private readonly chapter: Readonly<ChapterUpperConfinedDTO>
-  ) {
-    super(id, number, variation);
-  }
+    private readonly _chapter: Readonly<ChapterUpperConfinedDTO>
 
-  getChapter(): Readonly<ChapterUpperConfinedDTO> {
-    return Object.freeze(this.chapter);
-  }
+
+    constructor(
+        data: T_VerseUpperConfinedDTOConstructorParameters,
+    ) {
+        super({...data});
+        this._chapter = data.chapter;
+    }
+
+    static createFromJSON(data: T_VerseUpperConfinedDTOConstructorParametersJSON): VerseUpperConfinedDTO {
+        const variation = TextVariationDTO.createFromJSON(data.variation);
+        const chapter = ChapterUpperConfinedDTO.createFromJSON(data.chapter);
+        return new VerseUpperConfinedDTO({...data, chapter, variation})
+    }
+
+    getChapter(): Readonly<ChapterUpperConfinedDTO> {
+        return Object.freeze(this._chapter);
+    }
 }
 
-export class VerseLowerConfinedDTO extends VerseConfinedDTO {
-  constructor(
-    id: number,
-    number: number,
-    variation: TextVariationDTO,
-    private readonly words: ReadonlyArray<WordLowerConfinedDTO>
-  ) {
-    super(id, number, variation);
-  }
+export type T_VerseLowerConfinedDTOConstructorParameters = T_VerseConfinedDTOConstructorParameters & {
+    words: Array<WordLowerConfinedDTO>
+};
+export type T_VerseLowerConfinedDTOConstructorParametersJSON = T_VerseConfinedDTOConstructorParametersJSON & {
+    words: Array<T_WordLowerConfinedDTOConstructorParametersJSON>
+};
 
-  getWords(): ReadonlyArray<WordLowerConfinedDTO> {
-    return Object.freeze([...this.words]);
-  }
+
+export class VerseLowerConfinedDTO extends VerseConfinedDTO {
+    private readonly _words: ReadonlyArray<WordLowerConfinedDTO>
+
+
+    constructor(
+        data: T_VerseLowerConfinedDTOConstructorParameters,
+    ) {
+        super({...data});
+        this._words = data.words;
+    }
+
+    static createFromJSON(data: T_VerseLowerConfinedDTOConstructorParametersJSON): VerseLowerConfinedDTO {
+        const variation = TextVariationDTO.createFromJSON(data.variation);
+        const words = data.words.map(w => WordLowerConfinedDTO.createFromJSON(w))
+        return new VerseLowerConfinedDTO({...data, words, variation});
+    }
+
+    getWords(): ReadonlyArray<WordLowerConfinedDTO> {
+        return Object.freeze([...this._words]);
+    }
+}
+
+export type  T_VerseTranslationTextPairConstructorParameters = {
+    verse: VerseUpperDTO,
+    translationText: TranslationTextDTO
+}
+export type  T_VerseTranslationTextPairConstructorParametersJSON = {
+    verse: T_VerseUpperDTOConstructorParametersJSON,
+    translationText: T_TranslationTextDTOConstructorParametersJSON
 }
 
 export class VerseTranslationTextPair {
-  constructor(
-    private readonly _verse: VerseUpperDTO,
+    private readonly _verse: VerseUpperDTO
     private readonly _translationText: TranslationTextDTO
-  ) {}
 
-  getVerse(): Readonly<VerseUpperDTO> {
-    return this._verse;
-  }
+    constructor(
+        data: T_VerseTranslationTextPairConstructorParameters,
+    ) {
+        this._verse = data.verse;
+        this._translationText = data.translationText;
+    }
 
-  getTranslationText(): Readonly<TranslationTextDTO> {
-    return this._translationText;
-  }
+    static createFromJSON(data: T_VerseTranslationTextPairConstructorParametersJSON): VerseTranslationTextPair {
+        const verse = VerseUpperDTO.createFromJSON(data.verse);
+        const translationText = TranslationTextDTO.createFromJSON(data.translationText);
+        return new VerseTranslationTextPair({...data, verse, translationText});
+    }
+
+    getVerse(): Readonly<VerseUpperDTO> {
+        return this._verse;
+    }
+
+    getTranslationText(): Readonly<TranslationTextDTO> {
+        return this._translationText;
+    }
 }
 
-export class VerseMeanDTO extends VerseBaseDTO {}
+export type T_VerseMeanDTOConstructorParameters = T_VerseBaseDTOConstructorParameters;
+export type T_VerseMeanDTOConstructorParametersJSON = T_VerseBaseDTOConstructorParametersJSON;
+
+export class VerseMeanDTO extends VerseBaseDTO {
+    constructor(data: T_VerseMeanDTOConstructorParameters) {
+        super({...data});
+    }
+
+    static createFromJSON(data: T_VerseMeanDTOConstructorParametersJSON): VerseMeanDTO {
+        const variation = TextVariationDTO.createFromJSON(data.variation);
+        return new VerseMeanDTO({...data, variation});
+    }
+}
+
+export type T_VerseUpperMeanDTOConstructorParameters = T_VerseMeanDTOConstructorParameters & {
+    chapter: ChapterUpperMeanDTO
+};
+export type T_VerseUpperMeanDTOConstructorParametersJSON = T_VerseMeanDTOConstructorParametersJSON & {
+    chapter: T_ChapterUpperDTOConstructorParametersJSON
+};
 
 export class VerseUpperMeanDTO extends VerseMeanDTO {
-  constructor(
-    id: number,
-    number: number,
-    variation: TextVariationDTO,
-    private readonly chapter: Readonly<ChapterUpperMeanDTO>
-  ) {
-    super(id, number, variation);
-  }
+    private readonly _chapter: ChapterUpperMeanDTO
 
-  getChapter(): Readonly<ChapterUpperMeanDTO> {
-    return Object.freeze(this.chapter);
-  }
+
+    constructor(
+        data: T_VerseUpperMeanDTOConstructorParameters,
+    ) {
+        super({...data});
+        this._chapter = data.chapter;
+    }
+
+    static override createFromJSON(data: T_VerseUpperMeanDTOConstructorParametersJSON): VerseUpperMeanDTO {
+        const variation = TextVariationDTO.createFromJSON(data.variation);
+        const chapter = ChapterUpperMeanDTO.createFromJSON(data.chapter);
+
+        return new VerseUpperMeanDTO({...data, variation, chapter});
+    }
+
+    getChapter(): Readonly<ChapterUpperMeanDTO> {
+        return Object.freeze(this._chapter);
+    }
 }
 
+export type T_VerseLowerMeanDTOConstructorParameters = T_VerseMeanDTOConstructorParameters
+export type T_VerseLowerMeanDTOConstructorParametersJSON = T_VerseMeanDTOConstructorParametersJSON
+
+
 export class VerseLowerMeanDTO extends VerseMeanDTO {
-  // No additional fields
+    // No additional fields
 }

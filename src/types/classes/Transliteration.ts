@@ -1,16 +1,39 @@
-import { LanguageDTO } from "./Language";
+import {LanguageDTO, T_LanguageDTOConstructorParamsJSON} from "./Language";
+
+
+export type T_TransliterationDTOConstructorParamters = {
+    transliteration: string,
+    language: LanguageDTO
+}
+
+export type T_TransliterationDTOConstructorParametersJSON = {
+    transliteration: string,
+    language: T_LanguageDTOConstructorParamsJSON
+}
+
 
 export class TransliterationDTO {
-  constructor(
-    private readonly transliteration: string,
+    private readonly transliteration: string
     private readonly language: Readonly<LanguageDTO>
-  ) {}
 
-  getTransliteration(): string {
-    return this.transliteration;
-  }
+    constructor(
+        data: T_TransliterationDTOConstructorParamters
+    ) {
 
-  getLanguage(): Readonly<LanguageDTO> {
-    return Object.freeze(this.language);
-  }
+        this.transliteration = data.transliteration
+        this.language = data.language;
+    }
+
+    static createFromJSON(data: T_TransliterationDTOConstructorParametersJSON): TransliterationDTO {
+        const language = LanguageDTO.createFromJSON(data.language);
+        return new TransliterationDTO({...data, language})
+    }
+
+    getTransliteration(): string {
+        return this.transliteration;
+    }
+
+    getLanguage(): Readonly<LanguageDTO> {
+        return Object.freeze(this.language);
+    }
 }

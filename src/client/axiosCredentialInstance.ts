@@ -3,7 +3,6 @@ import axios from "axios";
 
 const axiosCredentialInstance = axios.create({
   baseURL: `${SERVER_URL}`,
-  validateStatus: () => true,
   withCredentials: true,
 });
 

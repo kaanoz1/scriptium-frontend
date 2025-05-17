@@ -1,270 +1,430 @@
 import {
-  T_ScriptureTextVariationKey,
-  T_ValidScriptureCode,
-  T_ValidScriptureFont,
+    T_OriginalScriptureTextFont,
+    T_OriginalScriptureTextVariationKey,
+    T_ScriptureCode,
 } from "../types";
-import { Meaning } from "./Language";
+import {LanguageDTO, Meaning, T_MeaningConstructorParameters, T_MeaningConstructorParametersJSON} from "./Language";
 import {
-  SectionLowerDTO,
-  SectionDTO,
-  SectionLowerConfinedDTO,
-  SectionLowerMeanDTO,
+    SectionLowerDTO,
+    SectionDTO,
+    SectionLowerConfinedDTO,
+    SectionLowerMeanDTO, T_SectionLowerDTOConstructorParametersJSON, T_SectionDTOConstructorParametersJSON,
 } from "./Section";
-import { TextVariationDTO } from "./Verse";
+
+
+export type T_ScriptureBaseDTOConstructorParameters = {
+    id: number,
+    name: string,
+    number: number,
+    code: T_ScriptureCode
+}
+export type T_ScriptureBaseDTOConstructorParametersJSON = T_ScriptureBaseDTOConstructorParameters;
+
 
 export abstract class ScriptureBaseDTO {
-  constructor(
-    protected readonly id: number,
-    protected readonly name: string,
-    protected readonly number: number,
-    protected readonly code: T_ValidScriptureCode
-  ) {}
+    protected readonly id: number
+    protected readonly name: string
+    protected readonly number: number
+    protected readonly code: T_ScriptureCode
 
-  getId(): number {
-    return this.id;
-  }
+    protected constructor(
+        data: T_ScriptureBaseDTOConstructorParameters
+    ) {
+        this.id = data.id;
+        this.name = data.name;
+        this.number = data.number;
+        this.code = data.code;
+    }
 
-  getName(): string {
-    return this.name;
-  }
+    getId(): number {
+        return this.id;
+    }
 
-  getNumber(): number {
-    return this.number;
-  }
+    getName(): string {
+        return this.name;
+    }
 
-  getCode(): T_ValidScriptureCode {
-    return this.code;
-  }
+    getNumber(): number {
+        return this.number;
+    }
+
+    getCode(): T_ScriptureCode {
+        return this.code;
+    }
+}
+
+export type T_ScriptureSimpleDTOConstructorParameters = T_ScriptureBaseDTOConstructorParameters & {
+    meanings: Array<ScriptureMeaningDTO>
+}
+export type T_ScriptureSimpleDTOConstructorParametersJSON = T_ScriptureBaseDTOConstructorParameters & {
+    meanings: Array<T_ScriptureMeaningDTOConstructorParametersJSON>
 }
 
 export abstract class ScriptureSimpleDTO extends ScriptureBaseDTO {
-  constructor(
-    id: number,
-    name: string,
-    number: number,
-    code: T_ValidScriptureCode,
-    protected readonly meanings: ReadonlyArray<ScriptureMeaningDTO> = []
-  ) {
-    super(id, name, number, code);
-  }
 
-  getMeanings(): ReadonlyArray<ScriptureMeaningDTO> {
-    return this.meanings;
-  }
+    protected readonly meanings: Array<ScriptureMeaningDTO>
+
+
+    constructor(
+        data: T_ScriptureSimpleDTOConstructorParameters
+    ) {
+        super({...data});
+        this.meanings = data.meanings;
+    }
+
+    getMeanings(): ReadonlyArray<ScriptureMeaningDTO> {
+        return this.meanings;
+    }
 }
 
+export type T_ScriptureDTOConstructorParameters = T_ScriptureSimpleDTOConstructorParameters;
+export type T_ScriptureDTOConstructorParametersJSON = T_ScriptureSimpleDTOConstructorParametersJSON;
+
 export class ScriptureDTO extends ScriptureSimpleDTO {
-  // No additional fields
+    constructor(data: T_ScriptureSimpleDTOConstructorParameters) {
+        super({...data});
+    }
+
+    static createFromJSON(data: T_ScriptureDTOConstructorParametersJSON): ScriptureDTO {
+        const meanings = data.meanings.map(ScriptureMeaningDTO.createFromJSON);
+        return new ScriptureDTO({...data, meanings});
+    }
+}
+
+export type T_ScriptureLowerDTOConstructorParameters = T_ScriptureDTOConstructorParameters & {
+    sections: Array<SectionLowerDTO>
+}
+export type T_ScriptureLowerDTOConstructorParametersJSON = T_ScriptureDTOConstructorParametersJSON & {
+    sections: Array<T_SectionLowerDTOConstructorParametersJSON>
 }
 
 export class ScriptureLowerDTO extends ScriptureDTO {
-  constructor(
-    id: number,
-    name: string,
-    number: number,
-    code: T_ValidScriptureCode,
-    meanings: ReadonlyArray<ScriptureMeaningDTO> = [],
-    private readonly sections: ReadonlyArray<SectionLowerDTO>
-  ) {
-    super(id, name, number, code, meanings);
-  }
+    private readonly sections: Array<SectionLowerDTO>
 
-  getSections(): ReadonlyArray<SectionLowerDTO> {
-    return this.sections;
-  }
+
+    constructor(
+        data: T_ScriptureLowerDTOConstructorParameters
+    ) {
+        super({...data});
+
+        this.sections = data.sections
+    }
+
+    static override createFromJSON(data: T_ScriptureLowerDTOConstructorParametersJSON): ScriptureLowerDTO {
+        const sections = data.sections.map(SectionLowerDTO.createFromJSON);
+        const meanings = data.meanings.map(ScriptureMeaningDTO.createFromJSON);
+        return new ScriptureLowerDTO({...data, sections, meanings});
+    }
+
+    getSections(): ReadonlyArray<SectionLowerDTO> {
+        return this.sections;
+    }
+}
+
+export type T_ScriptureUpperDTOConstructorParameters = T_ScriptureDTOConstructorParameters & {
+    sections: Array<SectionDTO>
+}
+export type T_ScriptureUpperDTOConstructorParametersJSON = T_ScriptureDTOConstructorParametersJSON & {
+    sections: Array<T_SectionDTOConstructorParametersJSON>
 }
 
 export class ScriptureOneLevelUpperDTO extends ScriptureDTO {
-  // Same structure as ScriptureDTO
+    constructor(data: T_ScriptureUpperDTOConstructorParameters) {
+        super({...data});
+    }
+
+    static override createFromJSON(data: T_ScriptureUpperDTOConstructorParametersJSON): ScriptureOneLevelUpperDTO {
+        const sections = data.sections.map(SectionDTO.createFromJSON);
+        const meanings = data.meanings.map(ScriptureMeaningDTO.createFromJSON);
+        return new ScriptureOneLevelUpperDTO({...data, sections, meanings});
+    }
+}
+
+export type T_ScriptureOneLevelLowerDTOConstructorParameters = T_ScriptureDTOConstructorParameters & {
+    sections: Array<SectionDTO>
+}
+export type T_ScriptureOneLevelLowerDTOConstructorParametersJSON = T_ScriptureDTOConstructorParametersJSON & {
+    sections: Array<T_SectionDTOConstructorParametersJSON>
 }
 
 export class ScriptureOneLevelLowerDTO extends ScriptureDTO {
-  constructor(
-    id: number,
-    name: string,
-    number: number,
-    code: T_ValidScriptureCode,
-    meanings: ReadonlyArray<ScriptureMeaningDTO> = [],
     private readonly sections: ReadonlyArray<SectionDTO>
-  ) {
-    super(id, name, number, code, meanings);
-  }
 
-  getSections(): ReadonlyArray<SectionDTO> {
-    return this.sections;
-  }
+
+    constructor(
+        data: T_ScriptureOneLevelLowerDTOConstructorParameters
+    ) {
+        super({...data});
+        this.sections = data.sections;
+    }
+
+
+    static override createFromJSON(data: T_ScriptureOneLevelLowerDTOConstructorParametersJSON): ScriptureOneLevelLowerDTO {
+        const sections = data.sections.map(SectionDTO.createFromJSON);
+        const meanings = data.meanings.map(ScriptureMeaningDTO.createFromJSON);
+        return new ScriptureOneLevelLowerDTO({...data, sections, meanings});
+    }
+
+    getSections(): ReadonlyArray<SectionDTO> {
+        return this.sections;
+    }
 }
+
+export type T_ScriptureMeaningDTOConstructorParameters = T_MeaningConstructorParameters;
+export type T_ScriptureMeaningDTOConstructorParametersJSON = T_MeaningConstructorParametersJSON;
 
 export class ScriptureMeaningDTO extends Meaning {
-  // Inherits from Meaning (which should also be immutable)
+    constructor(data: T_ScriptureMeaningDTOConstructorParameters) {
+        super({...data});
+    }
+
+    static override createFromJSON(data: T_ScriptureMeaningDTOConstructorParametersJSON): ScriptureMeaningDTO {
+        const language = LanguageDTO.createFromJSON(data.language);
+        return new ScriptureMeaningDTO({...data, language});
+    }
 }
+
+export type T_ScriptureConfinedDTOConstructorParameters = T_ScriptureBaseDTOConstructorParameters;
+export type T_ScriptureConfinedDTOConstructorParametersJSON = T_ScriptureBaseDTOConstructorParametersJSON;
 
 export abstract class ScriptureConfinedDTO extends ScriptureBaseDTO {
-  constructor(
-    id: number,
-    name: string,
-    number: number,
-    code: T_ValidScriptureCode
-  ) {
-    super(id, name, number, code);
-  }
+    constructor(
+        data: T_ScriptureConfinedDTOConstructorParameters
+    ) {
+        super({...data});
+    }
+
 }
 
+export type T_ScriptureUpperConfinedDTOConstructorParameters = T_ScriptureConfinedDTOConstructorParameters;
+export type T_ScriptureUpperConfinedDTOConstructorParametersJSON = T_ScriptureConfinedDTOConstructorParametersJSON;
+
 export class ScriptureUpperConfinedDTO extends ScriptureConfinedDTO {
-  // No additional fields
+    constructor(data: T_ScriptureUpperConfinedDTOConstructorParameters) {
+        super({...data});
+    }
+
+    static createFromJSON(data: T_ScriptureUpperConfinedDTOConstructorParametersJSON): ScriptureUpperConfinedDTO {
+        return new ScriptureUpperConfinedDTO({...data});
+    }
+}
+
+export type T_ScriptureLowerConfinedDTOConstructorParameters = T_ScriptureConfinedDTOConstructorParameters & {
+    sections: ReadonlyArray<SectionLowerConfinedDTO>
+}
+export type T_ScriptureLowerConfinedDTOConstructorParametersJSON = T_ScriptureConfinedDTOConstructorParametersJSON & {
+    sections: ReadonlyArray<T_SectionLowerDTOConstructorParametersJSON>
 }
 
 export class ScriptureLowerConfinedDTO extends ScriptureConfinedDTO {
-  constructor(
-    id: number,
-    name: string,
-    number: number,
-    code: T_ValidScriptureCode,
-    private readonly sections: ReadonlyArray<SectionLowerConfinedDTO>
-  ) {
-    super(id, name, number, code);
-  }
 
-  getSections(): ReadonlyArray<SectionLowerConfinedDTO> {
-    return this.sections;
-  }
+    private readonly sections: ReadonlyArray<SectionLowerConfinedDTO>
+
+
+    constructor(
+        data: T_ScriptureLowerConfinedDTOConstructorParameters
+    ) {
+        super({...data});
+        this.sections = data.sections;
+    }
+
+    static createFromJSON(data: T_ScriptureLowerConfinedDTOConstructorParametersJSON): ScriptureLowerConfinedDTO {
+        const sections = data.sections.map(SectionLowerConfinedDTO.createFromJSON);
+        return new ScriptureLowerConfinedDTO({...data, sections});
+    }
+
+    getSections(): ReadonlyArray<SectionLowerConfinedDTO> {
+        return this.sections;
+    }
 }
+
+export type T_TextVariationSymbolsConstructorParameters = { usual: string, simplified: string, withoutVowel: string }
+export type T_TextVariationSymbolsConstructorParametersJSON = T_TextVariationSymbolsConstructorParameters;
 
 export class TextVariationSymbols {
-  constructor(
-    private readonly usual: string,
-    private readonly simplified: string,
+    private readonly usual: string
+    private readonly simplified: string
     private readonly withoutVowel: string
-  ) {}
 
-  getUsual(): string {
-    return this.usual;
-  }
+    constructor(
+        data: T_TextVariationSymbolsConstructorParameters
+    ) {
+        this.usual = data.usual;
+        this.simplified = data.simplified;
+        this.withoutVowel = data.withoutVowel;
+    }
 
-  getSimplified(): string {
-    return this.simplified;
-  }
+    static createFromJSON(data: T_TextVariationSymbolsConstructorParametersJSON): TextVariationSymbols {
+        return new TextVariationSymbols({...data});
+    }
 
-  getWithoutVowel(): string {
-    return this.withoutVowel;
-  }
+    getUsual(): string {
+        return this.usual;
+    }
 
-  getTextWithVariation(key: T_ScriptureTextVariationKey): string {
-    return this[key];
-  }
+    getSimplified(): string {
+        return this.simplified;
+    }
+
+    getWithoutVowel(): string {
+        return this.withoutVowel;
+    }
+
+    getTextWithVariation(key: T_OriginalScriptureTextVariationKey): string {
+        return this[key];
+    }
 }
 
-export class ScriptureDetails {
-  private constructor(
-    private readonly _number: number,
-    private readonly _defaultTranslationId: number,
-    private readonly _code: T_ValidScriptureCode,
-    private readonly _variation: TextVariationSymbols,
-    private readonly _defaultScriptureFont: T_ValidScriptureFont,
-    private readonly _verseCountInformationArray: ReadonlyArray<
-      ReadonlyArray<number>
-    >
-  ) {}
+export class ScriptureDetail {
+    private constructor(
+        private readonly _number: number,
+        private readonly _defaultTranslationId: number,
+        private readonly _code: T_ScriptureCode,
+        private readonly _variation: TextVariationSymbols,
+        private readonly _defaultScriptureFont: T_OriginalScriptureTextFont,
+        private readonly _verseCountIndicatorArray: ReadonlyArray<
+            ReadonlyArray<number>
+        >
+    ) {
+    }
 
-  static create(data: {
-    number: number;
-    defaultTranslationId: number;
-    code: T_ValidScriptureCode;
-    variation: TextVariationSymbols;
-    defaultScriptureFont: T_ValidScriptureFont;
-    verseCountInformationArray: number[][];
-  }) {
-    return new ScriptureDetails(
-      data.number,
-      data.defaultTranslationId,
-      data.code,
-      data.variation,
-      data.defaultScriptureFont,
-      data.verseCountInformationArray
-    );
-  }
+    static create(data: {
+        number: number;
+        defaultTranslationId: number;
+        code: T_ScriptureCode;
+        variation: TextVariationSymbols;
+        defaultScriptureFont: T_OriginalScriptureTextFont;
+        verseCountIndicatorArray: number[][];
+    }) {
+        return new ScriptureDetail(
+            data.number,
+            data.defaultTranslationId,
+            data.code,
+            data.variation,
+            data.defaultScriptureFont,
+            data.verseCountIndicatorArray
+        );
+    }
 
-  getCode(): Readonly<T_ValidScriptureCode> {
-    return this._code;
-  }
+    getCode(): T_ScriptureCode {
+        return this._code;
+    }
 
-  getNumber(): Readonly<number> {
-    return this._number;
-  }
+    getNumber(): number {
+        return this._number;
+    }
 
-  getDefaultTranslationId(): Readonly<number> {
-    return this._defaultTranslationId;
-  }
-  getVaritionSymbols(): Readonly<TextVariationSymbols> {
-    return this._variation;
-  }
-  getVerseCountInformationArray(): ReadonlyArray<ReadonlyArray<number>> {
-    return this._verseCountInformationArray;
-  }
+    getDefaultTranslationId(): number {
+        return this._defaultTranslationId;
+    }
 
-  getDefaultTranslationFont(): Readonly<string> {
-    return this._defaultScriptureFont;
-  }
+    getVariationSymbols(): Readonly<TextVariationSymbols> {
+        return this._variation;
+    }
 
-  isChapterExistForSection(
-    sectionNumber: number,
-    chapterNumber: number
-  ): boolean {
-    const sectionIndex: number = sectionNumber - 1;
-    const chapterIndex: number = chapterNumber - 1;
+    getVerseCountInformationArray(): ReadonlyArray<ReadonlyArray<number>> {
+        return this._verseCountIndicatorArray;
+    }
 
-    return Boolean(
-      this._verseCountInformationArray.at(sectionIndex)?.at(chapterIndex)
-    );
-  }
+    getDefaultTranslationFont(): Readonly<string> {
+        return this._defaultScriptureFont;
+    }
 
-  getVerseCountOfChapterOfSection(
-    sectionNumber: number,
-    chapterNumber: number
-  ): number | null {
-    const sectionIndex: number = sectionNumber - 1;
-    const chapterIndex: number = chapterNumber - 1;
+    isChapterExistForSection(
+        sectionNumber: number,
+        chapterNumber: number
+    ): boolean {
+        const sectionIndex: number = sectionNumber - 1;
+        const chapterIndex: number = chapterNumber - 1;
 
-    return (
-      this._verseCountInformationArray.at(sectionIndex)?.at(chapterIndex) ??
-      null
-    );
-  }
+        return Boolean(
+            this._verseCountIndicatorArray.at(sectionIndex)?.at(chapterIndex)
+        );
+    }
+
+    getVerseCountOfChapterOfSection(
+        sectionNumber: number,
+        chapterNumber: number
+    ): number | null {
+        const sectionIndex: number = sectionNumber - 1;
+        const chapterIndex: number = chapterNumber - 1;
+
+        return (
+            this._verseCountIndicatorArray.at(sectionIndex)?.at(chapterIndex) ??
+            null
+        );
+    }
 }
+
+export type T_ScriptureMeanDTOConstructorParameters = T_ScriptureBaseDTOConstructorParameters & {
+    meanings: Array<ScriptureMeaningDTO>
+
+}
+export type T_ScriptureMeanDTOConstructorParametersJSON = T_ScriptureBaseDTOConstructorParametersJSON & {
+    meanings: Array<T_ScriptureMeaningDTOConstructorParametersJSON>
+}
+
 
 export class ScriptureMeanDTO extends ScriptureBaseDTO {
-  constructor(
-    id: number,
-    name: string,
-    number: number,
-    code: T_ValidScriptureCode,
-    private readonly meanings: ReadonlyArray<ScriptureMeaningDTO> = []
-  ) {
-    super(id, name, number, code);
-  }
+    private readonly meanings: Array<ScriptureMeaningDTO>
 
-  getMeanings(): ReadonlyArray<ScriptureMeaningDTO> {
-    return Object.freeze([...this.meanings]);
-  }
+
+    constructor(
+        data: T_ScriptureMeanDTOConstructorParameters
+    ) {
+        super({...data});
+        this.meanings = data.meanings;
+    }
+
+    static createFromJSON(data: T_ScriptureMeanDTOConstructorParametersJSON): ScriptureMeanDTO {
+        const meanings = data.meanings.map(ScriptureMeaningDTO.createFromJSON);
+        return new ScriptureMeanDTO({...data, meanings});
+    }
+
+    getMeanings(): ReadonlyArray<ScriptureMeaningDTO> {
+        return Object.freeze([...this.meanings]);
+    }
 }
 
+export type T_ScriptureUpperMeanDTOConstructorParameters = T_ScriptureMeanDTOConstructorParameters;
+export type T_ScriptureUpperMeanDTOConstructorParametersJSON = T_ScriptureMeanDTOConstructorParametersJSON;
+
 export class ScriptureUpperMeanDTO extends ScriptureMeanDTO {
-  // Inherits everything from ScriptureMeanDTO (no additional fields)
+    constructor(data: T_ScriptureUpperMeanDTOConstructorParameters) {
+        super({...data});
+    }
+
+    static override createFromJSON(data: T_ScriptureUpperMeanDTOConstructorParametersJSON): ScriptureUpperMeanDTO {
+        const meanings = data.meanings.map(ScriptureMeaningDTO.createFromJSON);
+        return new ScriptureUpperMeanDTO({...data, meanings});
+    }
+}
+
+export type T_ScriptureLowerMeanDTOConstructorParameters = T_ScriptureMeanDTOConstructorParameters & {
+    sections: Array<SectionLowerMeanDTO>
+}
+export type T_ScriptureLowerMeanDTOConstructorParametersJSON = T_ScriptureMeanDTOConstructorParametersJSON & {
+    sections: Array<T_SectionLowerDTOConstructorParametersJSON>
 }
 
 export class ScriptureLowerMeanDTO extends ScriptureMeanDTO {
-  constructor(
-    id: number,
-    name: string,
-    number: number,
-    code: T_ValidScriptureCode,
-    meanings: ReadonlyArray<ScriptureMeaningDTO> = [],
-    private readonly sections: ReadonlyArray<SectionLowerMeanDTO>
-  ) {
-    super(id, name, number, code, meanings);
-  }
+    private readonly sections: Array<SectionLowerMeanDTO>
 
-  getSections(): ReadonlyArray<SectionLowerMeanDTO> {
-    return Object.freeze([...this.sections]);
-  }
+
+    constructor(
+        data: T_ScriptureLowerMeanDTOConstructorParameters
+    ) {
+        super({...data});
+        this.sections = data.sections;
+    }
+
+    static override createFromJSON(data: T_ScriptureLowerMeanDTOConstructorParametersJSON): ScriptureLowerMeanDTO {
+        const sections = data.sections.map(SectionLowerMeanDTO.createFromJSON);
+        const meanings = data.meanings.map(ScriptureMeaningDTO.createFromJSON);
+        return new ScriptureLowerMeanDTO({...data, sections, meanings});
+    }
+
+    getSections(): ReadonlyArray<SectionLowerMeanDTO> {
+        return Object.freeze([...this.sections]);
+    }
 }

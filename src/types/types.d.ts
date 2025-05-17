@@ -4,7 +4,7 @@ import { CollectionDTO } from "./classes/Collection";
 import { ToastProps } from "../../node_modules/@heroui/toast/dist/use-toast";
 import { ToastOptions } from "@react-stately/toast";
 
-export type T_ScriptureTextVariationKey =
+export type T_OriginalScriptureTextVariationKey =
   | "usual"
   | "simplified"
   | "withoutVowel";
@@ -12,7 +12,7 @@ export type T_ScriptureTextVariationKey =
 export type T_FollowStatus = "Accepted" | "Pending";
 
 export type T_ScripturePageParams = {
-  scriptureCode: string | T_ValidScriptureCode;
+  scriptureCode: string | T_ScriptureCode;
 };
 export type T_SectionPageParams = {
   scriptureCode: string;
@@ -24,31 +24,31 @@ export type T_ChapterPageParams = {
   chapterNumber: string;
 };
 export type T_VersePageParams = {
-  scriptureCode: T_ValidScriptureCode | string;
+  scriptureCode: T_ScriptureCode | string;
   sectionNumber: string;
   chapterNumber: string;
   verseNumber: string;
 };
 
-export type VerseOptions = {
+export type T_VerseOptions = {
   stateIsTranslationShown: boolean;
-  stateIsOrignalTextShown: boolean;
+  stateIsOriginalTextShown: boolean;
   stateIsTransliterationShown: boolean;
 };
 
-export type CreateCollectionForm = {
+export type T_CollectionCreateForm = {
   collectionName: string;
   description: string | null;
 };
 
-export type RefetchDataFunctionType = (
+export type RefetchDataFunctionType<T> = (
   options?: RefetchOptions
-) => Promise<QueryObserverResult<unknown, Error>>;
+) => Promise<QueryObserverResult<T, Error>>;
 
-export type T_ValidScriptureCode = "t";
-export type T_ValidScriptureNumber = 1;
+
+
+export type T_ScriptureCode = "t";
 export type T_ValidTranslationId = 1;
-export type T_ValidScriptureFont = "font-davidLibre";
 
 export type UnblockUserForm = {
   username: string;
@@ -60,7 +60,7 @@ export type BlockReason = {
 };
 
 export type RootPageParams = {
-  scriptureCode: string | T_ValidScriptureCode;
+  scriptureCode: string | T_ScriptureCode;
   rootLatin: string;
 };
 
@@ -74,6 +74,15 @@ export type HasImage = {
   image: string | null;
 };
 
+
+export type T_OriginalScriptureTextFont = "font-davidLibre"
+
+
+export type T_SystemLanguageCode = "en";
+
+export type T_SystemLanguageId = number;
+
 export type Toast = ToastProps & ToastOptions;
 
 export type Overridden<T, K extends keyof T, V> = Omit<T, K> & { [P in K]: V };
+

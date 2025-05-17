@@ -1,14 +1,19 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import axiosNoCredentialInstance from "@/client/axiosNoCredentialInstance";
 import { Response, ResponseMessage } from "@/types/response";
-import { HasImage, T_ValidScriptureCode, Toast } from "@/types/types";
+import {
+  T_ScriptureCode,
+  T_SystemLanguageCode,
+  T_SystemLanguageId,
+  Toast
+} from "@/types/types";
 import { SlotsToClasses } from "@heroui/theme";
 import * as dotenv from "dotenv";
 import { Key } from "react";
 import { addToast } from "@heroui/toast";
 
 import {
-  ScriptureDetails,
+  ScriptureDetail,
   ScriptureDTO,
   TextVariationSymbols,
 } from "@/types/classes/Scripture";
@@ -62,25 +67,25 @@ export const VALID_PROFILE_PICTURE_EXTENSIONS: ReadonlyArray<string> = [
   "image/jpg",
 ] as const;
 
-export type T_ValidSystemLanguageCode = "en";
 
-export const ValidSystemLanguages: Readonly<
-  Record<number, T_ValidSystemLanguageCode>
+
+export const SystemLanguages: Readonly<
+  Record<T_SystemLanguageId, T_SystemLanguageCode>
 > = {
   1: "en",
 } as const;
 
-export const ValidScriptures: Record<
-  T_ValidScriptureCode,
-  Readonly<ScriptureDetails>
+export const ScripturesDetails: Record<
+  T_ScriptureCode,
+  Readonly<ScriptureDetail>
 > = {
-  t: ScriptureDetails.create({
+  t: ScriptureDetail.create({
     number: 1,
     defaultTranslationId: 1,
     code: "t",
     variation: new TextVariationSymbols("אָ֑", "א", "א"),
     defaultScriptureFont: "font-davidLibre",
-    verseCountInformationArray: [
+    verseCountIndicatorArray: [
       [
         31, 25, 24, 26, 32, 22, 24, 22, 29, 32, 32, 20, 18, 24, 21, 16, 27, 33,
         38, 18, 34, 24, 20, 67, 34, 35, 46, 22, 35, 43, 55, 32, 20, 31, 29, 43,
@@ -227,32 +232,19 @@ export function formatDateDMY(input: string | Date): string {
   });
 }
 
-const isValidBase64 = (str: string) => {
-  try {
-    return btoa(atob(str)) === str;
-  } catch (err) {
-    return false;
-  }
-};
 
-export const arrangeImageAndReturns = <T extends HasImage>(input: T): T => {
-  if (input.image && isValidBase64(input.image)) {
-    input.image = `data:image/jpeg;base64,${input.image}`;
-  }
 
-  return input;
-};
 
 export const isValidScriptureCode = (
   code: string
-): code is T_ValidScriptureCode => code in ValidScriptures;
+): code is T_ScriptureCode => code in ScripturesDetails;
 
 export const getScriptureIfCodeIsValid = (
-  scriptureCode: string | T_ValidScriptureCode
-): Readonly<ScriptureDetails> | null => {
+  scriptureCode: string | T_ScriptureCode
+): Readonly<ScriptureDetail> | null => {
   if (!isValidScriptureCode(scriptureCode)) return null;
 
-  return ValidScriptures[scriptureCode];
+  return ScripturesDetails[scriptureCode];
 };
 
 export const getLocalItemFromLocalStorage: (key: string) => string | null = (
@@ -304,17 +296,17 @@ export const MAX_LENGTH_FOR_COLLECTION_DESCRIPTION = 72;
 export const MAX_LENGTH_FOR_COMMENT = 250;
 export const MAX_LENGTH_FOR_NOTE = 1000;
 
-export const NOT_FOUND_RESPONSE_CODE = 404;
-export const CONFLICT_RESPONSE_CODE = 409;
-export const UNAUTHORIZED_RESPONSE_CODE = 401;
-export const METHOD_NOT_ALLOWED_RESPONSE_CODE = 405;
-export const TOO_MANY_REQUEST_RESPONSE_CODE = 429;
-export const INTERNAL_SERVER_ERROR_RESPONSE_CODE = 500;
-export const OK_RESPONSE_CODE = 200;
+export const NOT_FOUND_HTTP_RESPONSE_CODE = 404;
+export const CONFLICT_HTTP_RESPONSE_CODE = 409;
+export const UNAUTHORIZED_HTTP_RESPONSE_CODE = 401;
+export const METHOD_NOT_ALLOWED_HTTP_RESPONSE_CODE = 405;
+export const TOO_MANY_REQUEST_HTTP_RESPONSE_CODE = 429;
+export const INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE = 500;
+export const OK_HTTP_RESPONSE_CODE = 200;
 
 export const MAX_USER_COLLECTION_COUNT: number = 3;
 
-export const UNKNOWN_TEXT_VARIATON: TextVariationDTO = new TextVariationDTO(
+export const UNKNOWN_TEXT_VARIATION: TextVariationDTO = new TextVariationDTO(
   "NOTFOUND",
   null,
   null
@@ -323,11 +315,11 @@ export const UNKNOWN_TEXT_VARIATON: TextVariationDTO = new TextVariationDTO(
 export const DEFAULT_NOTFOUND_WORD: WordDTO = new WordDTO(
   0,
   0,
-  UNKNOWN_TEXT_VARIATON
+  UNKNOWN_TEXT_VARIATION
 );
 
 export const getChapterInformation = (
-  scriptureCode: T_ValidScriptureCode,
+  scriptureCode: T_ScriptureCode,
   sectionNumber: number,
   chapterNumber: number
 ) => {
@@ -335,7 +327,7 @@ export const getChapterInformation = (
   let doesNextChapterExists = true;
 
   if (
-    !ValidScriptures[scriptureCode].isChapterExistForSection(
+    !ScripturesDetails[scriptureCode].isChapterExistForSection(
       sectionNumber,
       chapterNumber - 1
     )
@@ -343,7 +335,7 @@ export const getChapterInformation = (
     doesPreviousChapterExists = false;
 
   if (
-    !ValidScriptures[scriptureCode].isChapterExistForSection(
+    !ScripturesDetails[scriptureCode].isChapterExistForSection(
       sectionNumber,
       chapterNumber + 1
     ) == undefined
@@ -354,7 +346,7 @@ export const getChapterInformation = (
 };
 
 export const getVerseInformation = (
-  scriptureCode: T_ValidScriptureCode,
+  scriptureCode: T_ScriptureCode,
   sectionNumber: number,
   chapterNumber: number,
   verseNumber: number
@@ -364,7 +356,7 @@ export const getVerseInformation = (
 
   if (verseNumber === 1) doesPreviousVerseExists = false;
 
-  const verseCount: Readonly<number> | null = ValidScriptures[
+  const verseCount: Readonly<number> | null = ScripturesDetails[
     scriptureCode
   ].getVerseCountOfChapterOfSection(sectionNumber, chapterNumber);
 
@@ -444,7 +436,7 @@ export const getArrangedVerseAndTranslationFor = (
       .getSection()
       .getScripture();
     const defaultTranslationId: number =
-      ValidScriptures[scripture.getCode()].getDefaultTranslationId();
+      ScripturesDetails[scripture.getCode()].getDefaultTranslationId();
     const translation: TranslationTextDTO =
       verse
         .getTranslationTexts()
