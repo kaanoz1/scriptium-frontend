@@ -8,10 +8,8 @@ import {
 } from "@heroui/modal";
 import { Select, SelectItem } from "@heroui/select";
 import { Dispatch, FC, Key, SetStateAction } from "react";
-import {
-  ScriptureDetail,
-  ScripturePreference,
-} from "@/types/classes/Scripture";
+import { ScripturePreference } from "@/types/classes/Scripture";
+import { ScriptureDetail } from "@/util/scriptureDetails";
 
 interface Props {
   isModalOpen: boolean;
@@ -29,6 +27,7 @@ const ChapterPageTranslationModel: FC<Props> = ({
   scriptureDetail,
 }) => {
   const translations = scriptureDetail.getTranslations();
+
   return (
     <Modal
       isOpen={isModalOpen}
@@ -44,23 +43,20 @@ const ChapterPageTranslationModel: FC<Props> = ({
           <div className="py-2">
             <Select
               label="Select a translation"
-              selectionMode="single"
-              selectedKeys={preference.getPreferredTranslationIdMultiple()}
-              onChange={(e) => {
-                if (e.target.value == "") return;
-
-                setTranslationIdMultiple(
-                  new Set([
-                    ...Array.from(
-                      preference.getPreferredTranslationIdMultiple()
-                    ),
-                    e.target.value,
-                  ])
-                );
-              }}
+              selectionMode="multiple"
+              selectedKeys={
+                new Set(
+                  Array.from(
+                    preference.getPreferredTranslationIdMultiple()
+                  ).map(String)
+                )
+              }
+              onChange={(e) =>
+                setTranslationIdMultiple(new Set(e.target.value.split(",")))
+              }
             >
               {translations.map((t) => {
-                const translationId = t.getId();
+                const translationId = t.getId().toString(); // ensure string
                 const translationName = t.getName();
                 const translatorsNameGathered = t
                   .getTranslators()
@@ -68,8 +64,11 @@ const ChapterPageTranslationModel: FC<Props> = ({
                   .join(", ");
 
                 return (
-                  <SelectItem key={translationId.toString()}>
-                    {translationName} / ${translatorsNameGathered}
+                  <SelectItem
+                    textValue={`${translationName} / ${translatorsNameGathered}`}
+                    key={translationId}
+                  >
+                    {translationName} / {translatorsNameGathered}
                   </SelectItem>
                 );
               })}

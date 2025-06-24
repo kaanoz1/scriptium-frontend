@@ -7,8 +7,8 @@ import { IoPlayOutline, IoSettingsOutline } from "react-icons/io5";
 import { MdTranslate } from "react-icons/md";
 import { ChapterUpperAndOneLevelLowerDTO } from "@/types/classes/Chapter";
 import { T_ScriptureCode } from "@/types/types";
-import { ScriptureDetail } from "@/types/classes/Scripture";
 import { PROJECT_NAME } from "@/util/constants";
+import { ScriptureDetail } from "@/util/scriptureDetails";
 
 type Props = {
   chapter: ChapterUpperAndOneLevelLowerDTO;

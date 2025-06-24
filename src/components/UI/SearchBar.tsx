@@ -12,7 +12,7 @@ import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import SearchBarResultRow from "../SearchBarResultRow";
 import { TranslationTextWithVerseUpperMeanDTO } from "@/types/classes/TranslationText";
 import { T_ScriptureCode } from "@/types/types";
-import { isValidScriptureCode } from "@/util/scriptureDetails";
+import { isValidScriptureCode } from "@/util/func";
 
 const SPLIT_REGEX = /[\s:.,|\\/=-]+/g;
 
@@ -42,12 +42,8 @@ const SearchBar: NextPage = () => {
 
   const handleSearch = useCallback(
     async (query: string) => {
-      console.log(query);
-
       const trimmedQuery = query.trim();
       if (!trimmedQuery) return;
-
-      console.log(trimmedQuery);
 
       const route = parseQueryToRoute(trimmedQuery);
 

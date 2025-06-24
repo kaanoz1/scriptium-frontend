@@ -256,18 +256,18 @@ export const getShareTextOfVerse = (
   const scriptureMeaning = scripture.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
   const scriptureNameInOwnLanguage = scripture.getName();
 
-  return `${PROJECT_NAME},\n${scriptureMeaning}(${scriptureNameInOwnLanguage}), ${sectionMeaning} (${sectionNameInOwnLanguage}), Chapter: ${chapterNumber}, Verse: ${verseNumber}\n\n  
-    ${selectedTranslationTexts
-      .map((tt) => {
-        const text = tt.getText();
+  return `${PROJECT_NAME},\n${scriptureMeaning}(${scriptureNameInOwnLanguage}), ${sectionMeaning} (${sectionNameInOwnLanguage}), Chapter: ${chapterNumber}, Verse: ${verseNumber}\n\n
+${selectedTranslationTexts
+  .map((tt) => {
+    const text = tt.getText();
 
-        const translation = tt.getTranslation();
-        const translationName = translation.getName();
+    const translation = tt.getTranslation();
+    const translationName = translation.getName();
 
-        return `${translationName}:\n${text}`;
-      })
-      .join("\n\n")
-      .concat("\n")
-      .concat(window.location.href)}`;
+    return `${translationName}:\n     ${text}`;
+  })
+  .join("\n\n")
+  .concat("\n\n")
+  .concat(window.location.href)}`;
 };
 export { DEFAULT_LANG_CODE, ScripturesDetails };

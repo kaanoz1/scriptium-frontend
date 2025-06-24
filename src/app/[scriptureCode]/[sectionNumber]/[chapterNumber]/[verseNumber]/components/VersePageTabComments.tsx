@@ -1,13 +1,4 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { AuthenticationRequestErrorCode, Response } from "@/types/response";
-import { CommentDTO, User, VerseDTO } from "@/types/types";
-import {
-  handleCommentVerseLike,
-  handleCommentVerseUnlike,
-  INTERNAL_SERVER_ERROR_RESPONSE_CODE,
-  OK_RESPONSE_CODE,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
-} from "@/util/utils";
 
 import { useQuery } from "@tanstack/react-query";
 import { NextPage } from "next";
@@ -23,9 +14,10 @@ import { GoPlusCircle } from "react-icons/go";
 import CreateCommentComponent from "../../../../../../components/UI/CreateCommentComponent";
 import EditCommentComponent from "../../../../../../components/UI/EditCommentComponent";
 import VersePageComment from "./VersePageComment";
+import { VerseDTO } from "@/types/classes/Verse";
 
 interface Props {
-  user: User;
+  user: UserDTO;
   verse: VerseDTO;
 }
 

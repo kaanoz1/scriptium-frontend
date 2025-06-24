@@ -32,7 +32,7 @@ import VersePageNotFoundComponent from "@/app/[scriptureCode]/[sectionNumber]/[c
 import VersePageTranslationBoxComponent from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageTranslationBoxComponent";
 import VersePageShareModal from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageShareModal";
 import { addToast } from "@heroui/toast";
-import { ScriptureDetail, ScriptureDTO } from "@/types/classes/Scripture";
+import { ScriptureDTO } from "@/types/classes/Scripture";
 import {
   T_VerseBothDTOConstructorParametersJSON,
   VerseBothDTO,
@@ -51,7 +51,10 @@ import {
   OK_HTTP_RESPONSE_CODE,
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
 } from "@/util/constants";
-import { getScriptureIfCodeIsValid } from "@/util/scriptureDetails";
+import { getScriptureIfCodeIsValid } from "@/util/func";
+import { ScriptureDetail } from "@/util/scriptureDetails";
+import Verse from "@/components/verse/Verse";
+import { TranslationDTO } from "@/types/classes/Translation";
 
 interface Props {}
 
@@ -185,6 +188,12 @@ const Page: NextPage<Props> = ({}) => {
   const textVariation = options.getVariation();
   const preferredFont = preference.getPreferredFont();
 
+  const selectedTranslations: Array<TranslationDTO> = scriptureDetail
+    .getTranslations()
+    .filter((t) =>
+      preference.getPreferredTranslationIdMultiple().has(t.getId())
+    );
+
   return (
     <Fragment>
       <main className="bg-white dark:bg-dark min-h-screen">
@@ -300,41 +309,12 @@ const Page: NextPage<Props> = ({}) => {
           <Divider className="my-5 text-xss dark:opacity-25 opacity-75" />
 
           <div className="flex flex-col gap-8">
-            {translationTexts
-              .filter(
-                (
-                  t //Weeding out the unwanted translations.
-                ) =>
-                  preference
-                    .getPreferredTranslationIdMultiple()
-                    .has(t.getTranslation().getId())
-              )
-              .map((translationText, i) => (
-                <div key={i}>
-                  {showTranslation && (
-                    <VersePageTranslationBoxComponent
-                      translationText={translationText}
-                      showFootnotes
-                    />
-                  )}
-                </div>
-              ))}
-
-            <div className="flex flex-col gap-2">
-              {showOriginalText && (
-                <div
-                  className={`text-3xl text-right leading-relaxed ${preferredFont}`}
-                >
-                  {verseText}
-                </div>
-              )}
-
-              {showTransliteration && (
-                <div className="text-sm font-light italic pt-2 text-gray-700 dark:text-gray-400">
-                  {transliteration}
-                </div>
-              )}
-            </div>
+            <Verse
+              verse={verse}
+              selectedTranslations={selectedTranslations}
+              preference={preference}
+              showTranslationHeader
+            />
 
             <div className="flex flex-row w-full pt-10 gap-10 ">
               <div className="w-full flex-[3] ">
@@ -351,7 +331,7 @@ const Page: NextPage<Props> = ({}) => {
                     <div className="w-full flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-300 dark:bg-dark">
                       <span className="px-2">#</span>
                       <span className="px-2">Word</span>
-                      <div className="px-2 flex gap-5">Roots</div>
+                      <div className="px-2 flex gap-5">Root/Lemma(s)</div>
                     </div>
                   </div>
 
@@ -448,13 +428,11 @@ const fetchVerse = async (
 
   const scriptureNumber = scriptureDetail.getNumber();
   try {
-    const url: URL = new URL(
-      `/verse/${scriptureNumber}/${parsedSectionNumber}/${parsedChapterNumber}/${parsedVerseNumber}`
-    );
-
     const response = await axiosCredentialInstance.get<
       Response<T_VerseBothDTOConstructorParametersJSON>
-    >(url.pathname);
+    >(
+      `/verse/${scriptureNumber}/${parsedSectionNumber}/${parsedChapterNumber}/${parsedVerseNumber}`
+    );
 
     if (response.status === OK_HTTP_RESPONSE_CODE)
       return VerseBothDTO.createFromJSON(response.data.data);

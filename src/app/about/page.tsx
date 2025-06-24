@@ -5,23 +5,7 @@ import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
-import {
-  PROJECT_EMAIL_ADDRESS,
-  DISCORD_BOT_ADD_URL,
-  PATREON_SUPPORT_URL,
-  PAYPAL_SUPPORT_URL,
-  GITHUB_SCRIPTIUM_FRONTEND_PROJECT_URL,
-  GITHUB_SCRIPTIUM_MOBILE_PROJECT_URL,
-  GITHUB_SCRIPTIUM_DISCORD_BOT_PROJECT_URL,
-  GITHUB_SCRIPTIUM_PROJECT_URL,
-  PROJECT_INSTAGRAM_ADDRESS,
-  PROJECT_X_ADDRESS,
-  PROJECT_NAME,
-  SOMETHING_WENT_WRONG_TOAST,
-  OK_HTTP_RESPONSE_CODE,
-  isNoAuthenticationRequestErrorCode,
-  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
-} from "@/util/utils";
+
 import axiosNoCredentialInstance from "@/client/axiosNoCredentialInstance";
 import { Response, T_NoAuthenticationRequestErrorCode } from "@/types/response";
 import AboutPageTranslatorExplanation from "@/components/AboutPageTranslatorExplanation";
@@ -41,6 +25,23 @@ import {
 import axios from "axios";
 import { T_ScriptureCode } from "@/types/types";
 import { getErrorComponent } from "@/util/reactUtil";
+import {
+  isNoAuthenticationRequestErrorCode,
+  PROJECT_NAME,
+  PROJECT_EMAIL_ADDRESS,
+  PROJECT_INSTAGRAM_ADDRESS,
+  PROJECT_X_ADDRESS,
+  PATREON_SUPPORT_URL,
+  PAYPAL_SUPPORT_URL,
+  GITHUB_SCRIPTIUM_FRONTEND_PROJECT_URL,
+  GITHUB_SCRIPTIUM_MOBILE_PROJECT_URL,
+  GITHUB_SCRIPTIUM_DISCORD_BOT_PROJECT_URL,
+  GITHUB_SCRIPTIUM_PROJECT_URL,
+  DISCORD_BOT_ADD_URL,
+  OK_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
+import { SOMETHING_WENT_WRONG_TOAST } from "@/util/utils";
 
 interface Props {}
 

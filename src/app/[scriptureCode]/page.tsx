@@ -14,7 +14,6 @@ import ScripturePageNotFoundComponent from "@/components/ScripturePageNotFoundCo
 import ScripturePageSectionBlockComponent from "@/components/ScripturePageSectionBlockComponent";
 import { addToast } from "@heroui/toast";
 import {
-  ScriptureDetail,
   ScriptureOneLevelLowerDTO,
   T_ScriptureOneLevelLowerDTOConstructorParametersJSON,
 } from "@/types/classes/Scripture";
@@ -28,7 +27,8 @@ import {
   OK_HTTP_RESPONSE_CODE,
   PROJECT_URL,
 } from "@/util/constants";
-import { getScriptureIfCodeIsValid } from "@/util/scriptureDetails";
+import { getScriptureIfCodeIsValid } from "@/util/func";
+import { ScriptureDetail } from "@/util/scriptureDetails";
 
 interface Props {}
 

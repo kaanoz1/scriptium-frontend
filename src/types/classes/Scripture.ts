@@ -21,10 +21,9 @@ import {
   SectionTwoLevelLowerDTO,
   T_SectionTwoLevelLowerDTOConstructorParametersJSON,
 } from "./Section";
-import { TranslationDTO } from "@/types/classes/Translation";
 import { Key } from "react";
-import { ScripturesDetails } from "@/util/utils";
 import { VerseOptions } from "@/types/classes/Verse";
+import { ScripturesDetails } from "@/util/scriptureDetails";
 
 export type T_ScriptureBaseDTOConstructorParameters = {
   id: number;
@@ -272,169 +271,6 @@ export class ScriptureLowerConfinedDTO extends ScriptureConfinedDTO {
   }
 }
 
-export type T_TextVariationSymbolsConstructorParameters = {
-  usual: string;
-  simplified: string;
-  withoutVowel: string;
-};
-export type T_TextVariationSymbolsConstructorParametersJSON =
-  T_TextVariationSymbolsConstructorParameters;
-
-export class TextVariationSymbols {
-  private readonly usual: string;
-  private readonly simplified: string;
-  private readonly withoutVowel: string;
-
-  constructor(data: T_TextVariationSymbolsConstructorParameters) {
-    this.usual = data.usual;
-    this.simplified = data.simplified;
-    this.withoutVowel = data.withoutVowel;
-  }
-
-  static createFromJSON(
-    data: T_TextVariationSymbolsConstructorParametersJSON
-  ): TextVariationSymbols {
-    return new TextVariationSymbols({ ...data });
-  }
-
-  getUsual(): string {
-    return this.usual;
-  }
-
-  getSimplified(): string {
-    return this.simplified;
-  }
-
-  getWithoutVowel(): string {
-    return this.withoutVowel;
-  }
-
-  getTextWithVariation(key: T_OriginalScriptureTextVariationKey): string {
-    return this[key];
-  }
-}
-
-export class ScriptureDetail {
-  private constructor(
-    private readonly _number: number,
-    private readonly _defaultTranslationId: number,
-    private readonly _code: T_ScriptureCode,
-    private readonly _variation: TextVariationSymbols,
-    private readonly _defaultScriptureFont: T_OriginalScriptureTextFontOfScriptureWithCodeT,
-    private readonly _verseCountIndicatorArray: ReadonlyArray<
-      ReadonlyArray<number>
-    >,
-    private readonly _translations: ReadonlyArray<TranslationDTO>
-  ) {}
-
-  static create(data: {
-    number: number;
-    defaultTranslationId: number;
-    code: T_ScriptureCode;
-    variation: TextVariationSymbols;
-    defaultScriptureFont: T_OriginalScriptureTextFontOfScriptureWithCodeT;
-    verseCountIndicatorArray: number[][];
-    translations: Array<TranslationDTO>;
-  }) {
-    return new ScriptureDetail(
-      data.number,
-      data.defaultTranslationId,
-      data.code,
-      data.variation,
-      data.defaultScriptureFont,
-      data.verseCountIndicatorArray,
-      data.translations
-    );
-  }
-
-  getTranslations(): ReadonlyArray<TranslationDTO> {
-    return Object.freeze([...this._translations]);
-  }
-
-  getChapterInformation(sectionNumber: number, chapterNumber: number) {
-    let doesPreviousChapterExists = true;
-    let doesNextChapterExists = true;
-
-    if (this.isChapterExistForSection(sectionNumber, chapterNumber - 1))
-      doesPreviousChapterExists = false;
-
-    if (
-      this.isChapterExistForSection(sectionNumber, chapterNumber + 1) ==
-      undefined
-    )
-      doesNextChapterExists = false;
-
-    return { doesPreviousChapterExists, doesNextChapterExists };
-  }
-
-  getVerseInformation = (
-    sectionNumber: number,
-    chapterNumber: number,
-    verseNumber: number
-  ) => {
-    let doesPreviousVerseExists = true;
-    let doesNextVerseExists = true;
-
-    if (verseNumber === 1) doesPreviousVerseExists = false;
-
-    const verseCount: Readonly<number> | null =
-      this.getVerseCountOfChapterOfSection(sectionNumber, chapterNumber);
-
-    if (verseCount == null || verseCount <= verseNumber)
-      doesNextVerseExists = false;
-
-    return { doesPreviousVerseExists, doesNextVerseExists };
-  };
-
-  getCode(): T_ScriptureCode {
-    return this._code;
-  }
-
-  getNumber(): number {
-    return this._number;
-  }
-
-  getDefaultTranslationId(): number {
-    return this._defaultTranslationId;
-  }
-
-  getVariationSymbols(): Readonly<TextVariationSymbols> {
-    return this._variation;
-  }
-
-  getVerseCountInformationArray(): ReadonlyArray<ReadonlyArray<number>> {
-    return this._verseCountIndicatorArray;
-  }
-
-  getDefaultTranslationFont(): Readonly<T_OriginalScriptureTextFont> {
-    return this._defaultScriptureFont;
-  }
-
-  isChapterExistForSection(
-    sectionNumber: number,
-    chapterNumber: number
-  ): boolean {
-    const sectionIndex: number = sectionNumber - 1;
-    const chapterIndex: number = chapterNumber - 1;
-
-    return Boolean(
-      this._verseCountIndicatorArray.at(sectionIndex)?.at(chapterIndex)
-    );
-  }
-
-  getVerseCountOfChapterOfSection(
-    sectionNumber: number,
-    chapterNumber: number
-  ): number | null {
-    const sectionIndex: number = sectionNumber - 1;
-    const chapterIndex: number = chapterNumber - 1;
-
-    return (
-      this._verseCountIndicatorArray.at(sectionIndex)?.at(chapterIndex) ?? null
-    );
-  }
-}
-
 export type T_ScriptureMeanDTOConstructorParameters =
   T_ScriptureBaseDTOConstructorParameters & {
     meanings: Array<ScriptureMeaningDTO>;
@@ -563,8 +399,6 @@ export class ScripturePreference {
   private preferredFont: T_OriginalScriptureTextFont;
   private preferredTranslationId: number;
   private preferredTranslationIdMultiple: Set<number>;
-  private preferredOriginalTextVariationKey: T_OriginalScriptureTextVariationKey =
-    "usual";
   private options: VerseOptions;
 
   constructor(
@@ -579,7 +413,6 @@ export class ScripturePreference {
     this.preferredTranslationIdMultiple = new Set<number>([
       preferredTranslationId,
     ]);
-    this.preferredOriginalTextVariationKey = "usual";
     this.options = options;
   }
 
@@ -617,7 +450,7 @@ export class ScripturePreference {
   }
 
   getPreferredOriginalScriptureTextVariationKey(): T_OriginalScriptureTextVariationKey {
-    return this.preferredOriginalTextVariationKey;
+    return this.getOptions().getVariation();
   }
 
   setPreferredTranslationId(preferredTranslationId: Key) {
@@ -633,22 +466,18 @@ export class ScripturePreference {
 
   setPreferredTranslationIdMultiple(preferredTranslationIdMultiple: Set<Key>) {
     try {
-      const parsedArray: number[] = Array.from(
-        preferredTranslationIdMultiple
-      ).map((e) => {
-        const num = Number(e);
-        if (Number.isNaN(num)) throw new Error("Some values are unexpected.");
-        return num;
-      });
+      const parsedArray: number[] = Array.from(preferredTranslationIdMultiple)
 
-      if (parsedArray.length === 0) {
-        const defaultTranslationId =
-          ScripturesDetails[this.getCode()].getDefaultTranslationId();
-        this.preferredTranslationIdMultiple = new Set<number>([
-          defaultTranslationId,
-        ]);
-        return;
-      }
+        .map((e, i) => {
+          const num = Number(e);
+          if (Number.isNaN(num)) {
+            throw new Error(
+              `Some values are unexpected. value: ${e} typeof e: ${typeof e}`
+            );
+          }
+          return num;
+        })
+        .filter((e) => e > 0);
 
       this.preferredTranslationIdMultiple = new Set<number>(parsedArray);
     } catch (error: unknown) {

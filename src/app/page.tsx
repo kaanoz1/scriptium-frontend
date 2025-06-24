@@ -2,7 +2,8 @@
 
 import SearchBar from "@/components/UI/SearchBar";
 import UIWrapper from "@/components/UI/UIWrapper";
-import { PROJECT_NAME, TOOL_TIP_CLASS_NAMES } from "@/util/utils";
+import { PROJECT_NAME } from "@/util/constants";
+import { TOOL_TIP_CLASS_NAMES } from "@/util/utils";
 import { Link } from "@heroui/link";
 import { Tooltip } from "@heroui/tooltip";
 import { useState, useEffect, useRef } from "react";

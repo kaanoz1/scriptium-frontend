@@ -1,13 +1,6 @@
 import { Response } from "@/types/response";
 import { Column, RefetchDataFunctionType } from "@/types/types";
-import {
-  CONFLICT_HTTP_RESPONSE_CODE,
-  displayErrorToast,
-  formatDate,
-  getFormattedNameAndSurname,
-  OK_HTTP_RESPONSE_CODE,
-  PROJECT_URL,
-} from "@/util/utils";
+
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
@@ -30,6 +23,16 @@ import LoadingSpinner from "./UI/LoadingSpinner";
 import ReceivedRequestTableFollowerAcceptionConfirmationModal from "./ReceivedRequestTableFollowerAcceptionConfirmationModal";
 import ReceivedRequestTableFollowerRejectionConfirmationModal from "./ReceivedRequestTableFollowerRejectionConfirmationModal";
 import { FollowerUserDTO } from "@/types/classes/Follow";
+import {
+  OK_HTTP_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
+  PROJECT_URL,
+} from "@/util/constants";
+import {
+  displayErrorToast,
+  getFormattedNameAndSurname,
+  formatDate,
+} from "@/util/utils";
 
 const columns: Array<Column> = [
   { key: "user", label: "USER" },
@@ -53,7 +56,7 @@ const fetchRequests = async (): Promise<Array<FollowerUserDTO>> => {
         return [];
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return [];
   }
 };

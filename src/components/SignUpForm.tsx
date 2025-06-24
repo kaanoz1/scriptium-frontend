@@ -17,15 +17,7 @@ import { FiUser } from "react-icons/fi";
 import { Tooltip } from "@heroui/tooltip";
 import PasswordStrengthMeter from "./UI/PasswordStrengthMeter";
 import { passwordStrength as checkPasswordStrength } from "check-password-strength";
-import {
-  CONFLICT_HTTP_RESPONSE_CODE,
-  getFormattedNameAndSurnameFromString,
-  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
-  OK_HTTP_RESPONSE_CODE,
-  SIGN_IN_URL,
-  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
-  TOOL_TIP_CLASS_NAMES,
-} from "@/util/utils";
+
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import InternalServerError from "./UI/InternalServerError";
@@ -35,6 +27,17 @@ import {
   T_NoAuthenticationRequestErrorCode,
   ResponseMessage,
 } from "@/types/response";
+import {
+  OK_HTTP_RESPONSE_CODE,
+  SIGN_IN_URL,
+  CONFLICT_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
+import {
+  TOOL_TIP_CLASS_NAMES,
+  getFormattedNameAndSurnameFromString,
+} from "@/util/utils";
 
 export type T_PasswordStrength = "Too Weak" | "Weak" | "Medium" | "Strong";
 

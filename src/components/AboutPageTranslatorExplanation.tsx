@@ -1,5 +1,5 @@
 import { TranslationWithScriptureDTODTO } from "@/types/classes/Translation";
-import { PROJECT_NAME } from "@/util/utils";
+import { PROJECT_NAME } from "@/util/constants";
 import { Link } from "@heroui/link";
 import { Tooltip } from "@heroui/tooltip";
 import { FC } from "react";

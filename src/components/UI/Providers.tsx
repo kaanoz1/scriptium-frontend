@@ -25,20 +25,22 @@ const Providers: FC<Props> = ({ children }) => {
   return (
     <HeroUIProvider locale="en-US" navigate={router.push}>
       <ToastProvider />
-      <AnimatePresence mode="wait">
-        <motion.div key={pathname}>
-          <FrozenRoute>
-            <QueryClientProvider client={queryClient}>
-              <UserProvider>
-                <Navbar showSearchBar={pathname != "/"} />
-                <ScriptureProvider>{children}</ScriptureProvider>
-                <Footer />
-                <ReactQueryDevtools initialIsOpen />
-              </UserProvider>
-            </QueryClientProvider>
-          </FrozenRoute>
-        </motion.div>
-      </AnimatePresence>
+      <QueryClientProvider client={queryClient}>
+        <ScriptureProvider>
+          <AnimatePresence mode="wait">
+            <motion.div key={pathname}>
+              <FrozenRoute>
+                <UserProvider>
+                  <Navbar showSearchBar={pathname != "/"} />
+                  {children}
+                  <Footer />
+                  <ReactQueryDevtools />
+                </UserProvider>
+              </FrozenRoute>
+            </motion.div>
+          </AnimatePresence>
+        </ScriptureProvider>
+      </QueryClientProvider>
     </HeroUIProvider>
   );
 };

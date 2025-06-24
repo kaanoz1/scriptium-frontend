@@ -25,7 +25,6 @@ import {
 } from "@/types/classes/Root";
 import { WordUpperDTO } from "@/types/classes/Word";
 import { useScripturePreferences } from "@/hooks/useScripture";
-import { ScriptureDetail } from "@/types/classes/Scripture";
 import { getErrorComponent } from "@/util/reactUtil";
 import axios from "axios";
 import {
@@ -34,7 +33,8 @@ import {
   OK_HTTP_RESPONSE_CODE,
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
 } from "@/util/constants";
-import { getScriptureIfCodeIsValid } from "@/util/scriptureDetails";
+import { getScriptureIfCodeIsValid } from "@/util/func";
+import { ScriptureDetail } from "@/util/scriptureDetails";
 
 const Page: NextPage = ({}) => {
   const { rootLatin: rootLatinParam, scriptureCode: scriptureCodeParam } =

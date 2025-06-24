@@ -8,7 +8,7 @@ import {
 import { T_ScriptureCode } from "@/types/types";
 import { ScripturePreference } from "@/types/classes/Scripture";
 import { VerseOptions } from "@/types/classes/Verse";
-import { getScriptureIfCodeIsValid } from "@/util/scriptureDetails";
+import { getScriptureIfCodeIsValid } from "@/util/func";
 
 type ScripturePreferencesMap = Record<T_ScriptureCode, ScripturePreference>;
 

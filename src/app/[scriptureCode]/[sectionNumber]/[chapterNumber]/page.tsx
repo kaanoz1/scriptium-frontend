@@ -16,7 +16,6 @@ import ChapterPageTranslationModel from "@/app/[scriptureCode]/[sectionNumber]/[
 import ChapterPageShareModal from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/components/ChapterPageShareModal";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
 import ChapterPageNotFoundComponent from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/components/ChapterPageNotFoundComponent";
-import { ScriptureDetail } from "@/types/classes/Scripture";
 import { addToast } from "@heroui/toast";
 import axios from "axios";
 import { getErrorComponent } from "@/util/reactUtil";
@@ -35,7 +34,8 @@ import {
   OK_HTTP_RESPONSE_CODE,
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
 } from "@/util/constants";
-import { getScriptureIfCodeIsValid } from "@/util/scriptureDetails";
+import { getScriptureIfCodeIsValid } from "@/util/func";
+import { ScriptureDetail } from "@/util/scriptureDetails";
 
 interface Props {}
 
@@ -130,29 +130,18 @@ const Page: NextPage<Props> = ({}): ReactNode => {
     section.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
 
   const scripture = section.getScripture();
-  const scriptureNameInOwnLanguage = chapter.getName();
+  const scriptureNameInOwnLanguage = scripture.getName();
   const scriptureMeaning: string =
     scripture.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
   const scriptureCode: T_ScriptureCode = scripture.getCode();
 
-  const possibleTranslations = new Set<TranslationDTO>([
-    ...scriptureDetail!.getTranslations().filter(
-      (
-        t // Not every translation have to have a translationText for all verses. So we filter translations in which at least one translation text across the chapter.
-      ) =>
-        verses.some((verse) =>
-          verse
-            .getTranslationTexts()
-            .some((tt) => tt.getTranslation().getId() === t.getId())
-        )
-    ),
-  ]);
-
   const preferredTranslations = new Set<TranslationDTO>([
-    ...Array.from(possibleTranslations).filter((t) =>
-      preference.getPreferredTranslationIdMultiple().has(t.getId())
-    ),
-  ]); // Impossible to exist. Since default translationId is a Translation that ever verse has translationText of it.
+    ...scriptureDetail
+      .getTranslations()
+      .filter((t) =>
+        preference.getPreferredTranslationIdMultiple().has(t.getId())
+      ),
+  ]); // Impossible to exist. Since default translationId is id of a Translation that ever verse has translationText of it.
 
   return (
     <Fragment>
@@ -209,9 +198,9 @@ const Page: NextPage<Props> = ({}): ReactNode => {
               </div>
             </div>
 
-            {verses.map((v, i) => (
+            {verses.map((v) => (
               <ChapterVerse
-                key={i}
+                key={v.getId()}
                 verse={v}
                 scriptureDetail={scriptureDetail}
                 chapter={chapter}

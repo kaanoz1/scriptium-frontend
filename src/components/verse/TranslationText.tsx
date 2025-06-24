@@ -1,47 +1,58 @@
-import {TranslationDTO} from "@/types/classes/Translation";
-import {TranslationTextDTO} from "@/types/classes/TranslationText";
-import {FC} from "react";
+import { TranslationDTO } from "@/types/classes/Translation";
+import { TranslationTextDTO } from "@/types/classes/TranslationText";
+import { FC } from "react";
 import TranslatedTextWithFootnotes from "@/components/UI/TranslatedTextWithFootnotes";
-import {ScripturePreference} from "@/types/classes/Scripture";
-
+import { ScripturePreference } from "@/types/classes/Scripture";
 
 type Props = {
-    translation: TranslationDTO
-    translationText: TranslationTextDTO | undefined
-    preference: ScripturePreference
-}
+  translation: TranslationDTO;
+  translationText: TranslationTextDTO | undefined;
+  preference: ScripturePreference;
+  showTranslationHeader: boolean;
+};
 
-const TranslationText: FC<Props> = ({translation, translationText, preference}) => {
+const TranslationText: FC<Props> = ({
+  translation,
+  translationText,
+  preference,
+  showTranslationHeader,
+}) => {
+  const translationName = translation.getName();
 
-    const translationName = translation.getName();
+  const translatorNamesGathered = translation
+    .getTranslators()
+    .map((t) => t.getName())
+    .join(", ");
 
-    const translatorNamesGathered = translation
-        .getTranslators()
-        .map((t) => t.getName())
-        .join(", ");
+  const options = preference.getOptions();
+  const showFootnotes = options.getShowFootnotes();
 
-
-    const options = preference.getOptions();
-    const showFootnotes = options.getShowFootnotes();
-
-    return <div className="w-full p-4 bg-white dark:bg-black text-gray-800 dark:text-gray-200">
+  return (
+    <div className="w-full p-4 bg-white dark:bg-black text-gray-800 dark:text-gray-200">
+      {showTranslationHeader && (
         <div className="mb-2 flex items-center gap-2">
-            <span className="font-bold">{translationName}</span>
-            <span className="text-gray-400 dark:text-gray-500">—</span>
-            <span className="italic text-sm opacity-80">
-          {translatorNamesGathered}
-        </span>
+          <span className="font-bold">{translationName}</span>
+          <span className="text-gray-400 dark:text-gray-500">—</span>
+          <span className="italic text-sm opacity-80">
+            {translatorNamesGathered}
+          </span>
         </div>
+      )}
 
-        <div className="leading-relaxed">
-            {translationText ? <TranslatedTextWithFootnotes
-                    translationText={translationText}
-                    showFootnotes={showFootnotes}
-                /> :
-                <span>This translation does not have a text for this verse.</span>
-            }
-        </div>
+      <div className="leading-relaxed">
+        {translationText ? (
+          <TranslatedTextWithFootnotes
+            translationText={translationText}
+            showFootnotes={showFootnotes}
+          />
+        ) : (
+          <span className="italic">
+            This translation does not have a text for this verse.
+          </span>
+        )}
+      </div>
     </div>
-}
+  );
+};
 
 export default TranslationText;

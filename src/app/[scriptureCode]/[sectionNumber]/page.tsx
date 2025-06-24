@@ -15,7 +15,6 @@ import SectionPageChapterBlockComponent from "@/components/SectionPageChapterBlo
 import { addToast } from "@heroui/toast";
 import { getErrorComponent } from "@/util/reactUtil";
 import axiosNoCredentialInstance from "@/client/axiosNoCredentialInstance";
-import { ScriptureDetail } from "@/types/classes/Scripture";
 import {
   SectionOneLevelBothDTO,
   T_SectionOneLevelBothDTOConstructorParametersJSON,
@@ -27,7 +26,8 @@ import {
   OK_HTTP_RESPONSE_CODE,
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
 } from "@/util/constants";
-import { getScriptureIfCodeIsValid } from "@/util/scriptureDetails";
+import { getScriptureIfCodeIsValid } from "@/util/func";
+import { ScriptureDetail } from "@/util/scriptureDetails";
 
 const Page: NextPage = (): ReactNode => {
   const {
@@ -179,6 +179,7 @@ const fetchSection = async (
     const response = await axiosNoCredentialInstance.get<
       Response<T_SectionOneLevelBothDTOConstructorParametersJSON>
     >(`/verse/${scriptureNumber}/${sectionNumber}`);
+
 
     if (response.status === OK_HTTP_RESPONSE_CODE)
       return SectionOneLevelBothDTO.createFromJSON(response.data.data);

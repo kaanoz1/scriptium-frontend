@@ -6,7 +6,7 @@ import TranslatedTextWithFootnotes from "./TranslatedTextWithFootnotes";
 import { TranslationTextDTO } from "@/types/classes/TranslationText";
 import { WordUpperDTO } from "@/types/classes/Word";
 import { T_OriginalScriptureTextVariationKey } from "@/types/types";
-import { ScriptureDetail } from "@/types/classes/Scripture";
+import { ScriptureDetail } from "@/util/scriptureDetails";
 
 interface Props {
   word: WordUpperDTO;

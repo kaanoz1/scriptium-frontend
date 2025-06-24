@@ -1,8 +1,205 @@
 import {
-  ScriptureDetail,
-  TextVariationSymbols,
-} from "@/types/classes/Scripture";
-import { T_ScriptureCode } from "@/types/types";
+  T_TranslationDTOConstructorParametersJSON,
+  TranslationDTO,
+} from "@/types/classes/Translation";
+import {
+  T_OriginalScriptureTextFont,
+  T_OriginalScriptureTextFontOfScriptureWithCodeT,
+  T_OriginalScriptureTextVariationKey,
+  T_ScriptureCode,
+} from "@/types/types";
+
+export class TextVariationSymbols {
+  private readonly usual: string;
+  private readonly simplified: string;
+  private readonly withoutVowel: string;
+
+  constructor(data: T_TextVariationSymbolsConstructorParameters) {
+    this.usual = data.usual;
+    this.simplified = data.simplified;
+    this.withoutVowel = data.withoutVowel;
+  }
+
+  static createFromJSON(
+    data: T_TextVariationSymbolsConstructorParametersJSON
+  ): TextVariationSymbols {
+    return new TextVariationSymbols({ ...data });
+  }
+
+  getUsual(): string {
+    return this.usual;
+  }
+
+  getSimplified(): string {
+    return this.simplified;
+  }
+
+  getWithoutVowel(): string {
+    return this.withoutVowel;
+  }
+
+  getTextWithVariation(key: T_OriginalScriptureTextVariationKey): string {
+    return this[key];
+  }
+}
+
+export class ScriptureDetail {
+  private constructor(
+    private readonly _number: number,
+    private readonly _defaultTranslationId: number,
+    private readonly _code: T_ScriptureCode,
+    private readonly _variation: TextVariationSymbols,
+    private readonly _defaultScriptureFont: T_OriginalScriptureTextFontOfScriptureWithCodeT,
+    private readonly _verseCountIndicatorArray: ReadonlyArray<
+      ReadonlyArray<number>
+    >,
+    private readonly _translations: ReadonlyArray<TranslationDTO>
+  ) {}
+
+  static create(data: {
+    number: number;
+    defaultTranslationId: number;
+    code: T_ScriptureCode;
+    variation: TextVariationSymbols;
+    defaultScriptureFont: T_OriginalScriptureTextFontOfScriptureWithCodeT;
+    verseCountIndicatorArray: number[][];
+    translations: Array<TranslationDTO>;
+  }) {
+    return new ScriptureDetail(
+      data.number,
+      data.defaultTranslationId,
+      data.code,
+      data.variation,
+      data.defaultScriptureFont,
+      data.verseCountIndicatorArray,
+      data.translations
+    );
+  }
+
+  getTranslations(): ReadonlyArray<TranslationDTO> {
+    return Object.freeze([...this._translations]);
+  }
+
+  getChapterInformation(sectionNumber: number, chapterNumber: number) {
+    let doesPreviousChapterExists = true;
+    let doesNextChapterExists = true;
+
+    if (!this.isChapterExistForSection(sectionNumber, chapterNumber - 1))
+      doesPreviousChapterExists = false;
+
+    if (!this.isChapterExistForSection(sectionNumber, chapterNumber + 1))
+      doesNextChapterExists = false;
+
+    return { doesPreviousChapterExists, doesNextChapterExists };
+  }
+
+  getVerseInformation = (
+    sectionNumber: number,
+    chapterNumber: number,
+    verseNumber: number
+  ) => {
+    let doesPreviousVerseExists = true;
+    let doesNextVerseExists = true;
+
+    if (verseNumber === 1) doesPreviousVerseExists = false;
+
+    const verseCount: Readonly<number> | null =
+      this.getVerseCountOfChapterOfSection(sectionNumber, chapterNumber);
+
+    if (verseCount == null || verseCount <= verseNumber)
+      doesNextVerseExists = false;
+
+    return { doesPreviousVerseExists, doesNextVerseExists };
+  };
+
+  getCode(): T_ScriptureCode {
+    return this._code;
+  }
+
+  getNumber(): number {
+    return this._number;
+  }
+
+  getDefaultTranslationId(): number {
+    return this._defaultTranslationId;
+  }
+
+  getVariationSymbols(): Readonly<TextVariationSymbols> {
+    return this._variation;
+  }
+
+  getVerseCountInformationArray(): ReadonlyArray<ReadonlyArray<number>> {
+    return this._verseCountIndicatorArray;
+  }
+
+  getDefaultTranslationFont(): Readonly<T_OriginalScriptureTextFont> {
+    return this._defaultScriptureFont;
+  }
+
+  isChapterExistForSection(
+    sectionNumber: number,
+    chapterNumber: number
+  ): boolean {
+    const sectionIndex: number = sectionNumber - 1;
+    const chapterIndex: number = chapterNumber - 1;
+
+    return Boolean(
+      this._verseCountIndicatorArray.at(sectionIndex)?.at(chapterIndex)
+    );
+  }
+
+  getVerseCountOfChapterOfSection(
+    sectionNumber: number,
+    chapterNumber: number
+  ): number | null {
+    const sectionIndex: number = sectionNumber - 1;
+    const chapterIndex: number = chapterNumber - 1;
+
+    return (
+      this._verseCountIndicatorArray.at(sectionIndex)?.at(chapterIndex) ?? null
+    );
+  }
+}
+
+const tPlain: T_TranslationDTOConstructorParametersJSON[] = [
+  {
+    id: 1,
+    name: "Tanakh The Scriptures, JPS",
+    language: { langCode: "en", langOwn: "English", langEnglish: "English" },
+    translators: [
+      {
+        name: "JPS",
+        url: null,
+        language: {
+          langCode: "en",
+          langOwn: "English",
+          langEnglish: "English",
+        },
+      },
+    ],
+    isEager: false,
+  },
+  {
+    id: 2,
+    name: "The Contemporary Torah",
+    language: { langCode: "en", langOwn: "English", langEnglish: "English" },
+    translators: [
+      {
+        name: "Jewish Publication Society",
+        url: null,
+        language: {
+          langCode: "en",
+          langOwn: "English",
+          langEnglish: "English",
+        },
+      },
+    ],
+    isEager: false,
+  },
+];
+
+const t1 = TranslationDTO.createFromJSON(tPlain[0]!);
+const t2 = TranslationDTO.createFromJSON(tPlain[1]!);
 
 export const ScripturesDetails: Record<
   T_ScriptureCode,
@@ -127,17 +324,14 @@ export const ScripturesDetails: Record<
         11, 37, 20, 12, 21, 27, 28, 23, 9, 27, 36, 27, 21, 33, 25, 33, 27, 23,
       ],
     ],
-    translations: [],
+    translations: [t1, t2],
   }),
 };
 
-export const getScriptureIfCodeIsValid = (
-  scriptureCode: string | T_ScriptureCode
-): Readonly<ScriptureDetail> | null => {
-  if (!isValidScriptureCode(scriptureCode)) return null;
-
-  return ScripturesDetails[scriptureCode];
+export type T_TextVariationSymbolsConstructorParameters = {
+  usual: string;
+  simplified: string;
+  withoutVowel: string;
 };
-
-export const isValidScriptureCode = (code: string): code is T_ScriptureCode =>
-  code in ScripturesDetails;
+export type T_TextVariationSymbolsConstructorParametersJSON =
+  T_TextVariationSymbolsConstructorParameters;
