@@ -10,21 +10,21 @@ import {
 } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { AuthenticationRequestErrorCode, Response } from "@/types/response";
+import { Response, T_AuthenticationRequestErrorCode } from "@/types/response";
 import { RefetchDataFunctionType } from "@/types/types";
 import {
   displayErrorToast,
-  INTERNAL_SERVER_ERROR_RESPONSE_CODE,
-  METHOD_NOT_ALLOWED_RESPONSE_CODE,
-  NOT_FOUND_RESPONSE_CODE,
-  OK_RESPONSE_CODE,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  METHOD_NOT_ALLOWED_HTTP_RESPONSE_CODE,
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
   UNDEFINED_TRANSLATION_TEXT_DTO,
 } from "@/util/utils";
 
 import LoadingSpinner from "./LoadingSpinner";
 import ServerErrorComponent from "./ServerErrorComponent";
-import TooManyRequestComponent from "./TooManyRequestComponent";
+import TooManyRequestComponent from "./TooManyRequest";
 import {
   Table,
   TableBody,
@@ -36,7 +36,6 @@ import {
 import { Pagination } from "@heroui/pagination";
 import { Spinner } from "@heroui/spinner";
 import CollectionVerseTableRow from "./CollectionVerseTableRow";
-import { useScripture } from "@/hooks/useScripture";
 import { motion, Variants } from "framer-motion";
 import { CollectionDTO } from "@/types/classes/Collection";
 import { VerseBaseDTO, VerseUpperDTO } from "@/types/classes/Verse";
@@ -62,7 +61,9 @@ const tableWrapperVariants: Variants = {
 const fetchCollectionVerses = async (
   collection: CollectionDTO,
   page: number,
-  setError: Dispatch<SetStateAction<AuthenticationRequestErrorCode | undefined>>
+  setError: Dispatch<
+    SetStateAction<T_AuthenticationRequestErrorCode | undefined>
+  >
 ): Promise<Array<VerseUpperDTO>> => {
   try {
     const response = await axiosCredentialInstance.get<
@@ -70,25 +71,25 @@ const fetchCollectionVerses = async (
     >(`/collection/${collection.getId()}?page=${page}`);
 
     switch (response.status) {
-      case OK_RESPONSE_CODE:
+      case OK_HTTP_RESPONSE_CODE:
         setError(undefined);
         return response.data.data;
-      case NOT_FOUND_RESPONSE_CODE:
-        setError(NOT_FOUND_RESPONSE_CODE);
+      case NOT_FOUND_HTTP_RESPONSE_CODE:
+        setError(NOT_FOUND_HTTP_RESPONSE_CODE);
         return [];
-      case TOO_MANY_REQUEST_RESPONSE_CODE:
-        setError(TOO_MANY_REQUEST_RESPONSE_CODE);
+      case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
+        setError(TOO_MANY_REQUEST_HTTP_RESPONSE_CODE);
         return [];
-      case METHOD_NOT_ALLOWED_RESPONSE_CODE:
-        setError(METHOD_NOT_ALLOWED_RESPONSE_CODE);
+      case METHOD_NOT_ALLOWED_HTTP_RESPONSE_CODE:
+        setError(METHOD_NOT_ALLOWED_HTTP_RESPONSE_CODE);
         return [];
       default:
-        setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+        setError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
         return [];
     }
   } catch (error) {
     console.error(error);
-    setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+    setError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
 
     displayErrorToast(error);
 
@@ -99,7 +100,7 @@ const fetchCollectionVerses = async (
 export const handleUnsaveClick = async (
   verse: VerseBaseDTO,
   collection: CollectionDTO,
-  refetchDataFunction: RefetchDataFunctionType,
+  refetchDataFunction: RefetchDataFunctionType<VerseBaseDTO>,
   setStateActionFunctionForUnsaveLoading: Dispatch<SetStateAction<boolean>>
 ) => {
   try {
@@ -125,7 +126,7 @@ interface Props {
 
 const CollectionComponent: FC<Props> = ({ collection }) => {
   const [error, setError] = useState<
-    AuthenticationRequestErrorCode | undefined
+    T_AuthenticationRequestErrorCode | undefined
   >(undefined);
   const [page, setPage] = useState<number>(1);
 

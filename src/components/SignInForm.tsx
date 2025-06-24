@@ -14,19 +14,19 @@ import { Link } from "@heroui/link";
 import { Divider } from "@heroui/divider";
 import { Tooltip } from "@heroui/tooltip";
 import {
-  NoAuthenticationRequestErrorCode,
+  T_NoAuthenticationRequestErrorCode,
   ResponseMessage,
 } from "@/types/response";
 import {
-  INTERNAL_SERVER_ERROR_RESPONSE_CODE,
-  OK_RESPONSE_CODE,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
   TOOL_TIP_CLASS_NAMES,
-  UNAUTHORIZED_RESPONSE_CODE,
+  UNAUTHORIZED_HTTP_RESPONSE_CODE,
 } from "@/util/utils";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
-import ServerError from "./UI/ServerError";
+import InternalServerError from "./UI/InternalServerError";
 import TooManyRequest from "./UI/TooManyRequest";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import LoadingSpinnerFullH from "./UI/LoadingSpinnerFullH";
@@ -43,7 +43,7 @@ const SignInForm: FC = () => {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
 
   const [error, setError] = useState<
-    NoAuthenticationRequestErrorCode | undefined
+    T_NoAuthenticationRequestErrorCode | undefined
   >(undefined);
 
   const {
@@ -67,31 +67,31 @@ const SignInForm: FC = () => {
     );
 
     switch (response.status) {
-      case OK_RESPONSE_CODE:
+      case OK_HTTP_RESPONSE_CODE:
         await fetchUser();
         router.push("/");
         return;
 
-      case UNAUTHORIZED_RESPONSE_CODE:
-        setError(UNAUTHORIZED_RESPONSE_CODE);
+      case UNAUTHORIZED_HTTP_RESPONSE_CODE:
+        setError(UNAUTHORIZED_HTTP_RESPONSE_CODE);
         setFormError("password", {
           message: response.data.message,
         });
         return;
 
       default:
-        setError(response.status as NoAuthenticationRequestErrorCode);
+        setError(response.status as T_NoAuthenticationRequestErrorCode);
         return;
     }
   });
 
   if (isUserLoading) return <LoadingSpinnerFullH />;
 
-  if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
+  if (error && error === TOO_MANY_REQUEST_HTTP_RESPONSE_CODE)
     return <TooManyRequest />;
 
-  if (error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE)
-    return <ServerError />;
+  if (error && error === INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE)
+    return <InternalServerError />;
 
   const toggleVisibility = () => setIsPasswordVisible(!isPasswordVisible);
 

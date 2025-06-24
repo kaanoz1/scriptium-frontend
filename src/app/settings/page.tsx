@@ -1,24 +1,31 @@
 "use client";
-import UserSettingsAccountPrivacy from "@/components/UserSettingsAccountPrivacy";
-import UserSettingsBlocked from "@/components/UserSettingsBlocked";
-import UserSettingsComments from "@/components/UserSettingsComments";
-import UserSettingsEditUser from "@/components/UserSettingsEditUser";
-import UserSettingsFollowerFollowings from "@/components/UserSettingsFollowerFollowings";
-import UserSettingsLikes from "@/components/UserSettingsLikes";
-import UserSettingsNote from "@/components/UserSettingsNote";
+import UserSettingsAccountPrivacy from "@/app/settings/components/UserSettingsAccountPrivacy";
+import UserSettingsBlocked from "@/app/settings/components/UserSettingsBlocked";
+import UserSettingsComments from "@/app/settings/components/UserSettingsComments";
+import UserSettingsEditUser from "@/app/settings/components/UserSettingsEditUser";
+import UserSettingsFollowerFollowings from "@/app/settings/components/UserSettingsFollowerFollowings";
+import UserSettingsLikes from "@/app/settings/components/UserSettingsLikes";
+import UserSettingsNote from "@/app/settings/components/UserSettingsNote";
 import { useUser } from "@/hooks/useUser";
 import { Tab, Tabs } from "@heroui/tabs";
 import { NextPage } from "next";
-import { AiOutlineUser, AiOutlineLock, AiOutlineHeart } from "react-icons/ai";
+import {
+  AiOutlineUser,
+  AiOutlineLock,
+  AiOutlineHeart,
+  AiOutlineBell,
+} from "react-icons/ai";
 import { FiUserPlus } from "react-icons/fi";
 import { HiOutlineBan, HiOutlineChat } from "react-icons/hi";
 import { MdOutlineStickyNote2 } from "react-icons/md";
 import { GrConfigure } from "react-icons/gr";
-import UserSettingsConfig from "@/components/UserSettingsConfig";
+import UserSettingsConfig from "@/app/settings/components/UserSettingsConfig";
 import { useRouter } from "next/navigation";
 import { SIGN_UP_URL } from "@/util/utils";
 import UIWrapper from "@/components/UI/UIWrapper";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
+import { ReactNode } from "react";
+import UserSettingsNotifications from "@/components/UserSettingsNotifications";
 interface Props {}
 
 const Page: NextPage<Props> = ({}) => {
@@ -48,71 +55,40 @@ const Page: NextPage<Props> = ({}) => {
             className="w-full flex justify-center"
             key="user"
             aria-label="userEditSettingTab"
-            title={
-              <div className="flex items-center gap-2 justify-start">
-                <AiOutlineUser className="text-2xl text-neutral-600 dark:text-neutral-300" />
-                <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                  Edit Profile
-                </span>
-              </div>
-            }
+            title={EDIT_USER_TAB_TITLE}
           >
-            <div className="w-[90%]">
-              <UserSettingsEditUser
-                user={user}
-                fetchUser={fetchUser}
-                setUser={setUser}
-              />
-            </div>
+            <span>Will be implemented</span>
+            <UserSettingsEditUser
+              user={user}
+              fetchUser={fetchUser}
+              setUser={setUser}
+            />
           </Tab>
 
-          {/* <Tab
-                  className="w-full flex justify-center"
-                  key="notifications"
-                  aria-label="notificationSettings"
-                  title={
-                    <div className="flex items-center gap-2 justify-start">
-                      <AiOutlineBell className="text-2xl text-neutral-600 dark:text-neutral-300" />
-                      <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                        Notifications
-                      </span>
-                    </div>
-                  }
-                >
-                  <div className="w-[80%]">
-                    <UserSettingsNotifications />
-                  </div>
-                </Tab> TODO:Will be implemented */}
+          <Tab
+            className="w-full flex justify-center"
+            key="notifications"
+            aria-label="notificationSettings"
+            title={NOTIFICATIONS_TAB_TITLE}
+          >
+            <div className="w-[80%]">
+              <UserSettingsNotifications />
+            </div>
+          </Tab>
 
           <Tab
             className="w-full flex justify-center"
             key="privacy"
             aria-label="privacySettingsTab"
-            title={
-              <div className="flex items-center gap-2 justify-start">
-                <AiOutlineLock className="text-2xl text-neutral-600 dark:text-neutral-300" />
-                <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                  Account Privacy
-                </span>
-              </div>
-            }
+            title={ACCOUNT_PRIVACY_TAB_TITLE}
           >
-            <div className="w-[80%]">
-              <UserSettingsAccountPrivacy user={user} setUser={setUser} />
-            </div>
+            <UserSettingsAccountPrivacy user={user} setUser={setUser} />
           </Tab>
 
           <Tab
             className="w-full flex justify-center"
             key="config"
-            title={
-              <div className="flex items-center gap-2 justify-start">
-                <GrConfigure className="text-2xl text-neutral-600 dark:text-neutral-300" />
-                <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                  Account Configuration
-                </span>
-              </div>
-            }
+            title={USER_CONFIG_TAB_TITLE}
           >
             <UserSettingsConfig user={user} setUser={setUser} />
           </Tab>
@@ -120,84 +96,41 @@ const Page: NextPage<Props> = ({}) => {
             className="w-full flex justify-center"
             key="followers"
             aria-label="followerSettings"
-            title={
-              <div className="flex items-center gap-2 justify-start">
-                <FiUserPlus className="text-xl text-neutral-600 dark:text-neutral-300" />
-                <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                  Followers & Followings
-                </span>
-              </div>
-            }
+            title={FOLLOWERS_AND_FOLLOWINGS_TAB_TITLE}
           >
-            <div className="w-[90%]">
-              <UserSettingsFollowerFollowings user={user} />
-            </div>
+            <UserSettingsFollowerFollowings user={user} />
           </Tab>
 
           <Tab
             className="w-full flex justify-center"
             key="blocked-users"
             aria-label="blockedUserSettings"
-            title={
-              <div className="flex items-center gap-2 justify-start">
-                <HiOutlineBan className="text-2xl text-neutral-600 dark:text-neutral-300" />
-                <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                  Blocked
-                </span>
-              </div>
-            }
+            title={BLOCKED_TAB_TITLE}
           >
-            <div className="w-[90%]">
-              <UserSettingsBlocked />
-            </div>
+            <UserSettingsBlocked />
           </Tab>
 
           <Tab
             className="w-full flex justify-center"
             key="likes"
-            title={
-              <div className="flex items-center gap-2 justify-start">
-                <AiOutlineHeart className="text-2xl text-neutral-600 dark:text-neutral-300" />
-                <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                  Likes
-                </span>
-              </div>
-            }
+            title={LIKES_TAB_TITLE}
           >
-            <div className="w-[90%]">
-              <UserSettingsLikes user={user} />
-            </div>
+            <UserSettingsLikes user={user} />
           </Tab>
 
           <Tab
             className="w-full flex justify-center"
             key="reflections"
             aria-label="reflectionsSettings"
-            title={
-              <div className="flex items-center gap-2 justify-start">
-                <HiOutlineChat className="text-2xl text-neutral-600 dark:text-neutral-300" />
-                <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                  Reflections
-                </span>
-              </div>
-            }
+            title={COMMENTS_TAB_TITLE}
           >
-            <div className="w-[90%]">
-              <UserSettingsComments user={user} />
-            </div>
+            <UserSettingsComments user={user} />
           </Tab>
 
           <Tab
             className="w-full flex justify-center"
             key="notes"
-            title={
-              <div className="flex items-center gap-2 justify-start">
-                <MdOutlineStickyNote2 className="text-2xl text-neutral-600 dark:text-neutral-300" />
-                <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                  Notes
-                </span>
-              </div>
-            }
+            title={NOTES_TAB_TITLE}
           >
             <UserSettingsNote user={user} />
           </Tab>
@@ -208,3 +141,84 @@ const Page: NextPage<Props> = ({}) => {
 };
 
 export default Page;
+
+const EDIT_USER_TAB_TITLE: ReactNode = (
+  <div className="flex items-center gap-2 justify-start">
+    <AiOutlineUser className="text-2xl text-neutral-600 dark:text-neutral-300" />
+    <span className="text-sm text-neutral-700 dark:text-neutral-200">
+      Edit Profile
+    </span>
+  </div>
+);
+
+const ACCOUNT_PRIVACY_TAB_TITLE: ReactNode = (
+  <div className="flex items-center gap-2 justify-start">
+    <AiOutlineLock className="text-2xl text-neutral-600 dark:text-neutral-300" />
+    <span className="text-sm text-neutral-700 dark:text-neutral-200">
+      Account Privacy
+    </span>
+  </div>
+);
+
+const USER_CONFIG_TAB_TITLE: ReactNode = (
+  <div className="flex items-center gap-2 justify-start">
+    <GrConfigure className="text-2xl text-neutral-600 dark:text-neutral-300" />
+    <span className="text-sm text-neutral-700 dark:text-neutral-200">
+      Account Configuration
+    </span>
+  </div>
+);
+
+const FOLLOWERS_AND_FOLLOWINGS_TAB_TITLE: ReactNode = (
+  <div className="flex items-center gap-2 justify-start">
+    <FiUserPlus className="text-xl text-neutral-600 dark:text-neutral-300" />
+    <span className="text-sm text-neutral-700 dark:text-neutral-200">
+      Followers & Followings
+    </span>
+  </div>
+);
+
+const BLOCKED_TAB_TITLE: ReactNode = (
+  <div className="flex items-center gap-2 justify-start">
+    <HiOutlineBan className="text-2xl text-neutral-600 dark:text-neutral-300" />
+    <span className="text-sm text-neutral-700 dark:text-neutral-200">
+      Blocked
+    </span>
+  </div>
+);
+
+const LIKES_TAB_TITLE: ReactNode = (
+  <div className="flex items-center gap-2 justify-start">
+    <AiOutlineHeart className="text-2xl text-neutral-600 dark:text-neutral-300" />
+    <span className="text-sm text-neutral-700 dark:text-neutral-200">
+      Likes
+    </span>
+  </div>
+);
+
+const COMMENTS_TAB_TITLE: ReactNode = (
+  <div className="flex items-center gap-2 justify-start">
+    <HiOutlineChat className="text-2xl text-neutral-600 dark:text-neutral-300" />
+    <span className="text-sm text-neutral-700 dark:text-neutral-200">
+      Reflections
+    </span>
+  </div>
+);
+
+const NOTES_TAB_TITLE: ReactNode = (
+  <div className="flex items-center gap-2 justify-start">
+    <MdOutlineStickyNote2 className="text-2xl text-neutral-600 dark:text-neutral-300" />
+    <span className="text-sm text-neutral-700 dark:text-neutral-200">
+      Notes
+    </span>
+  </div>
+);
+
+const NOTIFICATIONS_TAB_TITLE: ReactNode = (
+  <div className="flex items-center gap-2 justify-start">
+    <AiOutlineBell className="text-2xl text-neutral-600 dark:text-neutral-300" />
+    <span className="text-sm text-neutral-700 dark:text-neutral-200">
+      Notifications
+    </span>
+  </div>
+);

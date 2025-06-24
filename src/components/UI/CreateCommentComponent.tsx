@@ -5,7 +5,7 @@ import {
   displayErrorToast,
   getFormattedNameAndSurname,
   MAX_LENGTH_FOR_COMMENT,
-  OK_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
 } from "@/util/utils";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
@@ -15,14 +15,15 @@ import { useForm } from "react-hook-form";
 import ReplyingComment from "./ReplyingComment";
 import { Dispatch, SetStateAction } from "react";
 import { UserOwnDTO } from "@/types/classes/User";
+import { CommentOwnDTO, ParentCommentDTO } from "@/types/classes/Comment";
 
 interface Props {
   user: UserOwnDTO;
   entityType?: "verse" | "note";
-  parentComment?: CommentDTO;
-  refetchDataFunction: RefetchDataFunctionType;
+  parentComment?: ParentCommentDTO;
+  refetchDataFunction: RefetchDataFunctionType<unknown>;
   stateControlFunctionOfCreateNewComment: Dispatch<
-    SetStateAction<CommentDTO | boolean>
+    SetStateAction<CommentOwnDTO | boolean>
   >;
   entityId: number;
 }
@@ -51,7 +52,7 @@ const CreateCommentComponent: NextPage<Props> = ({
   const onSubmit = handleSubmit(async (comment: CreateCommentForm) => {
     comment.entityId = entityId;
 
-    comment.parentCommentId = parentComment?.id ?? null;
+    comment.parentCommentId = parentComment?.getId() ?? null;
 
     try {
       const response = await axiosCredentialInstance.post<ResponseMessage>(
@@ -60,7 +61,7 @@ const CreateCommentComponent: NextPage<Props> = ({
       );
 
       switch (response.status) {
-        case OK_RESPONSE_CODE:
+        case OK_HTTP_RESPONSE_CODE:
           await refetchDataFunction();
           stateControlFunctionOfCreateNewComment(false);
           return;
@@ -74,7 +75,7 @@ const CreateCommentComponent: NextPage<Props> = ({
     }
   });
 
-  const imagePath: string | undefined = user.image ?? undefined;
+  const imagePath: string | undefined = user.getImage() ?? undefined;
 
   return (
     <div className="w-full flex flex-col gap-4 p-2">

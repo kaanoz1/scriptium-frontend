@@ -5,7 +5,10 @@ import {
     ChapterLowerMeanDTO,
     T_ChapterLowerDTOConstructorParametersJSON,
     T_ChapterDTOConstructorParametersJSON,
-    T_ChapterLowerConfinedDTOConstructorParametersJSON, T_ChapterLowerMeanDTOConstructorParametersJSON,
+    T_ChapterLowerConfinedDTOConstructorParametersJSON,
+    T_ChapterLowerMeanDTOConstructorParametersJSON,
+    ChapterOneLevelLowerDTO,
+    T_ChapterOneLevelLowerDTOConstructorParametersJSON,
 } from "./Chapter";
 import {LanguageDTO, Meaning, T_MeaningConstructorParameters, T_MeaningConstructorParametersJSON} from "./Language";
 import {
@@ -16,6 +19,7 @@ import {
     T_ScriptureUpperConfinedDTOConstructorParametersJSON,
     T_ScriptureUpperMeanDTOConstructorParametersJSON,
 } from "./Scripture";
+import {T_SystemLanguageCode} from "@/types/types";
 
 
 export type T_SectionBaseDTOConstructorParameters = { id: number, name: string, number: number }
@@ -58,7 +62,7 @@ export abstract class SectionSimpleDTO extends SectionBaseDTO {
     protected readonly meanings: Array<SectionMeaningDTO>
 
 
-    constructor(data: T_SectionSimpleDTOConstructorParameters) {
+    protected constructor(data: T_SectionSimpleDTOConstructorParameters) {
         super({...data});
         this.meanings = data.meanings;
     }
@@ -80,6 +84,11 @@ export class SectionDTO extends SectionSimpleDTO {
         const meanings = data.meanings.map(SectionMeaningDTO.createFromJSON);
         return new SectionDTO({...data, meanings});
     }
+
+    getMeaningTextOrDefault(langCode: T_SystemLanguageCode): string {
+        return this.getMeanings().find(t => t.getLanguage().getLangCode() == langCode)?.getText() ?? "Unknown Section";
+    }
+
 }
 
 export type T_SectionUpperDTOConstructorParameters = T_SectionDTOConstructorParameters & { scripture: ScriptureDTO }
@@ -159,7 +168,7 @@ export class SectionOneLevelLowerDTO extends SectionDTO {
 
     static override createFromJSON(data: T_SectionOneLevelLowerDTOConstructorParametersJSON): SectionOneLevelLowerDTO {
         const meanings = data.meanings.map(SectionMeaningDTO.createFromJSON)
-        const chapters = data.chapters.map(ChapterDTO.createFromParams)
+        const chapters = data.chapters.map(ChapterDTO.createFromJSON)
         return new SectionOneLevelLowerDTO({...data, meanings, chapters});
     }
 
@@ -219,6 +228,7 @@ export class SectionMeaningDTO extends Meaning {
         const language = LanguageDTO.createFromJSON(data.language);
         return new SectionMeaningDTO({...data, language});
     }
+
 }
 
 export type T_SectionConfinedDTOConstructorParameters = T_SectionBaseDTOConstructorParameters;
@@ -312,6 +322,10 @@ export class SectionMeanDTO extends SectionBaseDTO {
     getMeanings(): ReadonlyArray<SectionMeaningDTO> {
         return Object.freeze([...this.meanings]);
     }
+
+    getMeaningTextOrDefault(langCode: T_SystemLanguageCode): string {
+        return this.getMeanings().find(t => t.getLanguage().getLangCode() == langCode)?.getText() ?? "Unknown Section";
+    }
 }
 
 export type T_SectionUpperMeanDTOConstructorParameters = T_SectionMeanDTOConstructorParameters & {
@@ -373,4 +387,75 @@ export class SectionLowerMeanDTO extends SectionMeanDTO {
     getChapters(): ReadonlyArray<ChapterLowerMeanDTO> {
         return Object.freeze([...this.chapters]);
     }
+}
+
+export type T_SectionOneLevelBothDTOConstructorParameters = T_SectionMeanDTOConstructorParameters & {
+    chapters: Array<ChapterDTO>
+    scripture: ScriptureDTO
+}
+
+export type T_SectionOneLevelBothDTOConstructorParametersJSON = T_SectionMeanDTOConstructorParametersJSON & {
+    chapters: Array<T_ChapterDTOConstructorParametersJSON>
+    scripture: T_ScriptureDTOConstructorParametersJSON
+}
+
+export class SectionOneLevelBothDTO extends SectionDTO {
+    private readonly chapters: Array<ChapterDTO>
+    private readonly scripture: ScriptureDTO
+
+    constructor(data: T_SectionOneLevelBothDTOConstructorParameters) {
+        super({...data});
+
+        this.chapters = data.chapters;
+        this.scripture = data.scripture;
+    }
+
+    getChapters(): ReadonlyArray<ChapterDTO> {
+        return this.chapters;
+    }
+
+    getScripture(): Readonly<ScriptureDTO> {
+        return this.scripture;
+    }
+
+    getChapterCount(): number {
+        return this.getChapters().length;
+    }
+
+    static override createFromJSON(data: T_SectionOneLevelBothDTOConstructorParametersJSON): SectionOneLevelBothDTO {
+        const chapters = data.chapters.map(ChapterDTO.createFromJSON);
+        const scripture = ScriptureDTO.createFromJSON(data.scripture);
+        const meanings = data.meanings.map(SectionMeaningDTO.createFromJSON);
+        return new SectionOneLevelBothDTO({...data, chapters, scripture, meanings});
+    }
+}
+
+export type T_SectionTwoLevelLowerDTOConstructorParameters = T_SectionDTOConstructorParameters & {
+    chapters: Array<ChapterOneLevelLowerDTO>;
+}
+
+export type T_SectionTwoLevelLowerDTOConstructorParametersJSON = T_SectionDTOConstructorParametersJSON & {
+    chapters: Array<T_ChapterOneLevelLowerDTOConstructorParametersJSON>
+}
+
+
+export class SectionTwoLevelLowerDTO extends SectionDTO {
+    private readonly chapters: Array<ChapterOneLevelLowerDTO>
+
+    constructor(data: T_SectionTwoLevelLowerDTOConstructorParameters) {
+        super({...data});
+        this.chapters = data.chapters;
+    }
+
+    static override createFromJSON(data: T_SectionTwoLevelLowerDTOConstructorParametersJSON) {
+        const chapters = data.chapters.map(ChapterOneLevelLowerDTO.createFromJSON);
+        const meanings = data.meanings.map(SectionMeaningDTO.createFromJSON);
+        return new SectionTwoLevelLowerDTO({...data, meanings, chapters});
+
+    }
+
+    getChapters(): ReadonlyArray<ChapterOneLevelLowerDTO> {
+        return Object.freeze([...this.chapters]);
+    }
+
 }

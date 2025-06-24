@@ -1,6 +1,6 @@
 import { RootDTO } from "@/types/classes/Root";
 import { WordLowerDTO } from "@/types/classes/Word";
-import { T_ScriptureTextVariationKey } from "@/types/types";
+import { T_OriginalScriptureTextVariationKey } from "@/types/types";
 import { TOOL_TIP_CLASS_NAMES } from "@/util/utils";
 import { Link } from "@heroui/link";
 import { Tooltip } from "@heroui/tooltip";
@@ -10,7 +10,7 @@ import { Fragment } from "react";
 interface Props {
   word: WordLowerDTO;
   scriptureCode: string;
-  variation: T_ScriptureTextVariationKey;
+  variation: T_OriginalScriptureTextVariationKey;
 }
 
 const WordVerse: NextPage<Props> = ({ word, scriptureCode, variation }) => {

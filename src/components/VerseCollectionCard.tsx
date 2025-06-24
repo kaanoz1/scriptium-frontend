@@ -1,4 +1,4 @@
-import { CollectionWithVerseSavedInformationDTO } from "@/types/types";
+import { CollectionWithVerseSavedInformationDTO } from "@/types/classes/Collection";
 import { Card, CardBody } from "@heroui/card";
 import { NextPage } from "next";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -16,18 +16,18 @@ const VerseCollectionCard: NextPage<Props> = ({
 }) => {
   const [isSelected, setSelected] = useState<boolean>(false);
 
-  const isDisabled = collection.isSaved;
+  const isDisabled = collection.getIsSaved();
 
   const selectCollection = () => {
     if (isDisabled) return;
 
     setSelectedCollectionNames((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(collection.name)) {
-        newSet.delete(collection.name);
+      if (newSet.has(collection.getName())) {
+        newSet.delete(collection.getName());
         setSelected(false);
       } else {
-        newSet.add(collection.name);
+        newSet.add(collection.getName());
         setSelected(true);
       }
       return newSet;
@@ -56,11 +56,11 @@ const VerseCollectionCard: NextPage<Props> = ({
       <CardBody className="flex items-center justify-between p-3">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="text-gray-700 dark:text-gray-200 font-medium">
-            {collection.name}
+            {collection.getName()}
           </span>
-          {collection.description && (
+          {collection.getDescription() && (
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              - {collection.description}
+              - {collection.getDescription()}
             </span>
           )}
         </div>
@@ -69,7 +69,7 @@ const VerseCollectionCard: NextPage<Props> = ({
           {isSelected && !isDisabled && (
             <IoCheckmarkCircle className="text-emerald-600" size={24} />
           )}
-          {collection.isSaved ? (
+          {collection.getIsSaved() ? (
             <div className="text-green-600 dark:text-green-300 flex items-center gap-2">
               <GoBookmarkFill />
               <span className="text-xs font-semibold">Already saved</span>

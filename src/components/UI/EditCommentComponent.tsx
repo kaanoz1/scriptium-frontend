@@ -1,10 +1,9 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { ResponseMessage } from "@/types/response";
 import {
-  OK_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
   getFormattedNameAndSurname,
   MAX_LENGTH_FOR_COMMENT,
-  arrangeImageAndReturns,
   displayErrorToast,
 } from "@/util/utils";
 import { Avatar } from "@heroui/avatar";
@@ -12,27 +11,19 @@ import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/input";
 import { useForm } from "react-hook-form";
 import ReplyingComment from "./ReplyingComment";
-import {
-  CommentDTO,
-  CommentDTOExtended,
-  CommentExtendedParentCommentDTO,
-  ImageObject,
-  ParentCommentDTO,
-  RefetchDataFunctionType,
-  User,
-  UserSimplified,
-} from "@/types/types";
 import { Dispatch, FC, SetStateAction } from "react";
+import { CommentOwnDTO } from "@/types/classes/Comment";
+import { UserOwnDTO } from "@/types/classes/User";
+import { RefetchDataFunctionType } from "@/types/types";
 
 interface Props {
-  comment: CommentDTO | CommentExtendedParentCommentDTO;
-  parentComment?: ParentCommentDTO;
-  user: User;
-  stateControlFunctionOfEditComment:
-    | Dispatch<SetStateAction<CommentDTOExtended | CommentDTO | null>>
-    | Dispatch<SetStateAction<CommentExtendedParentCommentDTO | null>>
-    | Dispatch<SetStateAction<CommentDTO | null>>;
-  refetchDataFunction: RefetchDataFunctionType; //TODO: Add client side update. Do not bother server again.
+  comment: CommentOwnDTO;
+  user: UserOwnDTO;
+  stateControlFunctionOfEditComment: Dispatch<
+    SetStateAction<CommentOwnDTO | null>
+  >;
+
+  refetchDataFunction: RefetchDataFunctionType<unknown>; //TODO: Add client side update. Do not bother server again.
 }
 
 type EditCommentForm = {
@@ -42,7 +33,6 @@ type EditCommentForm = {
 
 const EditCommentComponent: FC<Props> = ({
   comment,
-  parentComment,
   user,
   stateControlFunctionOfEditComment,
   refetchDataFunction,
@@ -53,8 +43,10 @@ const EditCommentComponent: FC<Props> = ({
     formState: { errors, isSubmitting },
   } = useForm<EditCommentForm>();
 
+  const parentComment = comment.getParentComment();
+
   const onSubmit = handleSubmit(async (commentToUpdate: EditCommentForm) => {
-    commentToUpdate.commentId = comment.id;
+    commentToUpdate.commentId = comment.getId();
 
     try {
       const response = await axiosCredentialInstance.put<ResponseMessage>(
@@ -63,7 +55,7 @@ const EditCommentComponent: FC<Props> = ({
       );
 
       switch (response.status) {
-        case OK_RESPONSE_CODE:
+        case OK_HTTP_RESPONSE_CODE:
           await refetchDataFunction();
           stateControlFunctionOfEditComment(null);
           return;
@@ -78,20 +70,11 @@ const EditCommentComponent: FC<Props> = ({
     }
   });
 
-  const imagePath: string | undefined = user.image ?? undefined;
+  const imagePath: string | undefined = user.getImage() ?? undefined;
 
   return (
     <section className="w-full flex flex-col gap-4 p-2">
-      {parentComment && (
-        <ReplyingComment
-          parentComment={{
-            ...parentComment,
-            user: arrangeImageAndReturns(
-              parentComment.user as ImageObject
-            ) as UserSimplified,
-          }}
-        />
-      )}
+      {parentComment && <ReplyingComment parentComment={parentComment} />}
 
       <form className="flex flex-col gap-2" onSubmit={onSubmit}>
         <div className="flex items-start gap-2">
@@ -106,7 +89,7 @@ const EditCommentComponent: FC<Props> = ({
             className="w-full"
             isRequired
             description={`Reflection might contain up to ${MAX_LENGTH_FOR_COMMENT} characters`}
-            defaultValue={comment.text}
+            defaultValue={comment.getText()}
             errorMessage={errors.newCommentText?.message}
             isInvalid={!!errors.newCommentText}
             maxLength={MAX_LENGTH_FOR_COMMENT}

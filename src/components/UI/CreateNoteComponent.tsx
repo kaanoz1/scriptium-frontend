@@ -7,7 +7,7 @@ import {
   displayErrorToast,
   getFormattedNameAndSurname,
   MAX_LENGTH_FOR_NOTE,
-  OK_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
 } from "@/util/utils";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 
 interface Props {
   verse: VerseBaseDTO;
-  refetch: RefetchDataFunctionType;
+  refetch: RefetchDataFunctionType<unknown>;
   setCreateNewComment: Dispatch<SetStateAction<boolean>>;
   user: UserOwnDTO;
 }
@@ -50,7 +50,7 @@ const CreateNoteComponent: FC<Props> = ({
       );
 
       switch (response.status) {
-        case OK_RESPONSE_CODE:
+        case OK_HTTP_RESPONSE_CODE:
           await refetch();
           setCreateNewComment(false);
           return;

@@ -18,21 +18,21 @@ import { Tooltip } from "@heroui/tooltip";
 import PasswordStrengthMeter from "./UI/PasswordStrengthMeter";
 import { passwordStrength as checkPasswordStrength } from "check-password-strength";
 import {
-  CONFLICT_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
   getFormattedNameAndSurnameFromString,
-  INTERNAL_SERVER_ERROR_RESPONSE_CODE,
-  OK_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
   SIGN_IN_URL,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
   TOOL_TIP_CLASS_NAMES,
 } from "@/util/utils";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
-import ServerError from "./UI/ServerError";
+import InternalServerError from "./UI/InternalServerError";
 import TooManyRequest from "./UI/TooManyRequest";
 import axiosNoCredentialInstance from "@/client/axiosNoCredentialInstance";
 import {
-  NoAuthenticationRequestErrorCode,
+  T_NoAuthenticationRequestErrorCode,
   ResponseMessage,
 } from "@/types/response";
 
@@ -60,7 +60,7 @@ const SignUpForm: NextPage = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const { user, fetchUser } = useUser();
   const [error, setError] = useState<
-    NoAuthenticationRequestErrorCode | undefined
+    T_NoAuthenticationRequestErrorCode | undefined
   >(undefined);
 
   const router = useRouter();
@@ -108,11 +108,11 @@ const SignUpForm: NextPage = () => {
     );
 
     switch (response.status) {
-      case OK_RESPONSE_CODE:
+      case OK_HTTP_RESPONSE_CODE:
         await fetchUser();
         router.push(user ? `user/${user.getUsername()}` : SIGN_IN_URL);
         return;
-      case CONFLICT_RESPONSE_CODE:
+      case CONFLICT_HTTP_RESPONSE_CODE:
         switch (response.data.message) {
           case "Username already exists.":
             setFormError("username", {
@@ -131,7 +131,7 @@ const SignUpForm: NextPage = () => {
             });
             return;
         }
-      case TOO_MANY_REQUEST_RESPONSE_CODE:
+      case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
         setError(429);
         return undefined;
       default:
@@ -140,11 +140,11 @@ const SignUpForm: NextPage = () => {
     }
   });
 
-  if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
+  if (error && error === TOO_MANY_REQUEST_HTTP_RESPONSE_CODE)
     return <TooManyRequest />;
 
-  if (error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE)
-    return <ServerError />;
+  if (error && error === INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE)
+    return <InternalServerError />;
 
   return (
     <div className="h-[calc(100vh-130px)] flex justify-center items-center bg-gray-50 dark:bg-dark px-4">

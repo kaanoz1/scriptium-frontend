@@ -5,20 +5,19 @@ import { NextPage } from "next";
 import TranslatedTextWithFootnotes from "./TranslatedTextWithFootnotes";
 import { TranslationTextDTO } from "@/types/classes/TranslationText";
 import { WordUpperDTO } from "@/types/classes/Word";
-import { Key } from "react";
-import { ScriptureDetails } from "@/types/classes/Scripture";
-import { T_ScriptureTextVariationKey } from "@/types/types";
+import { T_OriginalScriptureTextVariationKey } from "@/types/types";
+import { ScriptureDetail } from "@/types/classes/Scripture";
 
 interface Props {
   word: WordUpperDTO;
-  variation: T_ScriptureTextVariationKey;
+  variation: T_OriginalScriptureTextVariationKey;
   showTranslation: boolean;
   showFootnotes: boolean;
   showOriginalText: boolean;
   showTransliteration: boolean;
   preferredFont: string;
-  preferredTranslationId: Set<Key>;
-  scriptureDetails: Readonly<ScriptureDetails>;
+  preferredTranslationId: number;
+  scriptureDetails: Readonly<ScriptureDetail>;
 }
 
 const Root: NextPage<Props> = ({
@@ -50,7 +49,7 @@ const Root: NextPage<Props> = ({
   const translationText: TranslationTextDTO =
     verse
       .getTranslationTexts()
-      .find((tt) => preferredTranslationId.has(tt.getTranslation().getId())) ??
+      .find((tt) => preferredTranslationId === tt.getTranslation().getId()) ??
     verse
       .getTranslationTexts()
       .find(
@@ -77,10 +76,7 @@ const Root: NextPage<Props> = ({
           </span>
           <div className="py-2 px-3 w-full leading-relaxed">
             <TranslatedTextWithFootnotes
-              translationText={{
-                text: translationText.getText(),
-                footnotes: translationText.getFootNotes(),
-              }}
+              translationText={translationText}
               showFootnotes={showFootnotes}
             />
           </div>

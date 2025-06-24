@@ -4,16 +4,16 @@ import { useState, Fragment, Dispatch, SetStateAction } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   getFormattedNameAndSurname,
-  INTERNAL_SERVER_ERROR_RESPONSE_CODE,
-  NOT_FOUND_RESPONSE_CODE,
-  OK_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
   SIGN_IN_URL,
   SOMETHING_WENT_WRONG_TOAST,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
 } from "@/util/utils";
 import { Divider } from "@heroui/divider";
 import { Avatar } from "@heroui/avatar";
-import { AuthenticationRequestErrorCode, Response } from "@/types/response";
+import { Response, T_AuthenticationRequestErrorCode } from "@/types/response";
 import { useUser } from "@/hooks/useUser";
 import { UserPageParams } from "@/types/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -21,28 +21,28 @@ import TooManyRequest from "@/components/UI/TooManyRequest";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import GetUserRoleSymbolsComponent from "@/components/GetUserRoleSymbolsComponent";
 import PrivateAccountIcon from "@/components/UI/PrivateAccountIcon";
-import UserPageBlockUserConfirmationModal from "@/components/UserPageBlockUserConfirmationModal";
-import UserPageFollowButtonComponent from "@/components/UserPageFollowButtonComponent";
-import UserPageFollowOperationConfirmationModal from "@/components/UserPageFollowOperationConfirmationModal";
-import UserPageInformationButton from "@/components/UserPageInformationButton";
-import UserPageInformationModal from "@/components/UserPageInformationModal";
-import UserPageNotFoundUserComponent from "@/components/UserPageNotFoundUserComponent";
-import UserPageRemoveFollowerConfirmationModal from "@/components/UserPageRemoveFollowerConfirmationModal";
-import UserPageSkeleton from "@/components/UserPageSkeleton";
-import UserPageUnblockUserConfirmationModal from "@/components/UserPageUnblockUserConfirmationModal";
-import UserPageUserDetailsModal from "@/components/UserPageUserDetailsModal";
-import UserPageUserStatistics from "@/components/UserPageUserStatistics";
+import UserPageBlockUserConfirmationModal from "@/app/user/[username]/components/UserPageBlockUserConfirmationModal";
+import UserPageFollowButtonComponent from "@/app/user/[username]/components/UserPageFollowButtonComponent";
+import UserPageFollowOperationConfirmationModal from "@/app/user/[username]/components/UserPageFollowOperationConfirmationModal";
+import UserPageInformationButton from "@/app/user/[username]/components/UserPageInformationButton";
+import UserPageInformationModal from "@/app/user/[username]/components/UserPageInformationModal";
+import UserPageNotFoundUserComponent from "@/app/user/[username]/components/UserPageNotFoundUserComponent";
+import UserPageRemoveFollowerConfirmationModal from "@/app/user/[username]/components/UserPageRemoveFollowerConfirmationModal";
+import UserPageSkeleton from "@/app/user/[username]/components/UserPageSkeleton";
+import UserPageUnblockUserConfirmationModal from "@/app/user/[username]/components/UserPageUnblockUserConfirmationModal";
+import UserPageUserDetailsModal from "@/app/user/[username]/components/UserPageUserDetailsModal";
+import UserPageUserStatistics from "@/app/user/[username]/components/UserPageUserStatistics";
 import UserProfilePrivateProfile from "@/components/UserProfilePrivateProfile";
 import UserProfileTabs from "@/components/UserProfileTabs";
 import UserPageRejectFollowerConfirmationModal from "@/components/UserRejectFollowerConfirmationModal";
-import ServerError from "@/components/UI/ServerError";
+import InternalServerError from "@/components/UI/InternalServerError";
 import { addToast } from "@heroui/toast";
 import { UserFetchedDTO } from "@/types/classes/User";
 
 const fetchUserByUsername = async (
   username: string,
   setStateActionFunctionForError: Dispatch<
-    SetStateAction<AuthenticationRequestErrorCode | undefined>
+    SetStateAction<T_AuthenticationRequestErrorCode | undefined>
   >
 ): Promise<UserFetchedDTO | null> => {
   try {
@@ -50,24 +50,26 @@ const fetchUserByUsername = async (
       Response<UserFetchedDTO>
     >(`/user/${username}`);
     switch (response.status) {
-      case OK_RESPONSE_CODE:
+      case OK_HTTP_RESPONSE_CODE:
         setStateActionFunctionForError(undefined);
 
         return response.data.data;
-      case NOT_FOUND_RESPONSE_CODE:
-        setStateActionFunctionForError(NOT_FOUND_RESPONSE_CODE);
+      case NOT_FOUND_HTTP_RESPONSE_CODE:
+        setStateActionFunctionForError(NOT_FOUND_HTTP_RESPONSE_CODE);
         return null;
-      case TOO_MANY_REQUEST_RESPONSE_CODE:
-        setStateActionFunctionForError(TOO_MANY_REQUEST_RESPONSE_CODE);
+      case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
+        setStateActionFunctionForError(TOO_MANY_REQUEST_HTTP_RESPONSE_CODE);
         return null;
       default:
-        setStateActionFunctionForError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+        setStateActionFunctionForError(
+          INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE
+        );
         return null;
     }
   } catch (error) {
     addToast(SOMETHING_WENT_WRONG_TOAST);
     console.error(error);
-    setStateActionFunctionForError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+    setStateActionFunctionForError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
     return null;
   }
 };
@@ -89,7 +91,7 @@ const Page: NextPage = () => {
   const [isUserDetailsModalOpen, setIsUserDetailsModalOpen] = useState(false);
 
   const [error, setError] = useState<
-    AuthenticationRequestErrorCode | undefined
+    T_AuthenticationRequestErrorCode | undefined
   >(undefined);
 
   const { username: usernameParam } = useParams<UserPageParams>();
@@ -131,14 +133,14 @@ const Page: NextPage = () => {
     return null;
   }
 
-  if ((error && error == NOT_FOUND_RESPONSE_CODE) || userFetched == null)
+  if ((error && error == NOT_FOUND_HTTP_RESPONSE_CODE) || userFetched == null)
     return <UserPageNotFoundUserComponent username={usernameParam} />;
 
-  if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
+  if (error && error === TOO_MANY_REQUEST_HTTP_RESPONSE_CODE)
     return <TooManyRequest />;
 
-  if (error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE)
-    return <ServerError />;
+  if (error && error === INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE)
+    return <InternalServerError />;
 
   const isOwnProfile = user && user.getId() === userFetched.getId();
 
@@ -175,7 +177,7 @@ const Page: NextPage = () => {
                   <h2 className="text-2xl font-semibold flex items-center">
                     {formattedName}
                     {userFetchedPrivateFrom && <PrivateAccountIcon />}
-                    <GetUserRoleSymbolsComponent rolesOfUser={userFetched} />
+                    <GetUserRoleSymbolsComponent user={userFetched} />
                   </h2>
                   <p className="text-gray-500">@{userFetchedUsername}</p>
                 </div>

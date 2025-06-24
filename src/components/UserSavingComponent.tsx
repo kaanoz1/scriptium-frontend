@@ -1,12 +1,6 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { AuthenticationRequestErrorCode, Response } from "@/types/response";
-import {
-  displayErrorToast,
-  INTERNAL_SERVER_ERROR_RESPONSE_CODE,
-  MAX_USER_COLLECTION_COUNT,
-  OK_RESPONSE_CODE,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
-} from "@/util/utils";
+import { Response, T_AuthenticationRequestErrorCode } from "@/types/response";
+import { displayErrorToast } from "@/util/utils";
 import { useQuery } from "@tanstack/react-query";
 import { NextPage } from "next";
 import { Fragment, useState } from "react";
@@ -15,7 +9,7 @@ import CollectionComponent from "./UI/CollectionComponent";
 import { motion, Variants } from "framer-motion";
 import { AiOutlineClose } from "react-icons/ai";
 import ServerErrorComponent from "./UI/ServerErrorComponent";
-import TooManyRequestComponent from "./UI/TooManyRequestComponent";
+import TooManyRequestComponent from "./UI/TooManyRequest";
 import CollectionUpdateModal from "./UI/CollectionUpdateModal";
 import { Button } from "@heroui/button";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -30,6 +24,12 @@ import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import CreateCollectionCard from "./UI/CreateCollectionCard";
 import { UserOwnDTO } from "@/types/classes/User";
 import { CollectionDTO } from "@/types/classes/Collection";
+import {
+  OK_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  MAX_USER_COLLECTION_COUNT,
+} from "@/util/constants";
 
 interface Props {
   user: UserOwnDTO;
@@ -57,7 +57,7 @@ const cardVariants: Variants = {
 
 const UserSavingComponent: NextPage<Props> = ({ user }) => {
   const [error, setError] = useState<
-    AuthenticationRequestErrorCode | undefined
+    T_AuthenticationRequestErrorCode | undefined
   >(undefined);
   const [selectedCollection, setSelectedCollection] =
     useState<CollectionDTO | null>(null);
@@ -78,19 +78,19 @@ const UserSavingComponent: NextPage<Props> = ({ user }) => {
       >(`/collection/`);
 
       switch (response.status) {
-        case OK_RESPONSE_CODE:
+        case OK_HTTP_RESPONSE_CODE:
           setError(undefined);
           return response.data.data;
-        case TOO_MANY_REQUEST_RESPONSE_CODE:
-          setError(TOO_MANY_REQUEST_RESPONSE_CODE);
+        case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
+          setError(TOO_MANY_REQUEST_HTTP_RESPONSE_CODE);
           return [];
         default:
-          setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+          setError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
           return [];
       }
     } catch (error) {
       console.error(error);
-      setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+      setError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
 
       displayErrorToast(error);
 
@@ -111,10 +111,10 @@ const UserSavingComponent: NextPage<Props> = ({ user }) => {
 
   if (isLoading) return <LoadingSpinner />;
 
-  if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
+  if (error && error === TOO_MANY_REQUEST_HTTP_RESPONSE_CODE)
     return <TooManyRequestComponent />;
 
-  if (error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE)
+  if (error && error === INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE)
     return <ServerErrorComponent />;
 
   return (

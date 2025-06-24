@@ -5,12 +5,7 @@ import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
-import ServerError from "@/components/UI/ServerError";
-import TooManyRequest from "@/components/UI/TooManyRequest";
 import {
-  TOO_MANY_REQUEST_RESPONSE_CODE,
-  INTERNAL_SERVER_ERROR_RESPONSE_CODE,
-  OK_RESPONSE_CODE,
   PROJECT_EMAIL_ADDRESS,
   DISCORD_BOT_ADD_URL,
   PATREON_SUPPORT_URL,
@@ -22,12 +17,13 @@ import {
   PROJECT_INSTAGRAM_ADDRESS,
   PROJECT_X_ADDRESS,
   PROJECT_NAME,
-  NOT_FOUND_RESPONSE_CODE,
   SOMETHING_WENT_WRONG_TOAST,
+  OK_HTTP_RESPONSE_CODE,
+  isNoAuthenticationRequestErrorCode,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
 } from "@/util/utils";
-import { Dispatch, SetStateAction, useState } from "react";
 import axiosNoCredentialInstance from "@/client/axiosNoCredentialInstance";
-import { NoAuthenticationRequestErrorCode, Response } from "@/types/response";
+import { Response, T_NoAuthenticationRequestErrorCode } from "@/types/response";
 import AboutPageTranslatorExplanation from "@/components/AboutPageTranslatorExplanation";
 import { FaDiscord, FaInstagram } from "react-icons/fa";
 import { RiNextjsFill, RiPaypalLine, RiTwitterXLine } from "react-icons/ri";
@@ -38,91 +34,34 @@ import { VscGithubAlt } from "react-icons/vsc";
 import { motion, Variants } from "framer-motion";
 import { MdOutlineEmail } from "react-icons/md";
 import { addToast } from "@heroui/toast";
-import { TranslationWithScriptureDTODTO } from "@/types/classes/Translation";
-import { T_ValidScriptureCode } from "@/types/types";
-
-const containerVariants: Variants = {
-  hidden: { opacity: 0, y: 15 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 15 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const cardHover = {
-  scale: 1.02,
-  boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
-};
-
-const iconHover = {
-  scale: 1.2,
-  rotate: 15,
-};
-
-const fetchTranslators = async (
-  setStateActionFunctionForSetError: Dispatch<
-    SetStateAction<NoAuthenticationRequestErrorCode | undefined>
-  >
-): Promise<Array<TranslationWithScriptureDTODTO>> => {
-  try {
-    const response = await axiosNoCredentialInstance.get<
-      Response<Array<TranslationWithScriptureDTODTO>>
-    >(`/translations/`);
-
-    switch (response.status) {
-      case OK_RESPONSE_CODE:
-        setStateActionFunctionForSetError(undefined);
-        return response.data.data;
-      case NOT_FOUND_RESPONSE_CODE:
-        setStateActionFunctionForSetError(NOT_FOUND_RESPONSE_CODE);
-        return [];
-      case TOO_MANY_REQUEST_RESPONSE_CODE:
-        setStateActionFunctionForSetError(TOO_MANY_REQUEST_RESPONSE_CODE);
-        return [];
-      default:
-        setStateActionFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-        return [];
-    }
-  } catch (error) {
-    addToast(SOMETHING_WENT_WRONG_TOAST);
-    console.error(error);
-    setStateActionFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-    return [];
-  }
-};
+import {
+  T_TranslationWithScriptureDTODTOConstructorParametersJSON,
+  TranslationWithScriptureDTODTO,
+} from "@/types/classes/Translation";
+import axios from "axios";
+import { T_ScriptureCode } from "@/types/types";
+import { getErrorComponent } from "@/util/reactUtil";
 
 interface Props {}
 
 const Page: NextPage<Props> = () => {
-  const [error, setError] = useState<
-    NoAuthenticationRequestErrorCode | undefined
-  >(undefined);
-
-  const { data = [], isLoading } =
-    useQuery<Array<TranslationWithScriptureDTODTO> | null>({
-      queryKey: ["about-translations"],
-      queryFn: async () => await fetchTranslators(setError),
-      staleTime: Infinity,
-    });
+  const { data = [], isLoading } = useQuery<
+    | Array<TranslationWithScriptureDTODTO>
+    | T_NoAuthenticationRequestErrorCode
+    | null
+  >({
+    queryKey: ["about-translations"],
+    queryFn: async () => await fetchTranslators(),
+    staleTime: Infinity,
+  });
 
   if (isLoading) return <LoadingSpinnerFullH />;
 
-  if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
-    return <TooManyRequest />;
-
-  if ((error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE) || data === null)
-    return <ServerError />;
+  if (data == null || isNoAuthenticationRequestErrorCode(data))
+    return getErrorComponent({ code: data, preferredErrorComponent: {} });
 
   //For now, this is the only scripture key.
-  const torahCode: T_ValidScriptureCode = "t";
+  const torahCode: T_ScriptureCode = "t";
 
   return (
     <UIWrapper>
@@ -509,3 +448,58 @@ Note on "Notes":
 };
 
 export default Page;
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const cardHover = {
+  scale: 1.02,
+  boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+};
+
+const iconHover = {
+  scale: 1.2,
+  rotate: 15,
+};
+
+const fetchTranslators = async (): Promise<
+  Array<TranslationWithScriptureDTODTO> | T_NoAuthenticationRequestErrorCode
+> => {
+  try {
+    const response = await axiosNoCredentialInstance.get<
+      Response<Array<T_TranslationWithScriptureDTODTOConstructorParametersJSON>>
+    >(`/translations/`);
+
+    if (response.status === OK_HTTP_RESPONSE_CODE)
+      return response.data.data.map((t) =>
+        TranslationWithScriptureDTODTO.createFromJSON(t)
+      );
+
+    throw new Error("Unexpected result. Status: " + response.status);
+  } catch (error) {
+    addToast(SOMETHING_WENT_WRONG_TOAST);
+    console.error(error);
+
+    if (
+      !axios.isAxiosError(error) ||
+      !error.response ||
+      !isNoAuthenticationRequestErrorCode(error.response.status)
+    )
+      return INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE;
+
+    return error.response.status;
+  }
+};

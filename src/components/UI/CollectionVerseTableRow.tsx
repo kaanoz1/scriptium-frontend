@@ -7,12 +7,12 @@ import { FiExternalLink } from "react-icons/fi";
 import { Link } from "@heroui/link";
 import TranslatedTextWithFootnotes from "./TranslatedTextWithFootnotes";
 import { CollectionDTO } from "@/types/classes/Collection";
-import { VerseUpperDTO } from "@/types/classes/Verse";
+import { VerseBaseDTO, VerseUpperDTO } from "@/types/classes/Verse";
 import { TranslationTextDTO } from "@/types/classes/TranslationText";
 import {
   RefetchDataFunctionType,
-  T_ScriptureTextVariationKey,
-  T_ValidScriptureCode,
+  T_OriginalScriptureTextVariationKey,
+  T_ScriptureCode,
 } from "@/types/types";
 import { handleUnsaveClick } from "./CollectionComponent";
 
@@ -41,8 +41,8 @@ interface Props {
   verse: VerseUpperDTO;
   translationText: TranslationTextDTO;
   font: string;
-  variation: T_ScriptureTextVariationKey;
-  refetchDataFunction: RefetchDataFunctionType;
+  variation: T_OriginalScriptureTextVariationKey;
+  refetchDataFunction: RefetchDataFunctionType<VerseBaseDTO>;
 }
 
 const CollectionVerseTableRow: FC<Props> = ({
@@ -82,7 +82,7 @@ const CollectionVerseTableRow: FC<Props> = ({
     <span className="italic">No transliteration available.</span>
   );
 
-  const scriptureCode: T_ValidScriptureCode = verse
+  const scriptureCode: T_ScriptureCode = verse
     .getChapter()
     .getSection()
     .getScripture()
@@ -164,12 +164,7 @@ const CollectionVerseTableRow: FC<Props> = ({
       </div>
 
       <div className="text-base font-light leading-relaxed">
-        <TranslatedTextWithFootnotes
-          translationText={{
-            text: translationText.getText(),
-            footnotes: translationText.getFootNotes(),
-          }}
-        />
+        <TranslatedTextWithFootnotes translationText={translationText} />
       </div>
 
       <div className={`text-2xl text-right leading-relaxed ${font}`}>

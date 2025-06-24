@@ -2,19 +2,17 @@ import { User } from "@heroui/user";
 import { Link } from "@heroui/link";
 import { getFormattedNameAndSurname } from "@/util/utils";
 import { LuReply } from "react-icons/lu";
-import {
-  CommentDTO,
-  CommentDTOExtended,
-  ParentCommentDTO,
-} from "@/types/types";
+
 import { FC } from "react";
+import { ParentCommentDTO } from "@/types/classes/Comment";
 
 interface Props {
-  parentComment: ParentCommentDTO | CommentDTO | CommentDTOExtended;
+  parentComment: Readonly<ParentCommentDTO>;
 }
 
 const ReplyingComment: FC<Props> = ({ parentComment }) => {
-  const imagePath: string | undefined = parentComment.user?.image ?? undefined;
+  const imagePath: string | undefined =
+    parentComment.user?.getImage() ?? undefined;
 
   return (
     <div className="w-full ps-4">
@@ -27,17 +25,17 @@ const ReplyingComment: FC<Props> = ({ parentComment }) => {
           <div className="flex items-center gap-2">
             <User
               avatarProps={{
-                src: imagePath,
+                src: imagePath ?? "",
                 size: "sm",
               }}
               description={
                 parentComment.user ? (
                   <Link
                     isExternal
-                    href={`/user/${parentComment.user.username}`}
+                    href={`/user/${parentComment.user.getUsername()}`}
                     size="sm"
                   >
-                    <em> @{parentComment.user.username} </em>
+                    <em> @{parentComment.user.getUsername()} </em>
                   </Link>
                 ) : null
               }
@@ -57,7 +55,7 @@ const ReplyingComment: FC<Props> = ({ parentComment }) => {
           </div>
         </div>
         <div className="pl-3 border-gray-300 dark:border-gray-500">
-          <p>{parentComment.text}</p>
+          <p>{parentComment.getText()}</p>
         </div>
       </div>
     </div>

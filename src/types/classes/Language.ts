@@ -75,4 +75,6 @@ export class Meaning {
     getLanguage(): Readonly<LanguageDTO> {
         return this.language;
     }
+
+
 }

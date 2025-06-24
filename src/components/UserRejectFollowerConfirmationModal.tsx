@@ -1,6 +1,5 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { Toast } from "@/types/types";
-import { OK_RESPONSE_CODE } from "@/util/utils";
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -13,6 +12,7 @@ import { Dispatch, FC, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { addToast } from "@heroui/toast";
 import { UserFetchedDTO } from "@/types/classes/User";
+import { OK_HTTP_RESPONSE_CODE } from "@/util/constants";
 
 interface Props {
   isModalOpen: boolean;
@@ -49,7 +49,7 @@ const UserPageRejectFollowerConfirmationModal: FC<Props> = ({
       });
 
       switch (response.status) {
-        case OK_RESPONSE_CODE:
+        case OK_HTTP_RESPONSE_CODE:
           stateControlFunctionOfUserToBeRejected((prev) => {
             if (!prev) return null;
 

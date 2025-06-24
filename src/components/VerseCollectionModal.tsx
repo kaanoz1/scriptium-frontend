@@ -1,14 +1,6 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { AuthenticationRequestErrorCode, Response } from "@/types/response";
-import {
-  CONFLICT_RESPONSE_CODE,
-  INTERNAL_SERVER_ERROR_RESPONSE_CODE,
-  MAX_USER_COLLECTION_COUNT,
-  NOT_FOUND_RESPONSE_CODE,
-  OK_RESPONSE_CODE,
-  SIGN_IN_URL,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
-} from "@/util/utils";
+import { T_AuthenticationRequestErrorCode, Response } from "@/types/response";
+
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -22,7 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { NextPage } from "next";
 import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import { motion } from "framer-motion";
-import TooManyRequestComponent from "./UI/TooManyRequestComponent";
+import TooManyRequestComponent from "./UI/TooManyRequest";
 import ServerErrorComponent from "./UI/ServerErrorComponent";
 import { FiLogIn } from "react-icons/fi";
 import VerseCollectionCard from "./VerseCollectionCard";
@@ -32,6 +24,15 @@ import LoadingSpinner from "./UI/LoadingSpinner";
 import { CollectionWithVerseSavedInformationDTO } from "@/types/classes/Collection";
 import { UserOwnDTO } from "@/types/classes/User";
 import { VerseBaseDTO } from "@/types/classes/Verse";
+import {
+  OK_HTTP_RESPONSE_CODE,
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
+  MAX_USER_COLLECTION_COUNT,
+  SIGN_IN_URL,
+} from "@/util/constants";
 
 interface Props {
   isCollectionModalOpen: boolean;
@@ -44,7 +45,7 @@ interface Props {
 const fetchCollections = async (
   verse: VerseBaseDTO,
   setStateFunctionForSetError: Dispatch<
-    SetStateAction<AuthenticationRequestErrorCode | undefined>
+    SetStateAction<T_AuthenticationRequestErrorCode | undefined>
   >
 ) => {
   try {
@@ -53,21 +54,21 @@ const fetchCollections = async (
     >(`/collection/verse/${verse.getId()}`);
 
     switch (response.status) {
-      case OK_RESPONSE_CODE:
+      case OK_HTTP_RESPONSE_CODE:
         setStateFunctionForSetError(undefined);
         return response.data.data;
-      case NOT_FOUND_RESPONSE_CODE:
-        setStateFunctionForSetError(NOT_FOUND_RESPONSE_CODE);
+      case NOT_FOUND_HTTP_RESPONSE_CODE:
+        setStateFunctionForSetError(NOT_FOUND_HTTP_RESPONSE_CODE);
         return [];
-      case TOO_MANY_REQUEST_RESPONSE_CODE:
-        setStateFunctionForSetError(TOO_MANY_REQUEST_RESPONSE_CODE);
+      case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
+        setStateFunctionForSetError(TOO_MANY_REQUEST_HTTP_RESPONSE_CODE);
         return [];
       default:
-        setStateFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+        setStateFunctionForSetError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
         return [];
     }
   } catch (err) {
-    setStateFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+    setStateFunctionForSetError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
     return [];
   }
 };
@@ -80,7 +81,7 @@ const CollectionModal: NextPage<Props> = ({
   user,
 }) => {
   const [error, setError] = useState<
-    AuthenticationRequestErrorCode | undefined
+    T_AuthenticationRequestErrorCode | undefined
   >(undefined);
 
   const [selectedCollectionNames, setSelectedCollectionNames] = useState<
@@ -105,26 +106,26 @@ const CollectionModal: NextPage<Props> = ({
     });
 
     switch (response.status) {
-      case OK_RESPONSE_CODE:
-      case CONFLICT_RESPONSE_CODE:
+      case OK_HTTP_RESPONSE_CODE:
+      case CONFLICT_HTTP_RESPONSE_CODE:
         setIsSaved(true);
         setSelectedCollectionNames(new Set<string>());
         setIsCollectionModalOpen(false);
         await refetch();
         return;
       default:
-        setError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
+        setError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
         return;
     }
   };
 
   if (isLoading) return <LoadingSpinner />;
 
-  if (error && error == TOO_MANY_REQUEST_RESPONSE_CODE)
+  if (error && error == TOO_MANY_REQUEST_HTTP_RESPONSE_CODE)
     return <TooManyRequestComponent />;
 
   if (
-    (error && error == INTERNAL_SERVER_ERROR_RESPONSE_CODE) ||
+    (error && error == INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE) ||
     collections == undefined
   )
     return <ServerErrorComponent />;

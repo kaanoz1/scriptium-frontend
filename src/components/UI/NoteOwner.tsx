@@ -1,5 +1,5 @@
 import { ResponseMessage } from "@/types/response";
-import { T_ValidScriptureCode } from "@/types/types";
+import { T_ScriptureCode } from "@/types/types";
 import {
   formatDate,
   getFormattedNameAndSurname,
@@ -88,7 +88,7 @@ const Note: NextPage<Props> = ({
       .find((s) => s.getLanguage().getLangCode() === "en")
       ?.getText() ?? "Scripture";
 
-  const scriptureCode: T_ValidScriptureCode = scripture.getCode();
+  const scriptureCode: T_ScriptureCode = scripture.getCode();
 
   const scriptureNameInOwnLanguage: string = scripture.getName();
 
@@ -123,7 +123,7 @@ const Note: NextPage<Props> = ({
             description: "text-xs",
           }}
           avatarProps={{
-            src: imageUrl ?? undefined,
+            src: imageUrl ?? "",
             size: "sm",
           }}
           name={noteOwnerFormattedName}

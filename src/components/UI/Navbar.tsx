@@ -8,13 +8,8 @@ import SearchBar from "./SearchBar";
 import {
   getFormattedNameAndSurname,
   getLocalItemFromLocalStorage,
-  METHOD_NOT_ALLOWED_RESPONSE_CODE,
-  OK_RESPONSE_CODE,
-  PROJECT_NAME,
   setLocalItemToLocalStore,
-  SIGN_IN_URL,
   TOOL_TIP_CLASS_NAMES,
-  UNAUTHORIZED_RESPONSE_CODE,
 } from "@/util/utils";
 import { Tooltip } from "@heroui/tooltip";
 import {
@@ -39,6 +34,13 @@ import { HiOutlineCog } from "react-icons/hi";
 import { MdOutlineLanguage } from "react-icons/md";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import LogOutModal from "./LogOutModal";
+import {
+  METHOD_NOT_ALLOWED_HTTP_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
+  UNAUTHORIZED_HTTP_RESPONSE_CODE,
+  PROJECT_NAME,
+  SIGN_IN_URL,
+} from "@/util/constants";
 
 type Props = {
   showSearchBar?: boolean;
@@ -74,12 +76,12 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
     const response = await axiosCredentialInstance.post(`/session/logout`);
 
     switch (response.status) {
-      case METHOD_NOT_ALLOWED_RESPONSE_CODE:
-      case OK_RESPONSE_CODE:
+      case METHOD_NOT_ALLOWED_HTTP_RESPONSE_CODE:
+      case OK_HTTP_RESPONSE_CODE:
         setUser(null);
         setModalOpen(false);
         return;
-      case UNAUTHORIZED_RESPONSE_CODE:
+      case UNAUTHORIZED_HTTP_RESPONSE_CODE:
       default:
         setUser(null);
 

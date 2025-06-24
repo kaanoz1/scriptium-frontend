@@ -1,11 +1,11 @@
 import { Response } from "@/types/response";
 import { Column, RefetchDataFunctionType } from "@/types/types";
 import {
-  CONFLICT_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
   displayErrorToast,
   formatDate,
   getFormattedNameAndSurname,
-  OK_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
   PROJECT_URL,
 } from "@/util/utils";
 import { Button } from "@heroui/button";
@@ -45,9 +45,9 @@ const fetchRequests = async (): Promise<Array<FollowerUserDTO>> => {
     >(`/follow/follower/0`);
 
     switch (response.status) {
-      case OK_RESPONSE_CODE:
+      case OK_HTTP_RESPONSE_CODE:
         return response.data.data;
-      case CONFLICT_RESPONSE_CODE:
+      case CONFLICT_HTTP_RESPONSE_CODE:
         return [];
       default:
         return [];
@@ -60,7 +60,7 @@ const fetchRequests = async (): Promise<Array<FollowerUserDTO>> => {
 
 const handleAcceptRequest = async (
   username: string,
-  refetch: RefetchDataFunctionType
+  refetch: RefetchDataFunctionType<unknown>
 ) => {
   try {
     const response = await axiosCredentialInstance.put(`/follow/accept`, {
@@ -68,7 +68,7 @@ const handleAcceptRequest = async (
     });
 
     switch (response.status) {
-      case OK_RESPONSE_CODE:
+      case OK_HTTP_RESPONSE_CODE:
         await refetch();
         return;
       default:
@@ -85,14 +85,14 @@ const handleAcceptRequest = async (
 
 const handleRejectRequest = async (
   username: string,
-  refetch: RefetchDataFunctionType
+  refetch: RefetchDataFunctionType<unknown>
 ) => {
   try {
     const response = await axiosCredentialInstance.delete(`/follow/reject`, {
       data: { username },
     });
     switch (response.status) {
-      case OK_RESPONSE_CODE:
+      case OK_HTTP_RESPONSE_CODE:
         await refetch();
         return;
       default:
@@ -155,7 +155,7 @@ const ReceivedRequestTable: FC = () => {
       case "user":
         return (
           <User
-            avatarProps={{ radius: "lg", src: image }}
+            avatarProps={{ radius: "lg", src: image ?? "" }}
             name={getFormattedNameAndSurname(followerUser)}
             description={
               <Link href={`${PROJECT_URL}/user/${username}`} size="sm">

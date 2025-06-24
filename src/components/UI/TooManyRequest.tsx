@@ -1,10 +1,10 @@
 import { TbTrafficCone } from "react-icons/tb";
 import { motion } from "framer-motion";
-import { FC } from "react";
+import {FC, ReactNode} from "react";
 
-const TooManyRequest: FC = ({}) => {
+const TooManyRequest: FC = ({}): ReactNode => {
   return (
-    <div className="w-full h-[calc(100vh-130px)] flex justify-center items-center">
+    <main className="w-full flex justify-center items-center">
       <div className="text-center">
         <motion.div
           className="mb-4 flex justify-center"
@@ -18,7 +18,7 @@ const TooManyRequest: FC = ({}) => {
           making too many requests. Please slow down and try again later.
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

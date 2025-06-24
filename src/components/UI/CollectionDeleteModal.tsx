@@ -4,8 +4,8 @@ import { ResponseMessage } from "@/types/response";
 import { RefetchDataFunctionType } from "@/types/types";
 import {
   displayErrorToast,
-  OK_RESPONSE_CODE,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
 } from "@/util/utils";
 import { Button } from "@heroui/button";
 import {
@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form";
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  refetchDataFunction: RefetchDataFunctionType;
+  refetchDataFunction: RefetchDataFunctionType<unknown>;
   collection: CollectionDTO | null;
 }
 
@@ -56,12 +56,12 @@ const CollectionDeleteModal: FC<Props> = ({
       );
 
       switch (response.status) {
-        case OK_RESPONSE_CODE:
+        case OK_HTTP_RESPONSE_CODE:
           await refetchDataFunction();
           setIsModalOpen(false);
           return;
 
-        case TOO_MANY_REQUEST_RESPONSE_CODE:
+        case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
           setError("root", {
             message:
               "You are trying to delete too frequently. Slow down and try later.",

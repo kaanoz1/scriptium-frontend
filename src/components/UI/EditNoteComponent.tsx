@@ -1,13 +1,12 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { NoteOwnerDTO } from "@/types/classes/Note";
+import { NoteOwnDTO } from "@/types/classes/Note";
 import { UserOwnDTO } from "@/types/classes/User";
 import { ResponseMessage } from "@/types/response";
-import { RefetchDataFunctionType } from "@/types/types";
 import {
-  OK_RESPONSE_CODE,
   getFormattedNameAndSurname,
   MAX_LENGTH_FOR_NOTE,
   displayErrorToast,
+  OK_HTTP_RESPONSE_CODE,
 } from "@/util/utils";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
@@ -17,10 +16,9 @@ import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 
 interface Props {
-  editNote: NoteOwnerDTO;
-  stateControlFunctionOfEditNote: Dispatch<SetStateAction<NoteOwnerDTO | null>>;
+  editNote: NoteOwnDTO;
+  stateControlFunctionOfEditNote: Dispatch<SetStateAction<NoteOwnDTO | null>>;
   user: UserOwnDTO;
-  refetchDataFunction: RefetchDataFunctionType;
 }
 
 type EditNoteForm = {
@@ -32,7 +30,6 @@ const EditNoteComponent: NextPage<Props> = ({
   editNote: note,
   stateControlFunctionOfEditNote,
   user,
-  refetchDataFunction,
 }) => {
   const {
     register,
@@ -50,8 +47,8 @@ const EditNoteComponent: NextPage<Props> = ({
       );
 
       switch (response.status) {
-        case OK_RESPONSE_CODE:
-          await refetchDataFunction();
+        case OK_HTTP_RESPONSE_CODE:
+          note.setText(noteToUpdate.noteText);
           stateControlFunctionOfEditNote(null);
           return;
         default:

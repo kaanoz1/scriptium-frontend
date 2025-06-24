@@ -11,16 +11,18 @@ import {
 import { Input, Textarea } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { NextPage } from "next";
-import { CreateCollectionForm } from "@/types/types";
+import { T_CreateCollectionForm } from "@/types/types";
 import {
   MAX_LENGTH_FOR_COLLECTION_DESCRIPTION,
   MAX_LENGTH_FOR_COLLECTION_NAME,
-} from "@/util/utils";
+} from "@/util/constants";
 
 interface Props {
   isOpen: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  createCollectionSubmitFunction: (data: CreateCollectionForm) => Promise<void>;
+  createCollectionSubmitFunction: (
+    data: T_CreateCollectionForm
+  ) => Promise<void>;
 }
 
 const CreateCollectionModal: NextPage<Props> = ({
@@ -33,7 +35,7 @@ const CreateCollectionModal: NextPage<Props> = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<CreateCollectionForm>();
+  } = useForm<T_CreateCollectionForm>();
 
   const onSubmit = handleSubmit(createCollectionSubmitFunction);
   const handleClose = () => {

@@ -1,21 +1,21 @@
-import { FootNoteDTO } from "@/types/classes/FootNote";
 import { TOOL_TIP_CLASS_NAMES } from "@/util/utils";
 import { Tooltip } from "@heroui/tooltip";
 import { FC } from "react";
+import { TranslationTextDTO } from "@/types/classes/TranslationText";
 
 interface Props {
-  translationText: {
-    text: string;
-    footnotes: readonly FootNoteDTO[];
-  };
+  translationText: Readonly<TranslationTextDTO>;
 
   showFootnotes?: boolean;
 }
 
 const TranslatedTextWithFootnotes: FC<Props> = ({
-  translationText: { text, footnotes },
+  translationText,
   showFootnotes = true,
 }) => {
+  const text = translationText.getText();
+  const footnotes = translationText.getFootNotes();
+
   if (!showFootnotes) return <div className="text-medium">{text}</div>;
 
   const sortedFootnotes = [...footnotes].sort(

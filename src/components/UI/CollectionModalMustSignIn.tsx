@@ -1,4 +1,3 @@
-import { SIGN_IN_URL } from "@/util/utils";
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -11,6 +10,7 @@ import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
 import { FiLogIn } from "react-icons/fi";
 import { Link } from "@heroui/link";
+import { SIGN_IN_URL } from "@/util/constants";
 
 interface Props {
   isCollectionModalOpen: boolean;

@@ -4,14 +4,15 @@ import { useState, useCallback } from "react";
 import { FaSearch } from "react-icons/fa";
 import { Divider } from "@heroui/divider";
 import { useRouter } from "next/navigation";
-import { fetchQuery, isValidScriptureCode } from "@/util/utils";
+import { fetchQuery } from "@/util/utils";
 import { Button } from "@heroui/button";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "./LoadingSpinner";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import SearchBarResultRow from "../SearchBarResultRow";
 import { TranslationTextWithVerseUpperMeanDTO } from "@/types/classes/TranslationText";
-import { T_ValidScriptureCode } from "@/types/types";
+import { T_ScriptureCode } from "@/types/types";
+import { isValidScriptureCode } from "@/util/scriptureDetails";
 
 const SPLIT_REGEX = /[\s:.,|\\/=-]+/g;
 
@@ -106,7 +107,7 @@ const SearchBar: NextPage = () => {
           classNames={{ endContentWrapper: "hidden" }}
         >
           {queryData.map((tt) => {
-            const scriptureCode: T_ValidScriptureCode = tt
+            const scriptureCode: T_ScriptureCode = tt
               .getVerse()
               .getChapter()
               .getSection()

@@ -421,3 +421,33 @@ export class ChapterLowerMeanDTO extends ChapterMeanDTO {
         return Object.freeze([...this.verses]);
     }
 }
+
+
+export type T_ChapterUpperAndOneLevelLowerDTOConstructorParameters = T_ChapterUpperDTOConstructorParameters & {
+    verses: Array<VerseDTO>
+}
+
+export type T_ChapterUpperAndOneLevelLowerDTOConstructorParametersJSON = T_ChapterUpperDTOConstructorParametersJSON & {
+    verses: Array<T_VerseDTOConstructorParametersJSON>
+}
+
+export class ChapterUpperAndOneLevelLowerDTO extends ChapterUpperDTO {
+    private verses: Array<VerseDTO>
+
+    constructor(data: T_ChapterUpperAndOneLevelLowerDTOConstructorParameters) {
+        super({...data});
+        this.verses = data.verses;
+    }
+
+    static override createFromJSON(data: T_ChapterUpperAndOneLevelLowerDTOConstructorParametersJSON): ChapterUpperAndOneLevelLowerDTO {
+        const meanings = data.meanings.map(ChapterMeaningDTO.createFromJSON)
+        const section = SectionUpperDTO.createFromJSON(data.section);
+        const verses = data.verses.map(VerseDTO.createFromJSON)
+        return new ChapterUpperAndOneLevelLowerDTO({...data, verses, meanings, section});
+    }
+
+    getVerses(): Array<VerseDTO> {
+        return this.verses;
+    }
+
+}

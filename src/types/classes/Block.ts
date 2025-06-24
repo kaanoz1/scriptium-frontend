@@ -11,7 +11,7 @@ export type T_BlockDTOParams = {
 export class BlockDTO {
     private readonly blockedUser: Readonly<UserDTO>
     private readonly blockedAt: Readonly<Date>
-    private readonly reason: Readonly<string | null> = null
+    private readonly reason: string | null = null
 
     constructor(
         data: T_BlockDTOParams

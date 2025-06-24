@@ -1,7 +1,6 @@
 import { FC } from "react";
 import TranslatedTextWithFootnotes from "./UI/TranslatedTextWithFootnotes";
 import { DEFAULT_LANG_CODE } from "@/util/utils";
-import { FootNoteDTO } from "@/types/classes/FootNote";
 import { VerseUpperMeanDTO } from "@/types/classes/Verse";
 import { TranslationTextWithVerseUpperMeanDTO } from "@/types/classes/TranslationText";
 
@@ -10,15 +9,9 @@ interface Props {
 }
 
 const SearchBarResultRow: FC<Props> = ({ translationText }) => {
-  const text: string = translationText.getTranslationText().getText();
-  const footnotes: ReadonlyArray<FootNoteDTO> = translationText
-    .getTranslationText()
-    .getFootNotes();
   const verse: Readonly<VerseUpperMeanDTO> = translationText.getVerse();
 
-  const verseText: string =
-    verse.getTextVarition().getWithoutVowel() ??
-    verse.getTextVarition().getUsual();
+  const verseText: string = verse.getTextVariation().getUsual();
 
   const chapter = verse.getChapter();
   const section = chapter.getSection();
@@ -71,10 +64,7 @@ const SearchBarResultRow: FC<Props> = ({ translationText }) => {
       </div>
       <TranslatedTextWithFootnotes
         showFootnotes={false}
-        translationText={{
-          text: text,
-          footnotes: footnotes,
-        }}
+        translationText={translationText.getTranslationText()}
       />
 
       <div className="">{verseText}</div>

@@ -1,129 +1,50 @@
 "use client";
 
-import ServerError from "@/components/UI/ServerError";
-import TooManyRequest from "@/components/UI/TooManyRequest";
-import { NoAuthenticationRequestErrorCode, Response } from "@/types/response";
-import {
-  T_ChapterPageParams,
-  T_ScriptureTextVariationKey,
-  T_ValidScriptureCode,
-} from "@/types/types";
-import {
-  DEFAULT_LANG_CODE,
-  getChapterInformation,
-  getScriptureIfCodeIsValid,
-  INTERNAL_SERVER_ERROR_RESPONSE_CODE,
-  NOT_FOUND_RESPONSE_CODE,
-  OK_RESPONSE_CODE,
-  PROJECT_NAME,
-  PROJECT_URL,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
-  TOOL_TIP_CLASS_NAMES,
-} from "@/util/utils";
+import { Response, T_NoAuthenticationRequestErrorCode } from "@/types/response";
+import { T_ChapterPageParams, T_ScriptureCode } from "@/types/types";
+import { DEFAULT_LANG_CODE, SOMETHING_WENT_WRONG_TOAST } from "@/util/utils";
 import { useQuery } from "@tanstack/react-query";
 import { NextPage } from "next";
 import { useParams } from "next/navigation";
-import { Dispatch, Fragment, Key, SetStateAction, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 import { motion } from "framer-motion";
 import { BreadcrumbItem, Breadcrumbs } from "@heroui/breadcrumbs";
-import { MdTranslate } from "react-icons/md";
-import {
-  IoBookOutline,
-  IoPlayOutline,
-  IoSettingsOutline,
-} from "react-icons/io5";
-import { GrNext, GrPrevious, GrShareOption } from "react-icons/gr";
-import ChapterVerse from "@/components/UI/ChapterVerse";
-import { useScripture } from "@/hooks/useScripture";
+import ChapterVerse from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/components/ChapterVerse";
 import axiosNoCredentialInstance from "@/client/axiosNoCredentialInstance";
 import VerseAndChapterPageSettingsModel from "@/components/VerseAndChapterPageSettingsModel";
-import ChapterPageTranslationModel from "@/components/ChapterPageTranslationModel";
-import ChapterPageShareModal from "@/components/ChapterPageShareModal";
-import { Link } from "@heroui/link";
-import { Tooltip } from "@heroui/tooltip";
+import ChapterPageTranslationModel from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/components/ChapterPageTranslationModel";
+import ChapterPageShareModal from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/components/ChapterPageShareModal";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
-import ChapterPageNotFoundComponent from "@/components/ChapterPageNotFoundComponent";
-import { ScriptureDetails } from "@/types/classes/Scripture";
-import { ChapterBothDTO } from "@/types/classes/Chapter";
-import { TranslationTextDTO } from "@/types/classes/TranslationText";
-
-const fetchChapter = async (
-  scripture: Readonly<ScriptureDetails> | null,
-  sectionNumber: string | number,
-  chapterNumber: string | number,
-  setStateActionFunctionForSetError: Dispatch<
-    SetStateAction<NoAuthenticationRequestErrorCode | undefined>
-  >
-) => {
-  const parsedSectionNumber = Number(sectionNumber);
-  const parsedChapterNumber = Number(chapterNumber);
-
-  if (
-    scripture == null ||
-    Number.isNaN(parsedSectionNumber) ||
-    Number.isNaN(parsedChapterNumber)
-  ) {
-    setStateActionFunctionForSetError(NOT_FOUND_RESPONSE_CODE);
-    return null;
-  }
-
-  try {
-    const response = await axiosNoCredentialInstance.get<
-      Response<ChapterBothDTO>
-    >(
-      `/verse/${scripture.getNumber()}/${parsedSectionNumber}/${parsedChapterNumber}`
-    );
-
-    switch (response.status) {
-      case OK_RESPONSE_CODE:
-        setStateActionFunctionForSetError(undefined);
-
-        return response.data.data;
-
-      case NOT_FOUND_RESPONSE_CODE:
-        setStateActionFunctionForSetError(NOT_FOUND_RESPONSE_CODE);
-        return null;
-      case TOO_MANY_REQUEST_RESPONSE_CODE:
-        setStateActionFunctionForSetError(TOO_MANY_REQUEST_RESPONSE_CODE);
-        return null;
-      default:
-        setStateActionFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-        return null;
-    }
-  } catch (error) {
-    console.error(error);
-    setStateActionFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-    return null;
-  }
-};
+import ChapterPageNotFoundComponent from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/components/ChapterPageNotFoundComponent";
+import { ScriptureDetail } from "@/types/classes/Scripture";
+import { addToast } from "@heroui/toast";
+import axios from "axios";
+import { getErrorComponent } from "@/util/reactUtil";
+import {
+  ChapterUpperAndOneLevelLowerDTO,
+  T_ChapterUpperAndOneLevelLowerDTOConstructorParametersJSON,
+} from "@/types/classes/Chapter";
+import { useScripturePreferences } from "@/hooks/useScripture";
+import ChapterPageTranslatorsIndicator from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/components/ChapterPageTranslatorsIndicator";
+import { TranslationDTO } from "@/types/classes/Translation";
+import ChapterPageTools from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/components/ChapterPageTools";
+import {
+  isNoAuthenticationRequestErrorCode,
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  PROJECT_URL,
+  OK_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
+import { getScriptureIfCodeIsValid } from "@/util/scriptureDetails";
 
 interface Props {}
 
-const Page: NextPage<Props> = ({}) => {
+const Page: NextPage<Props> = ({}): ReactNode => {
   const {
     scriptureCode: scriptureCodeParam,
     sectionNumber: sectionNumberParam,
     chapterNumber: chapterNumberParam,
   } = useParams<T_ChapterPageParams>();
-
-  const [error, setError] = useState<
-    NoAuthenticationRequestErrorCode | undefined
-  >(undefined);
-
-  const [showTranslation, setShowTranslation] = useState<boolean>(true);
-  const [showOriginalText, setShowOriginalText] = useState<boolean>(true);
-
-  const [showTransliteration, setShowTransliteration] =
-    useState<boolean>(false);
-
-  const [textVariation, setTextVariation] =
-    useState<T_ScriptureTextVariationKey>("usual");
-
-  const [preferredTranslationId, setPreferredTranslationId] = useState<
-    Set<Key>
-  >(new Set<Key>([0]));
-
-  const [showFootnotes, setShowFootnotes] = useState<boolean>(true);
 
   const [shareText, setShareText] = useState<string>("");
 
@@ -135,12 +56,22 @@ const Page: NextPage<Props> = ({}) => {
 
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
 
-  const scriptureDetails: Readonly<ScriptureDetails> | null =
+  const scriptureDetail: Readonly<ScriptureDetail> | null =
     getScriptureIfCodeIsValid(scriptureCodeParam);
 
-  const { preferredScriptureContext } = useScripture();
+  const {
+    preference,
+    setOriginalTextVariation,
+    setShowOriginalText,
+    setShowTransliterations,
+    setShowTranslations,
+    setShowFootnotes,
+    setTranslationIdMultiple,
+  } = useScripturePreferences(scriptureDetail?.getCode()); //TODO: Amend
 
-  const { data: chapter = null, isLoading } = useQuery<ChapterBothDTO | null>({
+  const { data: chapter = null, isLoading } = useQuery<
+    ChapterUpperAndOneLevelLowerDTO | T_NoAuthenticationRequestErrorCode | null
+  >({
     queryKey: [
       "chapter-page",
       scriptureCodeParam,
@@ -149,10 +80,9 @@ const Page: NextPage<Props> = ({}) => {
     ],
     queryFn: async () =>
       await fetchChapter(
-        scriptureDetails,
+        scriptureDetail,
         sectionNumberParam,
-        chapterNumberParam,
-        setError
+        chapterNumberParam
       ),
     refetchOnWindowFocus: false,
     staleTime: Infinity,
@@ -160,88 +90,69 @@ const Page: NextPage<Props> = ({}) => {
 
   if (isLoading) return <LoadingSpinnerFullH />;
 
-  const sectionNumber = parseInt(sectionNumberParam);
-  const chapterNumber = parseInt(chapterNumberParam);
+  if (chapter == null || isNoAuthenticationRequestErrorCode(chapter))
+    //TODO: Amend.
+    return getErrorComponent({
+      code: chapter,
+      preferredErrorComponent: {
+        [NOT_FOUND_HTTP_RESPONSE_CODE]: (
+          <ChapterPageNotFoundComponent
+            scriptureCode={scriptureCodeParam}
+            sectionNumber={sectionNumberParam}
+            chapterNumber={chapterNumberParam}
+          />
+        ),
+      },
+    });
 
-  if (
-    (error && error === NOT_FOUND_RESPONSE_CODE) ||
-    scriptureDetails == null ||
-    chapter == null ||
-    Number.isNaN(sectionNumber) ||
-    Number.isNaN(chapterNumber)
-  )
-    return (
-      <ChapterPageNotFoundComponent
-        scriptureCode={scriptureCodeParam}
-        sectionNumber={sectionNumberParam}
-        chapterNumber={chapterNumberParam}
-      />
-    );
+  if (scriptureDetail == null) {
+    return getErrorComponent({
+      code: NOT_FOUND_HTTP_RESPONSE_CODE,
+      preferredErrorComponent: {
+        [NOT_FOUND_HTTP_RESPONSE_CODE]: (
+          <ChapterPageNotFoundComponent
+            scriptureCode={scriptureCodeParam}
+            sectionNumber={sectionNumberParam}
+            chapterNumber={chapterNumberParam}
+          />
+        ),
+      },
+    });
+  }
 
-  if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
-    return <TooManyRequest />;
-  if (error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE)
-    return <ServerError />;
-
-  setPreferredTranslationId(
-    preferredScriptureContext.preferencesByScripture[scriptureDetails.getCode()]
-      .preferredTranslationIdSingle
-  );
-
-  const section = chapter.getSection();
-  const scripture = section.getScripture();
-  const scriptureMeanings = scripture.getMeanings();
-  const scriptureNameInOwnLanguage = scripture.getName();
-  const sectionNameInOwnLanguage = section.getName();
-  const sectionMeanings = section.getMeanings();
+  const chapterNumber = chapter.getNumber();
   const verses = chapter.getVerses();
 
-  const handleShare = (platform: string) => {
-    console.log(`Sharing content to: ${platform}`);
-    //TODO: Will be implemented.
-  };
-
-  const scriptureMeaning: string =
-    scriptureMeanings
-      .find((e) => e.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
-      ?.getText() ?? "Scripture";
-
-  const scriptureCode: T_ValidScriptureCode = scripture.getCode();
-
+  const section = chapter.getSection();
+  const sectionNumber = section.getNumber();
+  const sectionNameInOwnLanguage = section.getName();
   const sectionMeaning: string =
-    sectionMeanings
-      .find((e) => e.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
-      ?.getText() ?? "Section";
+    section.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
 
-  const preferredScripture =
-    preferredScriptureContext.preferencesByScripture[scripture.getCode()];
+  const scripture = section.getScripture();
+  const scriptureNameInOwnLanguage = chapter.getName();
+  const scriptureMeaning: string =
+    scripture.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
+  const scriptureCode: T_ScriptureCode = scripture.getCode();
 
-  const preferredFont: string = preferredScripture.preferredScriptureFont;
+  const possibleTranslations = new Set<TranslationDTO>([
+    ...scriptureDetail!.getTranslations().filter(
+      (
+        t // Not every translation have to have a translationText for all verses. So we filter translations in which at least one translation text across the chapter.
+      ) =>
+        verses.some((verse) =>
+          verse
+            .getTranslationTexts()
+            .some((tt) => tt.getTranslation().getId() === t.getId())
+        )
+    ),
+  ]);
 
-  const translations: ReadonlyArray<TranslationTextDTO> = Array.from(
-    new Map(
-      verses
-        .flatMap((v) => v.getTranslationTexts())
-        .map((t) => [t.getTranslation().getId(), t])
-    ).values()
-  );
-
-  const selectedTranslation = translations
-    .find((t) =>
-      preferredScripture.preferredTranslationIdSingle.has(
-        t.getTranslation().getId()
-      )
-    )
-    ?.getTranslation();
-
-  const translationName: string =
-    selectedTranslation?.getName() ?? "Unknown Translation";
-
-  const translatorNamesGathered: string =
-    selectedTranslation?.getTranslators().join(", ") ?? "Unknown Translation";
-
-  const { doesPreviousChapterExists, doesNextChapterExists } =
-    getChapterInformation(scripture.getCode(), sectionNumber, chapterNumber);
+  const preferredTranslations = new Set<TranslationDTO>([
+    ...Array.from(possibleTranslations).filter((t) =>
+      preference.getPreferredTranslationIdMultiple().has(t.getId())
+    ),
+  ]); // Impossible to exist. Since default translationId is a Translation that ever verse has translationText of it.
 
   return (
     <Fragment>
@@ -280,103 +191,33 @@ const Page: NextPage<Props> = ({}) => {
           <div className="flex flex-col">
             <div className="flex justify-center w-full py-1.5 px-2.5 rounded-t-lg border border-neutral-300 dark:border-gray-600 bg-white dark:bg-neutral-900">
               <div className="w-full flex justify-between items-center px-1">
-                <span className="py-1 px-2 mx-1 bg-gray-200 dark:bg-neutral-800text-gray-700 dark:text-gray-200 rounded-md inline-flex items-center gap-1">
-                  <IoBookOutline size={17} />
-                  <span>{translationName}</span>
-                  <span> / </span>
-                  <span>{translatorNamesGathered}</span>
-                </span>
-                <div className="py-1 px-2 flex items-center justify-evenly gap-5">
-                  <Link
-                    color="foreground"
-                    href={`/${scriptureCode}/${sectionNumber}/${
-                      chapterNumber - 1
-                    }`}
-                    isDisabled={!doesPreviousChapterExists}
-                  >
-                    <GrPrevious
-                      size={18}
-                      className="cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                    />
-                  </Link>
-                  <Link
-                    color="foreground"
-                    href={`/${scriptureCode}/${sectionNumber}/${
-                      chapterNumber + 1
-                    }`}
-                    isDisabled={!doesNextChapterExists}
-                  >
-                    <GrNext
-                      size={18}
-                      className="cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                    />
-                  </Link>
-
-                  <Tooltip
-                    content="Not supported yet."
-                    classNames={TOOL_TIP_CLASS_NAMES}
-                    showArrow
-                    delay={250}
-                    closeDelay={0}
-                  >
-                    <span className="flex items-center justify-center">
-                      {/*Since items-center tag does not effect this span as it is located in Tooltip, I had to adjust it again. */}
-                      <Link isDisabled={true} color="foreground">
-                        <IoPlayOutline size={21} />
-                      </Link>
-                    </span>
-                  </Tooltip>
-                  <IoSettingsOutline
-                    className="cursor-pointer hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
-                    onClick={() => setIsSettingsModelOpen(true)}
-                    size={19}
-                  />
-                  <MdTranslate
-                    className="cursor-pointer hover:text-red-600 dark:hover:text-red-500 transition-colors"
-                    onClick={() => setIsTranslationModelOpen(true)}
-                    size={19}
-                  />
-                  <GrShareOption
-                    size={19}
-                    className="cursor-pointer hover:text-teal-700 dark:hover:text-teal-500 transition-colors"
-                    onClick={() => {
-                      setIsShareModalOpen(true);
-                      setShareText(
-                        `${PROJECT_NAME},\n${scriptureMeaning}(${scriptureNameInOwnLanguage}), ${sectionMeaning} (${sectionNameInOwnLanguage}), Chapter: ${chapterNumber} \n\n${window.location.href}`
-                      );
-                    }}
-                  />
-                </div>
+                <ChapterPageTranslatorsIndicator
+                  preferredTranslations={preferredTranslations}
+                />
+                <ChapterPageTools
+                  chapter={chapter}
+                  functionWhichOpensTranslationModal={() =>
+                    setIsTranslationModelOpen(true)
+                  }
+                  functionWhichOpensSettingsModal={() =>
+                    setIsSettingsModelOpen(true)
+                  }
+                  functionWhichOpensShareModal={() => setIsShareModalOpen(true)}
+                  scriptureDetail={scriptureDetail!}
+                  shareTextSetStateFunction={setShareText}
+                />
               </div>
             </div>
 
             {verses.map((v, i) => (
               <ChapterVerse
-                font={preferredFont}
                 key={i}
                 verse={v}
-                options={{
-                  stateIsOrignalTextShown: showOriginalText,
-                  stateIsTranslationShown: showTranslation,
-                  stateIsTransliterationShown: showTransliteration,
-                }}
-                operations={{
-                  setStateActionFunctionForShareModelControl:
-                    setIsShareModalOpen,
-                  setStateActionFunctionForShareTextControl: setShareText,
-                }}
-                verseDetails={{
-                  scriptureCode,
-                  sectionNumber,
-                  scriptureMeaning,
-                  scriptureNameInOwnLanguage,
-                  sectionMeaning,
-                  sectionNameInOwnLanguage,
-                  chapterNumber,
-                  variation: textVariation,
-                  selectedTranslation,
-                  scriptureDetails,
-                }}
+                scriptureDetail={scriptureDetail}
+                chapter={chapter}
+                functionWhichOpensShareModel={() => setIsShareModalOpen(true)}
+                preference={preference}
+                setStateActionFunctionForShareText={setShareText}
               />
             ))}
           </div>
@@ -384,34 +225,24 @@ const Page: NextPage<Props> = ({}) => {
       </motion.div>
 
       <VerseAndChapterPageSettingsModel
-        showFootnotes={showFootnotes}
-        setShowFootnotes={setShowFootnotes}
         isSettingsModelOpen={isSettingsModelOpen}
         setIsSettingsModelOpen={setIsSettingsModelOpen}
-        showTranslation={showTranslation}
-        setShowTransliteration={setShowTransliteration}
-        textSymbol={scriptureDetails.getVaritionSymbols().getUsual()}
-        textSimplifiedSymbol={scriptureDetails
-          .getVaritionSymbols()
-          .getSimplified()}
-        textWithoutVowelSymbol={scriptureDetails
-          .getVaritionSymbols()
-          .getWithoutVowel()}
+        scriptureDetail={scriptureDetail}
+        preference={preference}
+        setShowTranslation={setShowTranslations}
+        setShowTransliteration={setShowTransliterations}
+        setShowFootnotes={setShowFootnotes}
         setShowOriginalText={setShowOriginalText}
-        setShowTranslation={setShowTranslation}
-        showOriginalText={showOriginalText}
-        showTransliteration={showTransliteration}
-        preferredFont={preferredFont}
-        setTextVariation={setTextVariation}
-        textVariation={textVariation}
+        setOriginalTextVariation={setOriginalTextVariation}
       />
       <ChapterPageTranslationModel
         isModalOpen={isTranslationModelOpen}
         setIsModalOpen={setIsTranslationModelOpen}
-        preferredTranslationId={preferredTranslationId}
-        stateControlFunctionOfPreferredTranslationId={setPreferredTranslationId}
-        translations={translations}
+        scriptureDetail={scriptureDetail}
+        preference={preference}
+        setTranslationIdMultiple={setTranslationIdMultiple}
       />
+
       <ChapterPageShareModal
         isModalOpen={isShareModalOpen}
         setIsModalOpen={setIsShareModalOpen}
@@ -424,3 +255,53 @@ const Page: NextPage<Props> = ({}) => {
 };
 
 export default Page;
+
+const fetchChapter = async (
+  scriptureDetail: Readonly<ScriptureDetail> | null,
+  sectionNumber: string | number,
+  chapterNumber: string | number
+): Promise<
+  ChapterUpperAndOneLevelLowerDTO | T_NoAuthenticationRequestErrorCode
+> => {
+  const parsedSectionNumber = Number(sectionNumber);
+  const parsedChapterNumber = Number(chapterNumber);
+
+  if (
+    scriptureDetail == null ||
+    Number.isNaN(parsedSectionNumber) ||
+    Number.isNaN(parsedChapterNumber)
+  )
+    return NOT_FOUND_HTTP_RESPONSE_CODE;
+
+  const scriptureNumber = scriptureDetail.getNumber();
+
+  try {
+    const response = await axiosNoCredentialInstance.get<
+      Response<T_ChapterUpperAndOneLevelLowerDTOConstructorParametersJSON>
+    >(
+      `/verse/${scriptureNumber}/${parsedSectionNumber}/${parsedChapterNumber}`
+    );
+
+    if (response.status === OK_HTTP_RESPONSE_CODE)
+      return ChapterUpperAndOneLevelLowerDTO.createFromJSON(response.data.data);
+
+    throw new Error("Unexpected result. Status: " + response.status);
+  } catch (error) {
+    addToast(SOMETHING_WENT_WRONG_TOAST);
+    console.error(error);
+
+    if (
+      !axios.isAxiosError(error) ||
+      !error.response ||
+      !isNoAuthenticationRequestErrorCode(error.response.status)
+    )
+      return INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE;
+
+    return error.response.status;
+  }
+};
+
+const handleShare = (platform: string) => {
+  console.log(`Sharing content to: ${platform}`);
+  //TODO: Will be implemented.
+};

@@ -7,7 +7,7 @@ type T_FollowUserDTOConstructorParametersJSON = T_FollowUserDTOConstructorParame
 export abstract class FollowUserDTO {
     protected readonly occurredAt: Date
 
-    constructor(data: T_FollowUserDTOConstructorParameters) {
+    protected constructor(data: T_FollowUserDTOConstructorParameters) {
         this.occurredAt = new Date(data.occurredAt) // Since some times TS cannot convert C# DateTime object into TS Date object.
     }
 

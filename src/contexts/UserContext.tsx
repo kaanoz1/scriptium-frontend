@@ -10,7 +10,11 @@ import {
   useQueryClient,
   UseQueryResult,
 } from "@tanstack/react-query";
-import { UserOwnDTO } from "@/types/classes/User";
+import {
+  T_UserOwnDTOConstructorParametersJSON,
+  UserOwnDTO,
+} from "@/types/classes/User";
+import axiosNoCredentialInstance from "@/client/axiosNoCredentialInstance";
 
 type UserContextType = {
   user: UserOwnDTO | null;
@@ -47,11 +51,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }: UseQueryResult<UserOwnDTO> = useQuery({
     queryKey: ["user"],
     queryFn: () =>
-      axios
-        .get<Response<UserOwnDTO>>(`/user/me`, {
+      axiosNoCredentialInstance
+        .get<Response<T_UserOwnDTOConstructorParametersJSON>>(`/user/me`, {
           withCredentials: true,
         })
-        .then((response) => response),
+        .then((response) => UserOwnDTO.createFromJSON(response.data.data)),
     staleTime: 1000 * 60 * 60,
     refetchInterval: 1000 * 60 * 60,
   });

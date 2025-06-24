@@ -18,11 +18,11 @@ import {
 import { useForm } from "react-hook-form";
 import { Input } from "@heroui/input";
 import {
-  CONFLICT_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
   MAX_LENGTH_FOR_COLLECTION_DESCRIPTION,
   MAX_LENGTH_FOR_COLLECTION_NAME,
-  OK_RESPONSE_CODE,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
 } from "@/util/utils";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { ResponseMessage } from "@/types/response";
@@ -31,7 +31,7 @@ import { CollectionDTO } from "@/types/classes/Collection";
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  refetchDataFunction: RefetchDataFunctionType;
+  refetchDataFunction: RefetchDataFunctionType<unknown>;
   collection: CollectionDTO | null;
 }
 
@@ -108,18 +108,18 @@ const CollectionUpdateModal: FC<Props> = ({
       );
 
       switch (response.status) {
-        case OK_RESPONSE_CODE:
+        case OK_HTTP_RESPONSE_CODE:
           await refetchDataFunction();
           setIsModalOpen(false);
           return;
 
-        case CONFLICT_RESPONSE_CODE:
+        case CONFLICT_HTTP_RESPONSE_CODE:
           setError("newCollectionName", {
             message: "You already have a collection with the same name.",
           });
           return;
 
-        case TOO_MANY_REQUEST_RESPONSE_CODE:
+        case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
           setError("root", {
             message:
               "You are trying to update your collection too frequently. Slow down and try later.",

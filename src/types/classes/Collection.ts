@@ -5,12 +5,6 @@ export enum CollectionStatus {
   Succeed = 3,
 }
 
-
-
-
-//TODO: Amend.
-
-
 export class CollectionProcessResultDTO {
   constructor(
     private readonly collectionName: string,

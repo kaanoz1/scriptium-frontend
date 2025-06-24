@@ -1,21 +1,21 @@
 import Logo from "./Logo";
 import { Link } from "@heroui/link";
-import {
-  DISCORD_BOT_ADD_URL,
-  GITHUB_SCRIPTIUM_PROJECT_URL,
-  PATREON_SUPPORT_URL,
-  PAYPAL_SUPPORT_URL,
-  PROJECT_EMAIL_ADDRESS,
-  PROJECT_INSTAGRAM_ADDRESS,
-  PROJECT_NAME,
-  PROJECT_X_ADDRESS,
-} from "@/util/utils";
 import { AiOutlineMail } from "react-icons/ai";
 import { RiPaypalLine, RiTwitterXLine } from "react-icons/ri";
 import { FaDiscord, FaInstagram, FaPatreon } from "react-icons/fa";
 import { VscGithubAlt } from "react-icons/vsc";
 import { Divider } from "@heroui/divider";
 import { FC } from "react";
+import {
+  PROJECT_NAME,
+  PROJECT_EMAIL_ADDRESS,
+  PROJECT_INSTAGRAM_ADDRESS,
+  PROJECT_X_ADDRESS,
+  DISCORD_BOT_ADD_URL,
+  GITHUB_SCRIPTIUM_PROJECT_URL,
+  PATREON_SUPPORT_URL,
+  PAYPAL_SUPPORT_URL,
+} from "@/util/constants";
 
 const Footer: FC = () => {
   return (

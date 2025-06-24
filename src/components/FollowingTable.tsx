@@ -1,11 +1,10 @@
 import { Response } from "@/types/response";
 import { Column } from "@/types/types";
 import {
-  CONFLICT_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
   displayErrorToast,
   formatDate,
-  getFormattedNameAndSurname,
-  OK_RESPONSE_CODE,
+  getFormattedNameAndSurname, OK_HTTP_RESPONSE_CODE,
   PROJECT_URL,
 } from "@/util/utils";
 import { Button } from "@heroui/button";
@@ -39,9 +38,9 @@ const fetchFollowing = async (): Promise<Array<FollowedUserDTO>> => {
     >(`/follow/followed/1`); //Code 1 is for telling server that we are demanding the following(s) data.
 
     switch (response.status) {
-      case OK_RESPONSE_CODE:
+      case OK_HTTP_RESPONSE_CODE:
         return response.data.data;
-      case CONFLICT_RESPONSE_CODE:
+      case CONFLICT_HTTP_RESPONSE_CODE:
         return [];
       default:
         return [];
@@ -113,7 +112,7 @@ const FollowingTable: FC<Props> = () => {
       case "user":
         return (
           <User
-            avatarProps={{ radius: "lg", src: image }}
+            avatarProps={{ radius: "lg", src: image ?? "" }}
             name={getFormattedNameAndSurname(followedUser)}
             description={
               <Link href={`${PROJECT_URL}/user/${username}`} size="sm">

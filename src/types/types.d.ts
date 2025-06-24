@@ -45,8 +45,6 @@ export type RefetchDataFunctionType<T> = (
   options?: RefetchOptions
 ) => Promise<QueryObserverResult<T, Error>>;
 
-
-
 export type T_ScriptureCode = "t";
 export type T_ValidTranslationId = 1;
 
@@ -74,9 +72,10 @@ export type HasImage = {
   image: string | null;
 };
 
+export type T_OriginalScriptureTextFontOfScriptureWithCodeT = "font-davidLibre";
 
-export type T_OriginalScriptureTextFont = "font-davidLibre"
-
+export type T_OriginalScriptureTextFont =
+  T_OriginalScriptureTextFontOfScriptureWithCodeT; //Other scriptures shall be added.
 
 export type T_SystemLanguageCode = "en";
 
@@ -86,3 +85,7 @@ export type Toast = ToastProps & ToastOptions;
 
 export type Overridden<T, K extends keyof T, V> = Omit<T, K> & { [P in K]: V };
 
+export type T_CreateCollectionForm = {
+  collectionName: string;
+  description: string | null;
+};

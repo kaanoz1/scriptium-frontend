@@ -17,7 +17,7 @@ import {
     T_WordDTOConstructorParametersJSON,
     T_WordLowerDTOConstructorParametersJSON, T_WordLowerConfinedDTOConstructorParametersJSON
 } from "./Word";
-import {T_OriginalScriptureTextVariationKey} from "@/types/types";
+import {T_OriginalScriptureTextVariationKey, T_SystemLanguageCode} from "@/types/types";
 
 
 export type T_TextVariationDTOConstructorParameters = {
@@ -135,6 +135,15 @@ export abstract class VerseSimpleDTO extends VerseBaseDTO {
 
     getTransliterations(): ReadonlyArray<TransliterationDTO> {
         return Object.freeze([...this._transliterations]);
+    }
+
+    getTextOfVariationOrUsual(variation:T_OriginalScriptureTextVariationKey ){
+        return  this.getVariation().getTextWithVariation(variation) ??
+            this.getVariation().getUsual();
+    }
+
+    getTransliterationTextOrNull(langCode: T_SystemLanguageCode): string | null{
+        return this.getTransliterations().find(t => t.getLanguage().getLangCode() == langCode)?.getTransliteration() ?? null
     }
 
     getTranslationTexts(): ReadonlyArray<TranslationTextDTO> {
@@ -476,4 +485,96 @@ export type T_VerseLowerMeanDTOConstructorParametersJSON = T_VerseMeanDTOConstru
 
 export class VerseLowerMeanDTO extends VerseMeanDTO {
     // No additional fields
+}
+
+
+
+
+export class VerseOptions {
+    private showFootnotes: boolean;
+    private showTranslation: boolean;
+    private showTransliteration: boolean;
+    private showOriginalText: boolean;
+    private variation: T_OriginalScriptureTextVariationKey
+
+
+    constructor(showFootnotes: boolean, showTranslation: boolean, showOriginalText: boolean, showTransliteration: boolean, variation: T_OriginalScriptureTextVariationKey) {
+        this.showFootnotes = showFootnotes;
+        this.showTranslation = showTranslation;
+        this.showOriginalText = showOriginalText;
+        this.variation = variation;
+        this.showTransliteration = showTransliteration;
+    }
+
+    getClone(): VerseOptions {
+
+        return new VerseOptions(this.getShowFootnotes(), this.getShowTranslation(), this.getShowOriginalText(), this.getShowTransliteration(), this.getVariation())
+    }
+
+    getShowFootnotes(): boolean
+    {
+        return this.showFootnotes;
+    }
+
+    getShowTranslation(): boolean {
+        return this.showTranslation;
+    }
+
+    getShowOriginalText(): boolean {
+        return this.showOriginalText;
+    }
+    getShowTransliteration(): boolean {
+        return this.showTransliteration;
+    }
+
+    getVariation(): T_OriginalScriptureTextVariationKey {
+        return this.variation;
+    }
+
+    setShowTranslation(boolean: boolean): void {
+        this.showTranslation = boolean;
+    }
+
+    setShowTransliteration(boolean: boolean): void {
+        this.showTransliteration = boolean;
+    }
+
+    setShowOriginalText(boolean: boolean): void {
+        this.showOriginalText = boolean;
+    }
+
+    setShowFootnotes(boolean: boolean): void {
+        this.showFootnotes = boolean;
+    }
+
+    setVariation(variation: T_OriginalScriptureTextVariationKey): void {
+        this.variation = variation;
+    }
+
+    setShowTranslationAndGetClone(boolean: boolean): VerseOptions {
+        this.setShowTranslation(boolean);
+        return this.getClone();
+    }
+
+    setShowTransliterationAndGetClone(boolean: boolean): VerseOptions {
+        this.setShowTransliteration(boolean);
+        return this.getClone();
+    }
+
+    setShowOriginalTextAndGetClone(boolean: boolean): VerseOptions {
+        this.setShowOriginalText(boolean);
+        return this.getClone();
+    }
+
+    setShowFootnotesAndGetClone(boolean: boolean): VerseOptions {
+        this.setShowFootnotes(boolean) ;
+        return this.getClone();
+    }
+
+    setVariationAndGetClone(variation: T_OriginalScriptureTextVariationKey): VerseOptions {
+        this.setVariation(variation);
+        return this.getClone();
+    }
+
+
 }

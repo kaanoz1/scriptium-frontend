@@ -1,12 +1,12 @@
 import { SectionDTO } from "@/types/classes/Section";
-import { T_ValidScriptureCode } from "@/types/types";
+import { T_ScriptureCode } from "@/types/types";
 import { DEFAULT_LANG_CODE } from "@/util/utils";
 import { Link } from "@heroui/link";
 import { motion } from "framer-motion";
 import { FC } from "react";
 
 interface Props {
-  scriptureCode: T_ValidScriptureCode;
+  scriptureCode: T_ScriptureCode;
   section: SectionDTO;
   index: number;
 }

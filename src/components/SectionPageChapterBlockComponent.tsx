@@ -1,10 +1,10 @@
-import { T_ValidScriptureCode } from "@/types/types";
 import { Link } from "@heroui/link";
 import { motion } from "framer-motion";
 import { FC } from "react";
+import {T_ScriptureCode} from "@/types/types";
 
 interface Props {
-  scriptureCode: T_ValidScriptureCode;
+  scriptureCode: T_ScriptureCode;
   sectionNumber: number;
   chapterNumber: number;
 }

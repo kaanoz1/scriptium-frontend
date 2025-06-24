@@ -1,118 +1,61 @@
 "use client";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import VerseAndChapterPageSettingsModel from "@/components/VerseAndChapterPageSettingsModel";
-import ServerError from "@/components/UI/ServerError";
-import TooManyRequest from "@/components/UI/TooManyRequest";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
 import CollectionModal from "@/components/VerseCollectionModal";
 import WordVerse from "@/components/UI/WordVerse";
-import { useScripture } from "@/hooks/useScripture";
-import { NoAuthenticationRequestErrorCode, Response } from "@/types/response";
-import {
-  T_ScriptureTextVariationKey,
-  T_ValidScriptureCode,
-  T_VersePageParams,
-} from "@/types/types";
+import { Response, T_NoAuthenticationRequestErrorCode } from "@/types/response";
+import { T_ScriptureCode, T_VersePageParams } from "@/types/types";
 import {
   DEFAULT_LANG_CODE,
-  getScriptureIfCodeIsValid,
-  getShareTextForVersePage,
-  getVerseInformation,
-  INTERNAL_SERVER_ERROR_RESPONSE_CODE,
-  NOT_FOUND_RESPONSE_CODE,
-  OK_RESPONSE_CODE,
-  PROJECT_URL,
+  getShareTextOfVerse,
   SOMETHING_WENT_WRONG_TOAST,
-  TOO_MANY_REQUEST_RESPONSE_CODE,
   TOOL_TIP_CLASS_NAMES,
 } from "@/util/utils";
-import { Breadcrumbs, BreadcrumbItem } from "@heroui/breadcrumbs";
+import { BreadcrumbItem, Breadcrumbs } from "@heroui/breadcrumbs";
 import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { NextPage } from "next";
 import { useParams } from "next/navigation";
-import { Dispatch, Fragment, Key, SetStateAction, useState } from "react";
-import { GoBookmarkFill, GoBookmark } from "react-icons/go";
+import { Fragment, ReactNode, useState } from "react";
+import { GoBookmark, GoBookmarkFill } from "react-icons/go";
 import { GrNext, GrPrevious, GrShareOption } from "react-icons/gr";
 import { IoPlayOutline, IoSettingsOutline } from "react-icons/io5";
 import { MdOutlineFormatListNumbered, MdTranslate } from "react-icons/md";
-import VersePageTabs from "@/components/VersePageTabs";
+import VersePageTabs from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageTabs";
 import { Tooltip } from "@heroui/tooltip";
-import VersePageTranslationModal from "@/components/VersePageTranslationModal";
+import VersePageTranslationModal from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageTranslationModal";
 import { useUser } from "@/hooks/useUser";
-import VersePageNotFoundComponent from "@/components/VersePageNotFoundComponent";
-import VersePageTranslationBoxComponent from "@/components/VersePageTranslationBoxComponent";
-import VersePageShareModal from "@/components/VersePageShareModal";
+import VersePageNotFoundComponent from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageNotFoundComponent";
+import VersePageTranslationBoxComponent from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageTranslationBoxComponent";
+import VersePageShareModal from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageShareModal";
 import { addToast } from "@heroui/toast";
-import { ScriptureDetails, ScriptureDTO } from "@/types/classes/Scripture";
-import { VerseBothDTO } from "@/types/classes/Verse";
-import { ChapterUpperDTO } from "@/types/classes/Chapter";
+import { ScriptureDetail, ScriptureDTO } from "@/types/classes/Scripture";
+import {
+  T_VerseBothDTOConstructorParametersJSON,
+  VerseBothDTO,
+} from "@/types/classes/Verse";
 import { SectionUpperDTO } from "@/types/classes/Section";
 import { TranslationTextDTO } from "@/types/classes/TranslationText";
 import CollectionModelMustSignIn from "@/components/UI/CollectionModalMustSignIn";
-
-const fetchVerse = async (
-  scriptureDetails: Readonly<ScriptureDetails> | null,
-  sectionNumber: number,
-  chapterNumber: number,
-  verseNumber: number,
-  isAvailable: boolean,
-  setStateActionFunctionForSetError: Dispatch<
-    SetStateAction<NoAuthenticationRequestErrorCode | undefined>
-  >
-) => {
-  if (scriptureDetails == null || isAvailable) {
-    //For some reason, even if I checked that scripture variable is not nullish. If do not check that it is, TypeScripts pops up error : "scripture might be undefined." So I checked it manually.
-    setStateActionFunctionForSetError(NOT_FOUND_RESPONSE_CODE);
-    return null;
-  }
-
-  try {
-    const response = await axiosCredentialInstance.get<Response<VerseBothDTO>>(
-      `/verse/${scriptureDetails.getNumber()}/${sectionNumber}/${chapterNumber}/${verseNumber}`
-    );
-
-    switch (response.status) {
-      case OK_RESPONSE_CODE:
-        setStateActionFunctionForSetError(undefined);
-
-        return response.data.data;
-      case NOT_FOUND_RESPONSE_CODE:
-        setStateActionFunctionForSetError(NOT_FOUND_RESPONSE_CODE);
-        return null;
-      case TOO_MANY_REQUEST_RESPONSE_CODE:
-        setStateActionFunctionForSetError(TOO_MANY_REQUEST_RESPONSE_CODE);
-        return null;
-      default:
-        setStateActionFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-        return null;
-    }
-  } catch (error) {
-    addToast(SOMETHING_WENT_WRONG_TOAST);
-    console.error(error);
-    setStateActionFunctionForSetError(INTERNAL_SERVER_ERROR_RESPONSE_CODE);
-    return null;
-  }
-};
+import axios from "axios";
+import { getErrorComponent } from "@/util/reactUtil";
+import { ChapterUpperDTO } from "@/types/classes/Chapter";
+import { useScripturePreferences } from "@/hooks/useScripture";
+import {
+  isNoAuthenticationRequestErrorCode,
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  PROJECT_URL,
+  OK_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
+import { getScriptureIfCodeIsValid } from "@/util/scriptureDetails";
 
 interface Props {}
 
 const Page: NextPage<Props> = ({}) => {
-  const [error, setError] = useState<
-    NoAuthenticationRequestErrorCode | undefined
-  >(undefined);
-
-  const [showFootnotes, setShowFootnotes] = useState<boolean>(true);
-
-  const [showTranslation, setShowTranslation] = useState<boolean>(true);
-  const [showOriginalText, setShowOriginalText] = useState<boolean>(true);
-  const [showTransliteration, setShowTransliteration] =
-    useState<boolean>(false);
-
-  const [textVariation, setTextVariation] =
-    useState<T_ScriptureTextVariationKey>("usual");
   const [shareText, setShareText] = useState<string>("");
   const [isSaved, setIsSaved] = useState<boolean>(false);
 
@@ -124,12 +67,6 @@ const Page: NextPage<Props> = ({}) => {
   const [isCollectionModalOpen, setIsCollectionModalOpen] =
     useState<boolean>(false);
 
-  const [preferredTranslationIds, setPreferredTranslationIds] = useState<
-    Set<Key>
-  >(new Set([]));
-
-  const { preferredScriptureContext } = useScripture();
-
   const {
     scriptureCode: scriptureCodeParam,
     sectionNumber: sectionNumberParam,
@@ -137,18 +74,18 @@ const Page: NextPage<Props> = ({}) => {
     verseNumber: verseNumberParam,
   } = useParams<T_VersePageParams>();
 
-  const scriptureDetails: Readonly<ScriptureDetails> | null =
+  const scriptureDetail: Readonly<ScriptureDetail> | null =
     getScriptureIfCodeIsValid(scriptureCodeParam);
 
-  const sectionNumber: number = Number.parseInt(sectionNumberParam);
-  const chapterNumber: number = Number.parseInt(chapterNumberParam);
-  const verseNumber: number = Number.parseInt(verseNumberParam);
-
-  const isAvailable: boolean =
-    scriptureDetails == null ||
-    Number.isNaN(sectionNumber) ||
-    Number.isNaN(chapterNumber) ||
-    Number.isNaN(verseNumber);
+  const {
+    preference,
+    setTranslationIdMultiple,
+    setShowTranslations,
+    setShowTransliterations,
+    setShowOriginalText,
+    setOriginalTextVariation,
+    setShowFootnotes,
+  } = useScripturePreferences("t"); //TODO: Amend;
 
   const { data: verse = null, isLoading } = useQuery({
     queryKey: [
@@ -160,12 +97,10 @@ const Page: NextPage<Props> = ({}) => {
     ],
     queryFn: async () =>
       await fetchVerse(
-        scriptureDetails,
-        sectionNumber,
-        chapterNumber,
-        verseNumber,
-        isAvailable,
-        setError
+        scriptureDetail,
+        sectionNumberParam,
+        chapterNumberParam,
+        verseNumberParam
       ),
     refetchOnWindowFocus: false,
     staleTime: Infinity,
@@ -175,12 +110,22 @@ const Page: NextPage<Props> = ({}) => {
 
   if (isLoading || isUserLoading) return <LoadingSpinnerFullH />;
 
-  if (
-    (error && error === NOT_FOUND_RESPONSE_CODE) ||
-    scriptureDetails == null ||
-    verse == null ||
-    !isAvailable
-  )
+  if (verse == null || isNoAuthenticationRequestErrorCode(verse))
+    return getErrorComponent({
+      code: verse,
+      preferredErrorComponent: {
+        [NOT_FOUND_HTTP_RESPONSE_CODE]: (
+          <VersePageNotFoundComponent
+            scriptureCode={scriptureCodeParam}
+            sectionNumber={sectionNumberParam}
+            chapterNumber={chapterNumberParam}
+            verseNumber={verseNumberParam}
+          />
+        ),
+      },
+    });
+
+  if (scriptureDetail === null)
     return (
       <VersePageNotFoundComponent
         scriptureCode={scriptureCodeParam}
@@ -190,81 +135,55 @@ const Page: NextPage<Props> = ({}) => {
       />
     );
 
-  if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
-    return <TooManyRequest />;
-  if (error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE)
-    return <ServerError />;
+  const options = preference.getOptions();
 
-  const handleShare = async (platform: string) => {
-    console.log(`Sharing content to: ${platform}`);
-    //TODO: Will be implemented
-  };
-
-  const verseText: string =
-    verse.getVariation().getTextWithVariation(textVariation) ??
-    verse.getVariation().getUsual();
+  const verseNumber = verse.getNumber();
+  const verseText: string = verse.getTextOfVariationOrUsual(
+    options.getVariation()
+  );
 
   const chapter: Readonly<ChapterUpperDTO> = verse.getChapter();
+  const chapterNumber = chapter.getNumber();
+
   const section: Readonly<SectionUpperDTO> = chapter.getSection();
+  const sectionNameInOwnLanguage: string = section.getName();
+  const sectionMeaning: string =
+    section.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
+  const sectionNumber = section.getNumber();
 
   const scripture: Readonly<ScriptureDTO> = section.getScripture();
-
+  const scriptureCode: T_ScriptureCode = scripture.getCode();
   const scriptureMeaning: string =
-    scripture
-      .getMeanings()
-      .find((e) => e.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
-      ?.getText() ?? "Scripture";
-
-  const scriptureCode: T_ValidScriptureCode = scripture.getCode();
-
+    scripture.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
   const scriptureNameInOwnLanguage: string = scripture.getName();
 
-  const sectionNameInOwnLanguage: string = section.getName();
+  const transliteration: string | ReactNode =
+    verse.getTransliterationTextOrNull(DEFAULT_LANG_CODE) ?? (
+      <span className="italic">No transliteration available.</span>
+    );
 
-  const sectionMeaning: string =
-    section
-      .getMeanings()
-      .find((e) => e.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
-      ?.getText() ?? "Section";
-
-  const preferredFont: string =
-    preferredScriptureContext.preferencesByScripture[scripture.getCode()]
-      .preferredScriptureFont;
-
-  const transliteration: string | JSX.Element = verse
-    .getTransliterations()
-    .find((t) => t.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
-    ?.getTransliteration() ?? (
-    <span className="italic">No transliteration available.</span>
-  );
-
-  const { doesNextVerseExists, doesPreviousVerseExists } = getVerseInformation(
-    scriptureCode,
-    sectionNumber,
-    chapterNumber,
-    verseNumber
-  );
+  const { doesNextVerseExists, doesPreviousVerseExists } =
+    scriptureDetail.getVerseInformation(
+      sectionNumber,
+      chapterNumber,
+      verseNumber
+    );
 
   const translationTexts: ReadonlyArray<TranslationTextDTO> =
     verse.getTranslationTexts();
 
-  const shareTextString: string = getShareTextForVersePage(
-    scriptureMeaning,
-    scriptureNameInOwnLanguage,
-    sectionNameInOwnLanguage,
-    sectionMeaning,
-    chapterNumber,
-    preferredTranslationIds,
-    verseText,
-    verseNumber,
+  const shareTextString: string = getShareTextOfVerse(
+    verse,
+    chapter,
     translationTexts
   );
 
-  setPreferredTranslationIds(
-    preferredScriptureContext.preferencesByScripture[
-      scriptureDetails?.getCode()
-    ].preferredTranslationIdsMultiple
-  );
+  const showFootnotes = options.getShowFootnotes();
+  const showTransliteration = options.getShowTransliteration();
+  const showOriginalText = options.getShowOriginalText();
+  const showTranslation = options.getShowTranslation();
+  const textVariation = options.getVariation();
+  const preferredFont = preference.getPreferredFont();
 
   return (
     <Fragment>
@@ -321,7 +240,7 @@ const Page: NextPage<Props> = ({}) => {
                   closeDelay={0}
                 >
                   <span className="flex items-center justify-center">
-                    {/*Since items-center tag does not effect this span as it is located in Tooltip, I had to adjust it again. */}
+                    {/*Since items-center tag does not affect this span as it is located in Tooltip, I had to adjust it again. */}
                     <Link isDisabled={true} color="foreground">
                       <IoPlayOutline size={21} />
                     </Link>
@@ -386,9 +305,9 @@ const Page: NextPage<Props> = ({}) => {
                 (
                   t //Weeding out the unwanted translations.
                 ) =>
-                  preferredTranslationIds.has(
-                    t.getTranslation().getId().toString()
-                  )
+                  preference
+                    .getPreferredTranslationIdMultiple()
+                    .has(t.getTranslation().getId())
               )
               .map((translationText, i) => (
                 <div key={i}>
@@ -463,32 +382,22 @@ const Page: NextPage<Props> = ({}) => {
       <VersePageTranslationModal
         isModalOpen={isTranslationModelOpen}
         setIsModalOpen={setIsTranslationModelOpen}
-        preferredTranslationIds={preferredTranslationIds}
-        setPreferredTranslationIds={setPreferredTranslationIds}
-        translationTexts={translationTexts}
+        preference={preference}
+        scriptureDetail={scriptureDetail}
+        verse={verse}
+        setTranslationIdMultiple={setTranslationIdMultiple}
       />
 
       <VerseAndChapterPageSettingsModel
         isSettingsModelOpen={isSettingsModelOpen}
         setIsSettingsModelOpen={setIsSettingsModelOpen}
-        showTranslation={showTranslation}
-        setShowTransliteration={setShowTransliteration}
-        textSymbol={scriptureDetails.getVaritionSymbols().getUsual()}
-        textSimplifiedSymbol={scriptureDetails
-          .getVaritionSymbols()
-          .getSimplified()}
-        textWithoutVowelSymbol={scriptureDetails
-          .getVaritionSymbols()
-          .getWithoutVowel()}
-        setShowOriginalText={setShowOriginalText}
-        setShowTranslation={setShowTranslation}
-        showOriginalText={showOriginalText}
-        showTransliteration={showTransliteration}
-        preferredFont={preferredFont}
-        setTextVariation={setTextVariation}
-        textVariation={textVariation}
-        showFootnotes={showFootnotes}
+        scriptureDetail={scriptureDetail}
+        preference={preference}
+        setShowTranslation={setShowTranslations}
+        setShowTransliteration={setShowTransliterations}
         setShowFootnotes={setShowFootnotes}
+        setShowOriginalText={setShowOriginalText}
+        setOriginalTextVariation={setOriginalTextVariation}
       />
 
       <VersePageShareModal
@@ -518,3 +427,55 @@ const Page: NextPage<Props> = ({}) => {
 };
 
 export default Page;
+
+const fetchVerse = async (
+  scriptureDetail: Readonly<ScriptureDetail> | null,
+  sectionNumber: number | string,
+  chapterNumber: number | string,
+  verseNumber: number | string
+): Promise<VerseBothDTO | T_NoAuthenticationRequestErrorCode> => {
+  const parsedSectionNumber = Number(sectionNumber);
+  const parsedChapterNumber = Number(chapterNumber);
+  const parsedVerseNumber = Number(verseNumber);
+
+  if (
+    scriptureDetail == null ||
+    Number.isNaN(parsedSectionNumber) ||
+    Number.isNaN(parsedChapterNumber) ||
+    Number.isNaN(parsedVerseNumber)
+  )
+    return NOT_FOUND_HTTP_RESPONSE_CODE;
+
+  const scriptureNumber = scriptureDetail.getNumber();
+  try {
+    const url: URL = new URL(
+      `/verse/${scriptureNumber}/${parsedSectionNumber}/${parsedChapterNumber}/${parsedVerseNumber}`
+    );
+
+    const response = await axiosCredentialInstance.get<
+      Response<T_VerseBothDTOConstructorParametersJSON>
+    >(url.pathname);
+
+    if (response.status === OK_HTTP_RESPONSE_CODE)
+      return VerseBothDTO.createFromJSON(response.data.data);
+
+    throw new Error("Unexpected result. Status: " + response.status);
+  } catch (error) {
+    addToast(SOMETHING_WENT_WRONG_TOAST);
+    console.error(error);
+
+    if (
+      !axios.isAxiosError(error) ||
+      !error.response ||
+      !isNoAuthenticationRequestErrorCode(error.response.status)
+    )
+      return INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE;
+
+    return error.response.status;
+  }
+};
+
+const handleShare = async (platform: string) => {
+  console.log(`Sharing content to: ${platform}`);
+  //TODO: Will be implemented
+};

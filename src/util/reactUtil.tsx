@@ -1,6 +1,20 @@
-import { FootNoteDTO } from "@/types/types";
 import { Tooltip } from "@heroui/tooltip";
 import { MdVerified } from "react-icons/md";
+import {
+  T_AuthenticationRequestErrorCode,
+  T_NoAuthenticationRequestErrorCode,
+} from "@/types/response";
+import { ReactNode } from "react";
+import NotFound from "@/components/UI/NotFound";
+import TooManyRequest from "@/components/UI/TooManyRequest";
+import InternalServerError from "@/components/UI/InternalServerError";
+
+import { FootNoteDTO } from "@/types/classes/FootNote";
+import {
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+} from "./constants";
 
 export const RoleIcon: Record<
   string,
@@ -27,16 +41,20 @@ export function injectTooltips(
   text: string,
   footnotes: FootNoteDTO[]
 ): Array<string | JSX.Element> {
-  const sortedFootnotes = [...footnotes].sort((a, b) => a.index - b.index);
+  const sortedFootnotes = [...footnotes].sort(
+    (a, b) => a.getIndex() - b.getIndex()
+  );
 
   const result: Array<string | JSX.Element> = [];
   let lastIndex = 0;
 
-  sortedFootnotes.forEach(({ index, text }, i) => {
+  sortedFootnotes.forEach((dto, i) => {
+    const index = dto.getIndex();
+
     if (index > lastIndex) result.push(text.slice(lastIndex, index));
 
     if (index < text.length) {
-      const charAtIndex = text[index];
+      const charAtIndex = dto.getText()[index] ?? "";
       result.push(charAtIndex);
 
       result.push(
@@ -55,3 +73,27 @@ export function injectTooltips(
 
   return result;
 }
+
+export const getErrorComponent = (
+  data: {
+    code:
+      | T_NoAuthenticationRequestErrorCode
+      | T_AuthenticationRequestErrorCode
+      | null;
+    preferredErrorComponent?: Partial<
+      Record<T_NoAuthenticationRequestErrorCode, ReactNode>
+    >;
+  } = { code: NOT_FOUND_HTTP_RESPONSE_CODE, preferredErrorComponent: {} }
+): ReactNode => {
+  const { code, preferredErrorComponent = {} } = data;
+  switch (code) {
+    case NOT_FOUND_HTTP_RESPONSE_CODE:
+      return preferredErrorComponent[code] ?? <NotFound />;
+    case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
+      return preferredErrorComponent[code] ?? <TooManyRequest />;
+    case INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE:
+      return preferredErrorComponent[code] ?? <InternalServerError />;
+    default:
+      return <NotFound />;
+  }
+};

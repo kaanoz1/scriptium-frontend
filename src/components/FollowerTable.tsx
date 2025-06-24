@@ -1,11 +1,11 @@
 import { Response } from "@/types/response";
 import { Column } from "@/types/types";
 import {
-  CONFLICT_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
   displayErrorToast,
   formatDate,
   getFormattedNameAndSurname,
-  OK_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
   PROJECT_URL,
   TOOL_TIP_CLASS_NAMES,
 } from "@/util/utils";
@@ -57,9 +57,9 @@ const FollowerTable: NextPage<Props> = () => {
       >(`/follow/follower/1`);
 
       switch (response.status) {
-        case OK_RESPONSE_CODE:
+        case OK_HTTP_RESPONSE_CODE:
           return response.data.data;
-        case CONFLICT_RESPONSE_CODE:
+        case CONFLICT_HTTP_RESPONSE_CODE:
           return [];
         default:
           return [];
@@ -118,7 +118,7 @@ const FollowerTable: NextPage<Props> = () => {
           <User
             avatarProps={{
               radius: "lg",
-              src: imagePath,
+              src: imagePath ?? "",
             }}
             name={getFormattedNameAndSurname(followerUser)}
           >
