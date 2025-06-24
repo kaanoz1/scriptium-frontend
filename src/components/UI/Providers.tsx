@@ -27,18 +27,18 @@ const Providers: FC<Props> = ({ children }) => {
       <ToastProvider />
       <QueryClientProvider client={queryClient}>
         <ScriptureProvider>
-          <AnimatePresence mode="wait">
-            <motion.div key={pathname}>
-              <FrozenRoute>
-                <UserProvider>
+          <UserProvider>
+            <AnimatePresence mode="wait">
+              <motion.div key={pathname}>
+                <FrozenRoute>
                   <Navbar showSearchBar={pathname != "/"} />
                   {children}
                   <Footer />
                   <ReactQueryDevtools />
-                </UserProvider>
-              </FrozenRoute>
-            </motion.div>
-          </AnimatePresence>
+                </FrozenRoute>
+              </motion.div>
+            </AnimatePresence>
+          </UserProvider>
         </ScriptureProvider>
       </QueryClientProvider>
     </HeroUIProvider>

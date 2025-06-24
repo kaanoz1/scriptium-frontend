@@ -28,11 +28,6 @@ const ChapterVerse: FC<Props> = ({
   setStateActionFunctionForShareText,
   scriptureDetail,
 }) => {
-  console.log(
-    "render:",
-    preference.getPreferredOriginalScriptureTextVariationKey()
-  );
-
   const transliteration: string | ReactNode =
     verse.getTransliterationTextOrNull(DEFAULT_LANG_CODE) ?? (
       <span className="italic">No transliteration available.</span>

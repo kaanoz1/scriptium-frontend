@@ -1,7 +1,14 @@
 "use client";
 import Logo from "./Logo";
 import Link from "next/link";
-import { FaUser, FaBook, FaMoon, FaSun } from "react-icons/fa";
+import {
+  FaUser,
+  FaBook,
+  FaMoon,
+  FaSun,
+  FaBookOpen,
+  FaChartBar,
+} from "react-icons/fa";
 import { FC, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import SearchBar from "./SearchBar";
@@ -15,6 +22,7 @@ import { Tooltip } from "@heroui/tooltip";
 import {
   NavbarBrand,
   NavbarContent,
+  NavbarItem,
   Navbar as NavbarWrapper,
 } from "@heroui/navbar";
 import {
@@ -29,7 +37,7 @@ import { useUser } from "@/hooks/useUser";
 import { LuUser } from "react-icons/lu";
 import { MdLogout } from "react-icons/md";
 import { IoBookmarkOutline } from "react-icons/io5";
-import { HiOutlineExclamation } from "react-icons/hi";
+import { HiChevronDown, HiOutlineExclamation } from "react-icons/hi";
 import { HiOutlineCog } from "react-icons/hi";
 import { MdOutlineLanguage } from "react-icons/md";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
@@ -41,6 +49,7 @@ import {
   PROJECT_NAME,
   SIGN_IN_URL,
 } from "@/util/constants";
+import { Button } from "@heroui/button";
 
 type Props = {
   showSearchBar?: boolean;
@@ -164,27 +173,71 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
           </button>
         </Tooltip>
 
-        <Tooltip
-          classNames={TOOL_TIP_CLASS_NAMES}
-          showArrow
-          placement="bottom"
-          content={`About ${PROJECT_NAME}`}
-          delay={30}
-          closeDelay={5}
-        >
-          <Link href="/about" aria-label="About">
-            <motion.div
-              whileHover={{
-                scale: 1.3,
-                transition: { duration: 0.3, ease: "easeInOut" },
-              }}
-              whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-xl text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600"
-            >
-              <FaBook size={20} />
-            </motion.div>
-          </Link>
-        </Tooltip>
+        <Dropdown>
+          <NavbarItem>
+            <DropdownTrigger>
+              <Button
+                disableRipple
+                radius="sm"
+                variant="light"
+                endContent={
+                  <HiChevronDown
+                    size={16}
+                    className="text-black dark:text-white"
+                  />
+                }
+                className="text-black dark:text-white font-medium px-2"
+                aria-label={`About ${PROJECT_NAME}`}
+              >
+                <FaBook size={20} className="text-black dark:text-white mr-1" />
+              </Button>
+            </DropdownTrigger>
+          </NavbarItem>
+
+          <DropdownMenu
+            aria-label="About Menu"
+            className="min-w-[260px] px-1"
+            itemClasses={{
+              base: "rounded-md transition-all duration-150 hover:bg-neutral-100 dark:hover:bg-neutral-800",
+            }}
+          >
+            <DropdownItem key="about" textValue="About">
+              <Link
+                href="/about"
+                className="flex items-center gap-3 px-2 py-2 hover:no-underline"
+              >
+                <FaBookOpen
+                  size={22}
+                  className="text-neutral-800 dark:text-neutral-300"
+                />
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold">About Project</span>
+                  <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Learn more about our mission and {PROJECT_NAME}
+                  </span>
+                </div>
+              </Link>
+            </DropdownItem>
+
+            <DropdownItem key="statistics" textValue="Statistics">
+              <Link
+                href="/statistics"
+                className="flex items-center gap-3 px-2 py-2 hover:no-underline"
+              >
+                <FaChartBar
+                  size={22}
+                  className="text-neutral-800 dark:text-neutral-300"
+                />
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold">Site Statistics</span>
+                  <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                    View user and usage data
+                  </span>
+                </div>
+              </Link>
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
 
         <Tooltip
           classNames={TOOL_TIP_CLASS_NAMES}
@@ -228,7 +281,6 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
             </Dropdown>
           </aside>
         </Tooltip>
-
         <Tooltip
           classNames={TOOL_TIP_CLASS_NAMES}
           showArrow

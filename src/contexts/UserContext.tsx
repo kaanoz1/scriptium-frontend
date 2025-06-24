@@ -1,7 +1,6 @@
 "use client";
 
 import { Response } from "@/types/response";
-import axios from "axios";
 import React, { createContext, ReactNode } from "react";
 import {
   QueryObserverResult,
@@ -56,8 +55,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           withCredentials: true,
         })
         .then((response) => UserOwnDTO.createFromJSON(response.data.data)),
-    staleTime: 1000 * 60 * 60,
-    refetchInterval: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 60 * 60,
+    refetchInterval: 1000 * 60 * 60 * 60,
   });
 
   return (

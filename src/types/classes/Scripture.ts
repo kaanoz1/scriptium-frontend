@@ -1,6 +1,5 @@
 import {
   T_OriginalScriptureTextFont,
-  T_OriginalScriptureTextFontOfScriptureWithCodeT,
   T_OriginalScriptureTextVariationKey,
   T_ScriptureCode,
   T_SystemLanguageCode,
@@ -468,7 +467,7 @@ export class ScripturePreference {
     try {
       const parsedArray: number[] = Array.from(preferredTranslationIdMultiple)
 
-        .map((e, i) => {
+        .map((e) => {
           const num = Number(e);
           if (Number.isNaN(num)) {
             throw new Error(
