@@ -3,10 +3,11 @@ import { CollectionDTO } from "@/types/classes/Collection";
 import { ResponseMessage } from "@/types/response";
 import { RefetchDataFunctionType } from "@/types/types";
 import {
-  displayErrorToast,
   OK_HTTP_RESPONSE_CODE,
   TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
-} from "@/util/utils";
+} from "@/util/constants";
+import { displayErrorToast } from "@/util/utils";
+
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -15,14 +16,17 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/modal";
+import { addToast } from "@heroui/toast";
+import { QueryClient } from "@tanstack/react-query";
 import { Dispatch, FC, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  refetchDataFunction: RefetchDataFunctionType<unknown>;
   collection: CollectionDTO | null;
+  queryKey: readonly unknown[];
+  queryClient: QueryClient;
 }
 
 type DeleteCollectionForm = {
@@ -35,7 +39,8 @@ const CollectionDeleteModal: FC<Props> = ({
   collection,
   setIsModalOpen,
   isModalOpen,
-  refetchDataFunction,
+  queryClient,
+  queryKey,
 }) => {
   const {
     handleSubmit,
@@ -49,6 +54,8 @@ const CollectionDeleteModal: FC<Props> = ({
   }
 
   const onSubmit = async () => {
+    if (!collection) return;
+
     try {
       const response = await axiosCredentialInstance.delete<ResponseMessage>(
         `/collection/delete`,
@@ -56,21 +63,35 @@ const CollectionDeleteModal: FC<Props> = ({
       );
 
       switch (response.status) {
-        case OK_HTTP_RESPONSE_CODE:
-          await refetchDataFunction();
+        case OK_HTTP_RESPONSE_CODE: {
+          // ✅ QueryClient cache'inden sil
+          queryClient.setQueryData<CollectionDTO[]>(
+            queryKey,
+            (prev) =>
+              prev?.filter((c) => c.getId() !== collection.getId()) ?? []
+          );
+
+          addToast({
+            title: "Collection Deleted",
+            description: `The collection "${collection.getName()}" was successfully deleted.`,
+            color: "success",
+          });
+
           setIsModalOpen(false);
           return;
+        }
 
         case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
           setError("root", {
             message:
-              "You are trying to delete too frequently. Slow down and try later.",
+              "You're deleting too frequently. Please slow down and try again later.",
           });
           return;
+
         default:
           setError("root", {
             message:
-              "Something went wrong unexpectedly. This might has something to do with our end. Try again later.",
+              "Unexpected error occurred. This might be on our side. Please try again later.",
           });
           return;
       }
@@ -78,11 +99,9 @@ const CollectionDeleteModal: FC<Props> = ({
       setError("root", {
         message: "An error occurred while deleting the collection.",
       });
+
       console.error(error);
-
       displayErrorToast(error);
-
-      return;
     }
   };
 

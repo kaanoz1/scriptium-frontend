@@ -1,4 +1,4 @@
-import { PROJECT_NAME } from "@/util/utils";
+import { PROJECT_NAME } from "@/util/constants";
 import {
   Modal,
   ModalContent,

@@ -1,102 +1,93 @@
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+// Refactored VersePageTabComments.tsx for comment flow
 
-import { useQuery } from "@tanstack/react-query";
-import { NextPage } from "next";
 import { useState } from "react";
-
-import TooManyRequestComponent from "../../../../../../components/UI/TooManyRequest";
-import ServerErrorComponent from "../../../../../../components/UI/ServerErrorComponent";
-import LoadingSpinner from "../../../../../../components/UI/LoadingSpinner";
 import { Button } from "@heroui/button";
-import { IoIosInformationCircleOutline } from "react-icons/io";
-import CommentInformationModal from "../../../../../../components/UI/CommentInformationModal";
+import { useQuery } from "@tanstack/react-query";
 import { GoPlusCircle } from "react-icons/go";
+import { IoIosInformationCircleOutline } from "react-icons/io";
+
 import CreateCommentComponent from "../../../../../../components/UI/CreateCommentComponent";
-import EditCommentComponent from "../../../../../../components/UI/EditCommentComponent";
-import VersePageComment from "./VersePageComment";
-import { VerseDTO } from "@/types/classes/Verse";
+import CommentInformationModal from "../../../../../../components/UI/CommentInformationModal";
+import LoadingSpinner from "../../../../../../components/UI/LoadingSpinner";
+import RecursiveComment from "./RecursiveComment";
+import { getErrorComponent } from "@/util/reactUtil";
+import { UserOwnDTO } from "@/types/classes/User";
+import { VerseDTO, VerseSimpleDTO } from "@/types/classes/Verse";
+import {
+  CommentOwnDTO,
+  CommentOwnerDTO,
+  T_CommentOwnerDTOConstructorParametersJSON,
+} from "@/types/classes/Comment";
+import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import {
+  T_AuthenticationRequestErrorCode,
+  ResponseMessage,
+  Response,
+} from "@/types/response";
+import {
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  isAuthenticationRequestErrorCode,
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+  UNAUTHORIZED_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
+import { SOMETHING_WENT_WRONG_TOAST } from "@/util/utils";
+import { addToast } from "@heroui/toast";
+import axios from "axios";
+import { Toast } from "@/types/types";
+import EditCommentComponent from "@/components/UI/EditCommentComponent";
 
 interface Props {
-  user: UserDTO;
+  user: UserOwnDTO;
   verse: VerseDTO;
 }
 
-function isCommentDTO(value: unknown): value is CommentDTO {
-  return typeof value === "object" && value !== null && "id" in value;
-}
-
-const VersePageTabComments: NextPage<Props> = ({ verse, user }) => {
-  const [error, setError] = useState<
-    AuthenticationRequestErrorCode | undefined
-  >(undefined);
-
+const VersePageTabComments = ({ user, verse }: Props) => {
+  const [selectedComment, setSelectedComment] =
+    useState<CommentOwnerDTO | null>(null);
   const [createNewComment, setCreateNewComment] = useState<
-    CommentDTO | boolean
+    CommentOwnerDTO | boolean
   >(false);
-
-  const [editComment, setEditComment] = useState<CommentDTO | null>(null);
-
+  const [editComment, setEditComment] = useState<CommentOwnDTO | null>(null);
   const [isCommentInformationModalOpen, setIsCommentInformationModalOpen] =
-    useState<boolean>(false);
+    useState(false);
 
-  const [selectedComment, setSelectedComment] = useState<CommentDTO | null>(
-    null
-  );
+  const queryKey: readonly unknown[] = [
+    "comments",
+    verse.getId(),
+    user.getId(),
+  ];
 
   const {
-    data: allComments = [],
+    data: comments = null,
     isLoading,
     refetch,
-  } = useQuery<CommentDTO[]>({
-    queryKey: ["comments", verse.id],
-    queryFn: async () => await fetchComments(),
+  } = useQuery({
+    queryKey: queryKey,
+    queryFn: async () => await fetchComments(verse),
   });
 
-  const fetchComments = async () => {
-    const response = await axiosCredentialInstance.get<Response<CommentDTO[]>>(
-      `/comment/verse/${verse.id}`
-    );
-
-    switch (response.status) {
-      case OK_RESPONSE_CODE:
-        setError(undefined);
-
-        return response.data.data;
-      default:
-        setError(response.status as AuthenticationRequestErrorCode);
-        return [];
-    }
-  };
-
   if (isLoading) return <LoadingSpinner />;
-  if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
-    return <TooManyRequestComponent />;
-  if (error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE)
-    return <ServerErrorComponent />;
+  if (comments === null || isAuthenticationRequestErrorCode(comments))
+    return getErrorComponent({ code: comments });
 
-  const getChildComments = (commentId: number) =>
-    allComments.filter((c) => c.parentCommentId === commentId);
-
-  let topLevelComments: CommentDTO[] = [];
-  let showTitle = "Reflections";
-
-  if (!selectedComment)
-    topLevelComments = allComments.filter((c) => c.parentCommentId == null);
-  else {
-    topLevelComments = [selectedComment];
-    showTitle = "Replies for Selected Reflection:";
-  }
+  const filteredComments = selectedComment
+    ? comments.filter(
+        (c) => c.getParentComment()?.getId() === selectedComment.getId()
+      )
+    : comments.filter((c) => c.getParentComment() === null);
 
   return (
     <div className="space-y-6">
       <h2 className="font-semibold text-base mb-4 flex justify-between">
-        {showTitle}
+        {selectedComment ? "Replies for Selected Reflection:" : "Reflections"}
         <div className="flex gap-2">
           <Button
             isIconOnly
             variant="light"
             color="warning"
-            onPress={() => setCreateNewComment((prev) => !prev)}
+            onPress={() => setCreateNewComment(selectedComment ?? true)}
           >
             <GoPlusCircle size={19} />
           </Button>
@@ -113,13 +104,12 @@ const VersePageTabComments: NextPage<Props> = ({ verse, user }) => {
 
       {createNewComment && (
         <CreateCommentComponent
-          entityId={verse.id}
-          entityType="verse"
-          parentComment={
-            isCommentDTO(createNewComment) ? createNewComment : undefined
-          }
           user={user}
           refetchDataFunction={refetch}
+          entity={verse}
+          parentComment={
+            typeof createNewComment === "object" ? createNewComment : null
+          }
           stateControlFunctionOfCreateNewComment={setCreateNewComment}
         />
       )}
@@ -127,60 +117,29 @@ const VersePageTabComments: NextPage<Props> = ({ verse, user }) => {
       {editComment && (
         <EditCommentComponent
           comment={editComment}
-          parentComment={allComments.find(
-            (c) => c.id == editComment.parentCommentId
-          )}
           user={user}
           stateControlFunctionOfEditComment={setEditComment}
-          refetchDataFunction={refetch}
+          queryKey={queryKey}
         />
       )}
-
-      {topLevelComments.length === 0 && (
-        <div className="flex justify-center items-center text-sm py-10">
-          No reflections yet.
-        </div>
+      {filteredComments.length === 0 && (
+        <div className="text-sm text-center py-10">No reflections yet.</div>
       )}
 
-      {topLevelComments.map((comment) => {
-        const childComments = getChildComments(comment.id);
-
-        return (
-          <div key={comment.id} className="space-y-2">
-            <VersePageComment
-              stateControlFunctionOfEditComment={setEditComment}
-              handleUnlikeCommentNote={handleCommentVerseUnlike}
-              handleLike={handleCommentVerseLike}
-              verse={verse}
-              comment={comment}
-              user={user}
-              refetchDataFunction={refetch}
-              stateControlFunctionOfSelectedComment={setSelectedComment}
-              stateControlFunctionOfCreateNewComment={setCreateNewComment}
-            />
-
-            {childComments.length > 0 && (
-              <div className="pl-10 mt-2 space-y-2">
-                {childComments.map((child) => (
-                  <VersePageComment
-                    verse={verse}
-                    stateControlFunctionOfEditComment={setEditComment}
-                    handleUnlikeCommentNote={handleCommentVerseUnlike}
-                    handleLike={handleCommentVerseLike}
-                    refetchDataFunction={refetch}
-                    key={child.id}
-                    comment={child}
-                    user={user}
-                    stateControlFunctionOfSelectedComment={setSelectedComment}
-                    stateControlFunctionOfCreateNewComment={setCreateNewComment}
-                    isChild
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {filteredComments.map((comment) => (
+        <RecursiveComment
+          key={comment.getId()}
+          comment={comment}
+          allComments={comments}
+          verse={verse}
+          user={user}
+          refetch={refetch}
+          stateControlFunctionOfCreateNewComment={setCreateNewComment}
+          stateControlFunctionOfSelectedComment={setSelectedComment}
+          stateControlFunctionOfEditComment={setEditComment}
+          queryKey={queryKey}
+        />
+      ))}
 
       {selectedComment && (
         <div className="mt-4">
@@ -203,3 +162,73 @@ const VersePageTabComments: NextPage<Props> = ({ verse, user }) => {
 };
 
 export default VersePageTabComments;
+
+const fetchComments = async (
+  verse: VerseSimpleDTO
+): Promise<Array<CommentOwnerDTO> | T_AuthenticationRequestErrorCode> => {
+  try {
+    const verseId = verse.getId();
+
+    const response = await axiosCredentialInstance.get<
+      Response<T_CommentOwnerDTOConstructorParametersJSON[]>
+    >(`/comment/verse/${verseId}`);
+
+    if (response.status === OK_HTTP_RESPONSE_CODE)
+      return response.data.data.map(CommentOwnerDTO.createFromJSON);
+
+    throw new Error("Unexpected status: " + response.status);
+  } catch (error) {
+    if (!axios.isAxiosError<ResponseMessage>(error)) {
+      addToast(SOMETHING_WENT_WRONG_TOAST);
+      console.error(error);
+      return INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE;
+    }
+
+    if (error.code === "ERR_NETWORK") {
+      const networkErrorToast: Toast = {
+        title: "Network Error!",
+        description:
+          "We couldn’t connect to the server. Please check your internet or try again later.",
+        color: "warning",
+      };
+      addToast(networkErrorToast);
+      console.error(error);
+      return INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE;
+    }
+
+    switch (error.status) {
+      case NOT_FOUND_HTTP_RESPONSE_CODE:
+        addToast({
+          title: "No Comments Found!",
+          description: "We couldn't find any comments for this verse.",
+          color: "secondary",
+        });
+        return NOT_FOUND_HTTP_RESPONSE_CODE;
+
+      case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
+        addToast({
+          title: "Too many requests!",
+          description:
+            "You're sending requests too frequently. Try again later.",
+          color: "warning",
+        });
+        return TOO_MANY_REQUEST_HTTP_RESPONSE_CODE;
+
+      case UNAUTHORIZED_HTTP_RESPONSE_CODE:
+        addToast({
+          title: "You need to login.",
+          description: "Please sign in to view or write comments.",
+          color: "danger",
+        });
+        return UNAUTHORIZED_HTTP_RESPONSE_CODE;
+
+      default:
+        addToast({
+          title: "Unexpected Error!",
+          description: "An unknown error occurred while fetching comments.",
+          color: "warning",
+        });
+        return INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE;
+    }
+  }
+};

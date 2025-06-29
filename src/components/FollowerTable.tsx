@@ -1,12 +1,9 @@
 import { Response } from "@/types/response";
 import { Column } from "@/types/types";
 import {
-  CONFLICT_HTTP_RESPONSE_CODE,
   displayErrorToast,
   formatDate,
   getFormattedNameAndSurname,
-  OK_HTTP_RESPONSE_CODE,
-  PROJECT_URL,
   TOOL_TIP_CLASS_NAMES,
 } from "@/util/utils";
 import { Button } from "@heroui/button";
@@ -32,16 +29,13 @@ import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import LoadingSpinner from "./UI/LoadingSpinner";
 import FollowerTableRemoveFollowersConfirmationModal from "./FollowerTableRemoveFollowersConfirmationModal";
 import { FollowerUserDTO } from "@/types/classes/Follow";
+import {
+  OK_HTTP_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
+  PROJECT_URL,
+} from "@/util/constants";
 
 interface Props {}
-
-const columns: Array<Column> = [
-  { key: "user", label: "USER" },
-  { key: "username", label: "USERNAME" },
-  { key: "occurredAt", label: "FOLLOWED AT" },
-  { key: "isFrozen", label: "FROZEN?" },
-  { key: "actions", label: "ACTIONS" },
-];
 
 const FollowerTable: NextPage<Props> = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -219,3 +213,11 @@ const FollowerTable: NextPage<Props> = () => {
 };
 
 export default FollowerTable;
+
+const columns: Array<Column> = [
+  { key: "user", label: "USER" },
+  { key: "username", label: "USERNAME" },
+  { key: "occurredAt", label: "FOLLOWED AT" },
+  { key: "isFrozen", label: "FROZEN?" },
+  { key: "actions", label: "ACTIONS" },
+];

@@ -1,6 +1,5 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { Toast } from "@/types/types";
-import { OK_HTTP_RESPONSE_CODE } from "@/util/utils";
 import { Button } from "@heroui/button";
 import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
@@ -9,6 +8,7 @@ import { FaUserCheck } from "react-icons/fa6";
 import { IoCheckmark } from "react-icons/io5";
 import { addToast } from "@heroui/toast";
 import { UserFetchedDTO } from "@/types/classes/User";
+import { OK_HTTP_RESPONSE_CODE } from "@/util/constants";
 
 const handleAcceptFollower = async (
   userToBeAccepted: UserFetchedDTO,

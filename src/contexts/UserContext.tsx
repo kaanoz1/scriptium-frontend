@@ -34,9 +34,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const setUser = (updatedUser: UserOwnDTO | null) => {
     queryClient.setQueryData(["user"], () =>
       updatedUser
-        ? {
-            ...updatedUser,
-          }
+        ? UserOwnDTO.createFromJSON({
+            id: updatedUser.getId(),
+            name: updatedUser.getName(),
+            surname: updatedUser.getSurname(),
+            image: updatedUser.getImageUint8Array(),
+            username: updatedUser.getUsername(),
+            email: updatedUser.getEmail(),
+            biography: updatedUser.getBiography(),
+            langId: updatedUser.getLangId(),
+            createdAt: updatedUser.getCreatedAt(),
+            roles: updatedUser.getRoles(),
+            privateFrom: updatedUser.getPrivateFrom(),
+            gender: updatedUser.getGender(),
+          })
         : null
     );
   };

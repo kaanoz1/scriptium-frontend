@@ -1,4 +1,3 @@
-import { RefetchDataFunctionType } from "@/types/types";
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -17,22 +16,26 @@ import {
 } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@heroui/input";
-import {
-  CONFLICT_HTTP_RESPONSE_CODE,
-  MAX_LENGTH_FOR_COLLECTION_DESCRIPTION,
-  MAX_LENGTH_FOR_COLLECTION_NAME,
-  OK_HTTP_RESPONSE_CODE,
-  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
-} from "@/util/utils";
+
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { ResponseMessage } from "@/types/response";
 import { CollectionDTO } from "@/types/classes/Collection";
+import {
+  OK_HTTP_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+  MAX_LENGTH_FOR_COLLECTION_NAME,
+  MAX_LENGTH_FOR_COLLECTION_DESCRIPTION,
+} from "@/util/constants";
+import { QueryClient } from "@tanstack/react-query";
+import { addToast } from "@heroui/toast";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  refetchDataFunction: RefetchDataFunctionType<unknown>;
   collection: CollectionDTO | null;
+  queryKey: readonly unknown[];
+  queryClient: QueryClient;
 }
 
 type UpdateCollectionForm = {
@@ -44,7 +47,8 @@ const CollectionUpdateModal: FC<Props> = ({
   collection,
   setIsModalOpen,
   isModalOpen,
-  refetchDataFunction,
+  queryKey,
+  queryClient,
 }) => {
   const [hasChanges, setHasChanges] = useState<boolean>(false);
 
@@ -92,10 +96,11 @@ const CollectionUpdateModal: FC<Props> = ({
 
   const onSubmit = async (data: UpdateCollectionForm) => {
     const formData = {} as UpdateCollectionForm;
-    if (collection.getName() != data.newCollectionName)
+
+    if (collection.getName() !== data.newCollectionName)
       formData.newCollectionName = data.newCollectionName;
 
-    if (collection.getDescription() != data.newCollectionDescription)
+    if (collection.getDescription() !== data.newCollectionDescription)
       formData.newCollectionDescription = data.newCollectionDescription;
 
     try {
@@ -108,10 +113,36 @@ const CollectionUpdateModal: FC<Props> = ({
       );
 
       switch (response.status) {
-        case OK_HTTP_RESPONSE_CODE:
-          await refetchDataFunction();
+        case OK_HTTP_RESPONSE_CODE: {
+          // ✅ Yeni verilerle koleksiyonu oluştur
+          const updated = Object.assign(
+            Object.create(Object.getPrototypeOf(collection)),
+            collection
+          );
+
+          if (formData.newCollectionName !== undefined)
+            updated.setName(formData.newCollectionName ?? "");
+
+          if (formData.newCollectionDescription !== undefined)
+            updated.setDescription(formData.newCollectionDescription ?? "");
+
+          queryClient.setQueryData<CollectionDTO[]>(
+            queryKey,
+            (prev) =>
+              prev?.map((c) =>
+                c.getId() === collection.getId() ? updated : c
+              ) ?? []
+          );
+
+          addToast({
+            title: "Collection Updated",
+            description: "Your collection was successfully updated.",
+            color: "success",
+          });
+
           setIsModalOpen(false);
           return;
+        }
 
         case CONFLICT_HTTP_RESPONSE_CODE:
           setError("newCollectionName", {
@@ -134,13 +165,12 @@ const CollectionUpdateModal: FC<Props> = ({
           return;
       }
     } catch (error) {
+      console.error(error);
       setError("root", {
         message: "A network or server error occurred. Please try again later.",
       });
-      return;
     }
   };
-
   const handleSave = () => {
     handleSubmit(onSubmit)();
   };

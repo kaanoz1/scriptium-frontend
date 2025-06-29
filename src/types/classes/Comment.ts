@@ -1,8 +1,8 @@
 import {
   NoteOwnDTO,
-  NoteOwnerDTO,
+  NoteOwnerVerseDTO,
   T_NoteOwnDTOConstructorParametersJSON,
-  T_NoteOwnerDTOConstructorParametersJSON,
+  T_NoteOwnerVerseDTOConstructorParametersJSON,
 } from "./Note";
 import { T_UserDTOConstructorParametersJSON, UserDTO } from "./User";
 import {
@@ -17,7 +17,7 @@ export type T_CommentBaseDTOConstructorParameters = {
   likeCount: number;
   replyCount: number;
   isLiked: boolean;
-  updatedAt: Date;
+  updatedAt: Date | null;
 };
 
 export type T_CommentBaseDTOConstructorParametersJSON = {
@@ -27,36 +27,26 @@ export type T_CommentBaseDTOConstructorParametersJSON = {
   likeCount: number;
   replyCount: number;
   isLiked: boolean;
-  updatedAt: Date;
+  updatedAt: Date | null;
 };
 
 export class CommentBaseDTO {
   private readonly id: number;
-  private readonly text: string;
+  private text: string;
   private readonly createdAt: Date;
-  private readonly likeCount: number;
+  private likeCount: number;
   private readonly replyCount: number;
-  private readonly isLiked: boolean = false;
-  private readonly updatedAt: Date | null = null;
+  private isLiked: boolean = false;
+  private updatedAt: Date | null;
 
-  constructor(data: {
-    id: number;
-    text: string;
-    createdAt: Date;
-    likeCount: number;
-    replyCount: number;
-    isLiked: boolean;
-    updatedAt: Date | null;
-  }) {
-    const { id, text, createdAt, likeCount, replyCount, isLiked, updatedAt } =
-      data;
-    this.id = id;
-    this.text = text;
-    this.createdAt = createdAt;
-    this.likeCount = likeCount;
-    this.replyCount = replyCount;
-    this.isLiked = isLiked;
-    this.updatedAt = updatedAt;
+  constructor(data: T_CommentBaseDTOConstructorParameters) {
+    this.id = data.id;
+    this.text = data.text;
+    this.createdAt = data.createdAt;
+    this.likeCount = data.likeCount;
+    this.replyCount = data.replyCount;
+    this.isLiked = data.isLiked;
+    this.updatedAt = data.updatedAt ? new Date(data.updatedAt) : null;
   }
 
   static createFromJSON(
@@ -65,11 +55,11 @@ export class CommentBaseDTO {
     return new CommentBaseDTO({ ...data });
   }
 
-  getId(): number {
+  public getId(): number {
     return this.id;
   }
 
-  getText(): string {
+  public getText(): string {
     return this.text;
   }
 
@@ -77,7 +67,7 @@ export class CommentBaseDTO {
     return this.createdAt;
   }
 
-  getUpdatedAt(): Readonly<Date> | null {
+  getUpdatedAt(): Date | null {
     return this.updatedAt;
   }
 
@@ -92,10 +82,22 @@ export class CommentBaseDTO {
   isCommentLiked(): boolean {
     return this.isLiked;
   }
+
+  public setLikedCount(likeCount: number): void {
+    this.likeCount = likeCount;
+  }
+
+  setIsLiked(isLiked: boolean) {
+    this.isLiked = isLiked;
+  }
+
+  setText(text: string) {
+    this.text = text;
+  }
 }
 
 export type T_ParentCommentDTOConstructorParameters =
-  T_CommentBaseDTOConstructorParameters & { user: Readonly<UserDTO> };
+  T_CommentBaseDTOConstructorParameters & { user: UserDTO };
 
 export type T_ParentCommentDTOConstructorParametersJSON =
   T_CommentBaseDTOConstructorParametersJSON & {
@@ -103,18 +105,9 @@ export type T_ParentCommentDTOConstructorParametersJSON =
   };
 
 export class ParentCommentDTO extends CommentBaseDTO {
-  readonly user: Readonly<UserDTO> | null = null;
+  readonly user: UserDTO | null = null;
 
-  constructor(data: {
-    id: number;
-    text: string;
-    createdAt: Date;
-    likeCount: number;
-    replyCount: number;
-    isLiked: boolean;
-    updatedAt: Date | null;
-    user: Readonly<UserDTO>;
-  }) {
+  constructor(data: T_ParentCommentDTOConstructorParameters) {
     super({ ...data });
     this.user = data.user;
   }
@@ -133,26 +126,17 @@ export class ParentCommentDTO extends CommentBaseDTO {
 
 export type T_CommentOwnDTOConstructorParameters =
   T_CommentBaseDTOConstructorParameters & {
-    parentComment: Readonly<ParentCommentDTO>;
+    parentComment: ParentCommentDTO | null;
   };
 
 export type T_CommentOwnDTOConstructorParametersJSON =
   T_CommentBaseDTOConstructorParametersJSON & {
-    parentComment: T_ParentCommentDTOConstructorParametersJSON;
+    parentComment: T_ParentCommentDTOConstructorParametersJSON | null;
   };
 
 export class CommentOwnDTO extends CommentBaseDTO {
-  readonly parentComment: Readonly<ParentCommentDTO> | null = null;
-  constructor(data: {
-    id: number;
-    text: string;
-    createdAt: Readonly<Date>;
-    likeCount: number;
-    replyCount: number;
-    isLiked: boolean;
-    updatedAt: Date | null;
-    parentComment: ParentCommentDTO | null;
-  }) {
+  readonly parentComment: ParentCommentDTO | null = null;
+  constructor(data: T_CommentOwnDTOConstructorParameters) {
     super({ ...data });
     this.parentComment = data.parentComment;
   }
@@ -160,18 +144,61 @@ export class CommentOwnDTO extends CommentBaseDTO {
   static override createFromJSON(
     data: T_CommentOwnDTOConstructorParametersJSON
   ): CommentOwnDTO {
-    const parentComment = ParentCommentDTO.createFromJSON(data.parentComment);
+    const parentComment = data.parentComment
+      ? ParentCommentDTO.createFromJSON(data.parentComment)
+      : null;
     return new CommentOwnDTO({ ...data, parentComment });
   }
 
-  getParentComment(): Readonly<ParentCommentDTO> | null {
+  getParentComment(): ParentCommentDTO | null {
     return this.parentComment;
+  }
+
+  public likeAndGetClone() {
+    this.setIsLiked(true);
+    return this.increaseLikeCountAndGetClone();
+  }
+
+  public unlikeAndGetClone() {
+    this.setIsLiked(false);
+    return this.decreaseLikeCountAndGetClone();
+  }
+  protected increaseLikeCountAndGetClone() {
+    this.setLikedCount(this.getLikeCount() + 1);
+    return this.getClone();
+  }
+
+  protected decreaseLikeCountAndGetClone() {
+    this.setLikedCount(this.getLikeCount() + 1);
+    return this.getClone();
+  }
+
+  protected getClone(): CommentOwnDTO {
+    const id = this.getId();
+    const text = this.getText();
+    const likeCount = this.getLikeCount();
+    const replyCount = this.getReplyCount();
+    const createdAt = this.getCreatedAt();
+    const isLiked = this.isCommentLiked();
+    const parentComment = this.getParentComment();
+    const updatedAt = this.getUpdatedAt();
+
+    return new CommentOwnDTO({
+      id,
+      text,
+      createdAt,
+      replyCount,
+      likeCount,
+      isLiked,
+      parentComment,
+      updatedAt,
+    });
   }
 }
 
 export type T_CommentOwnerDTOConstructorParameters =
   T_CommentOwnDTOConstructorParameters & {
-    creator: Readonly<UserDTO>;
+    creator: UserDTO;
   };
 
 export type T_CommentOwnerDTOConstructorParametersJSON =
@@ -179,27 +206,71 @@ export type T_CommentOwnerDTOConstructorParametersJSON =
     creator: T_UserDTOConstructorParametersJSON;
   };
 
-export abstract class CommentOwnerDTO extends CommentOwnDTO {
-  readonly creator: Readonly<UserDTO>;
+export class CommentOwnerDTO extends CommentOwnDTO {
+  readonly creator: UserDTO;
 
-  constructor(data: {
-    id: number;
-    text: string;
-    createdAt: Readonly<Date>;
-    likeCount: number;
-    replyCount: number;
-    isLiked: boolean;
-    updatedAt: Readonly<Date> | null;
-    readonly creator: Readonly<UserDTO>;
-    parentComment: ParentCommentDTO | null;
-  }) {
+  constructor(data: T_CommentOwnerDTOConstructorParameters) {
     super({ ...data });
 
     this.creator = data.creator;
   }
 
-  getCreator(): Readonly<UserDTO> {
+  getCreator(): UserDTO {
     return this.creator;
+  }
+
+  protected override increaseLikeCountAndGetClone() {
+    this.setLikedCount(this.getLikeCount() + 1);
+    return this.getClone();
+  }
+
+  protected override decreaseLikeCountAndGetClone() {
+    this.setLikedCount(this.getLikeCount() + 1);
+    return this.getClone();
+  }
+
+  public override likeAndGetClone() {
+    this.setIsLiked(true);
+    return this.increaseLikeCountAndGetClone();
+  }
+
+  public override unlikeAndGetClone() {
+    this.setIsLiked(false);
+    return this.decreaseLikeCountAndGetClone();
+  }
+
+  static override createFromJSON(
+    data: T_CommentOwnerDTOConstructorParametersJSON
+  ): CommentOwnerDTO {
+    const creator = UserDTO.createFromJSON(data.creator);
+    const parentComment = data.parentComment
+      ? ParentCommentDTO.createFromJSON(data.parentComment)
+      : null;
+    return new CommentOwnerDTO({ ...data, creator, parentComment });
+  }
+
+  protected override getClone(): CommentOwnerDTO {
+    const id = this.getId();
+    const text = this.getText();
+    const creator = this.getCreator();
+    const likeCount = this.getLikeCount();
+    const replyCount = this.getReplyCount();
+    const createdAt = this.getCreatedAt();
+    const isLiked = this.isCommentLiked();
+    const parentComment = this.getParentComment();
+    const updatedAt = this.getUpdatedAt();
+
+    return new CommentOwnerDTO({
+      id,
+      text,
+      createdAt,
+      creator,
+      replyCount,
+      likeCount,
+      isLiked,
+      parentComment,
+      updatedAt,
+    });
   }
 }
 
@@ -231,16 +302,38 @@ export class CommentOwnNoteDTO extends CommentOwnDTO {
     this.note = data.note;
   }
 
+  protected override increaseLikeCountAndGetClone() {
+    this.setLikedCount(this.getLikeCount() + 1);
+    return this.getClone();
+  }
+
+  protected override decreaseLikeCountAndGetClone() {
+    this.setLikedCount(this.getLikeCount() + 1);
+    return this.getClone();
+  }
+
   static override createFromJSON(
     data: T_CommentOwnNoteDTOConstructorParametersJSON
   ): CommentOwnNoteDTO {
     const note = NoteOwnDTO.createFromJSON(data.note);
-    const parentComment = ParentCommentDTO.createFromJSON(data.parentComment);
+    const parentComment = data.parentComment
+      ? ParentCommentDTO.createFromJSON(data.parentComment)
+      : null;
     return new CommentOwnNoteDTO({ ...data, note, parentComment });
   }
 
   getNote(): NoteOwnDTO {
     return this.note;
+  }
+
+  public override likeAndGetClone() {
+    this.setIsLiked(true);
+    return this.increaseLikeCountAndGetClone();
+  }
+
+  public override unlikeAndGetClone() {
+    this.setIsLiked(false);
+    return this.decreaseLikeCountAndGetClone();
   }
 }
 
@@ -276,34 +369,46 @@ export class CommentOwnVerseDTO extends CommentOwnDTO {
     data: T_CommentOwnVerseDTOConstructorParametersJSON
   ): CommentOwnVerseDTO {
     const verse = VerseUpperMeanDTO.createFromJSON(data.verse);
-    const parentComment = ParentCommentDTO.createFromJSON(data.parentComment);
+    const parentComment = data.parentComment
+      ? ParentCommentDTO.createFromJSON(data.parentComment)
+      : null;
     return new CommentOwnVerseDTO({ ...data, verse, parentComment });
   }
 
   getVerse(): VerseUpperMeanDTO {
     return this.verse;
   }
+
+  public override likeAndGetClone() {
+    this.setIsLiked(true);
+    return this.increaseLikeCountAndGetClone();
+  }
+
+  public override unlikeAndGetClone() {
+    this.setIsLiked(false);
+    return this.decreaseLikeCountAndGetClone();
+  }
 }
 
 export type T_CommentOwnerNoteDTOConstructorParameters =
   T_CommentOwnDTOConstructorParameters & {
-    note: Readonly<NoteOwnerDTO>;
+    note: Readonly<NoteOwnerVerseDTO>;
   };
 
 export type T_CommentOwnerNoteDTOConstructorParametersJSON =
   T_CommentOwnerDTOConstructorParametersJSON & {
-    note: T_NoteOwnerDTOConstructorParametersJSON;
+    note: T_NoteOwnerVerseDTOConstructorParametersJSON;
   };
 
 export class CommentOwnerNoteDTO extends CommentOwnerDTO {
-  readonly note: NoteOwnerDTO;
+  readonly note: NoteOwnerVerseDTO;
   constructor(data: {
     id: number;
     text: string;
     createdAt: Readonly<Date>;
     likeCount: number;
     replyCount: number;
-    note: NoteOwnerDTO;
+    note: NoteOwnerVerseDTO;
     isLiked: boolean;
     creator: UserDTO;
     updatedAt: Readonly<Date> | null;
@@ -316,13 +421,25 @@ export class CommentOwnerNoteDTO extends CommentOwnerDTO {
   static override createFromJSON(
     data: T_CommentOwnerNoteDTOConstructorParametersJSON
   ): CommentOwnerNoteDTO {
-    const parentComment = ParentCommentDTO.createFromJSON(data.parentComment);
-    const note = NoteOwnerDTO.createFromJSON(data.note);
+    const parentComment = data.parentComment
+      ? ParentCommentDTO.createFromJSON(data.parentComment)
+      : null;
+    const note = NoteOwnerVerseDTO.createFromJSON(data.note);
     const creator = UserDTO.createFromJSON(data.note.creator);
     return new CommentOwnerNoteDTO({ ...data, parentComment, note, creator });
   }
 
-  getNote(): NoteOwnerDTO {
+  protected override increaseLikeCountAndGetClone() {
+    this.setLikedCount(this.getLikeCount() + 1);
+    return this.getClone();
+  }
+
+  protected override decreaseLikeCountAndGetClone() {
+    this.setLikedCount(this.getLikeCount() + 1);
+    return this.getClone();
+  }
+
+  getNote(): NoteOwnerVerseDTO {
     return this.note;
   }
 }
@@ -339,20 +456,35 @@ export type T_CommentOwnerVerseDTOConstructorParametersJSON =
 
 export class CommentOwnerVerseDTO extends CommentOwnerDTO {
   readonly verse: VerseUpperMeanDTO;
-  constructor(data: {
-    id: number;
-    text: string;
-    createdAt: Readonly<Date>;
-    likeCount: number;
-    replyCount: number;
-    verse: VerseUpperMeanDTO;
-    creator: Readonly<UserDTO>;
-    isLiked: boolean;
-    updatedAt: Readonly<Date> | null;
-    parentComment: ParentCommentDTO | null;
-  }) {
+  constructor(data: T_CommentOwnerVerseDTOConstructorParameters) {
     super({ ...data });
     this.verse = data.verse;
+  }
+
+  protected override getClone(): CommentOwnerVerseDTO {
+    const id = this.getId();
+    const text = this.getText();
+    const creator = this.getCreator();
+    const likeCount = this.getLikeCount();
+    const replyCount = this.getReplyCount();
+    const createdAt = this.getCreatedAt();
+    const verse = this.getVerse();
+    const isLiked = this.isCommentLiked();
+    const parentComment = this.getParentComment();
+    const updatedAt = this.getUpdatedAt();
+
+    return new CommentOwnerVerseDTO({
+      id,
+      text,
+      createdAt,
+      creator,
+      replyCount,
+      likeCount,
+      verse,
+      isLiked,
+      parentComment,
+      updatedAt,
+    });
   }
 
   static override createFromJSON(
@@ -360,8 +492,20 @@ export class CommentOwnerVerseDTO extends CommentOwnerDTO {
   ): CommentOwnerVerseDTO {
     const verse = VerseUpperMeanDTO.createFromJSON(data.verse);
     const creator = UserDTO.createFromJSON(data.creator);
-    const parentComment = ParentCommentDTO.createFromJSON(data.parentComment);
+    const parentComment = data.parentComment
+      ? ParentCommentDTO.createFromJSON(data.parentComment)
+      : null;
     return new CommentOwnerVerseDTO({ ...data, verse, creator, parentComment });
+  }
+
+  protected override increaseLikeCountAndGetClone() {
+    this.setLikedCount(this.getLikeCount() + 1);
+    return this.getClone();
+  }
+
+  protected override decreaseLikeCountAndGetClone() {
+    this.setLikedCount(this.getLikeCount() + 1);
+    return this.getClone();
   }
 
   getVerse(): VerseUpperMeanDTO {

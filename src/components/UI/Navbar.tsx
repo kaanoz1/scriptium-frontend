@@ -50,6 +50,7 @@ import {
   SIGN_IN_URL,
 } from "@/util/constants";
 import { Button } from "@heroui/button";
+import { Spinner } from "@heroui/spinner";
 
 type Props = {
   showSearchBar?: boolean;
@@ -57,7 +58,7 @@ type Props = {
 
 const Navbar: FC<Props> = ({ showSearchBar = true }) => {
   const [darkMode, setDarkMode] = useState<boolean>(false);
-  const { user, setUser } = useUser();
+  const { user, isUserLoading, setUser } = useUser();
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedLanguage, setSelectedLanguage] = useState("English"); //TODO: Add language string enum.
 
@@ -287,10 +288,18 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
           delay={30}
           closeDelay={5}
           placement="bottom"
-          content={user ? `Signed in as ${user.getUsername()}` : "Log in"}
+          content={
+            isUserLoading
+              ? "Loading..."
+              : user
+              ? `Signed in as ${user.getUsername()}`
+              : "Log in"
+          }
         >
           <div>
-            {user ? (
+            {isUserLoading ? (
+              <Spinner size="sm" />
+            ) : user ? (
               <Dropdown placement="bottom-end">
                 <DropdownTrigger>
                   <Avatar
@@ -300,7 +309,7 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
                     color="default"
                     name={getFormattedNameAndSurname(user)}
                     size="sm"
-                    src={user.getImage()}
+                    src={user.getImage() ?? ""}
                   />
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Profile Actions" variant="flat">

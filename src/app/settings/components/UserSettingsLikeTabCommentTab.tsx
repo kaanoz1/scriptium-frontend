@@ -14,7 +14,7 @@ import { UserOwnDTO } from "@/types/classes/User";
 
 interface Props {
   comments: LikedCommentDTO[];
-  refetch: RefetchDataFunctionType;
+  refetch: RefetchDataFunctionType<unknown>;
 
   user: UserOwnDTO;
 }

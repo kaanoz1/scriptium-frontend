@@ -1,10 +1,6 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { Toast, UnblockUserForm } from "@/types/types";
-import {
-  CONFLICT_HTTP_RESPONSE_CODE,
-  displayErrorToast,
-  OK_HTTP_RESPONSE_CODE,
-} from "@/util/utils";
+
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -18,6 +14,11 @@ import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { addToast } from "@heroui/toast";
 import { UserFetchedDTO } from "@/types/classes/User";
+import {
+  CONFLICT_HTTP_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
+import { displayErrorToast } from "@/util/utils";
 
 interface Props {
   isModalOpen: boolean;

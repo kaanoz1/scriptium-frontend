@@ -1,7 +1,7 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { Response, T_AuthenticationRequestErrorCode } from "@/types/response";
 import { displayErrorToast } from "@/util/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { NextPage } from "next";
 import { Fragment, useState } from "react";
 import LoadingSpinner from "./UI/LoadingSpinner";
@@ -23,7 +23,10 @@ import CollectionDeleteModal from "./UI/CollectionDeleteModal";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import CreateCollectionCard from "./UI/CreateCollectionCard";
 import { UserOwnDTO } from "@/types/classes/User";
-import { CollectionDTO } from "@/types/classes/Collection";
+import {
+  CollectionDTO,
+  T_CollectionDTOConstructorParametersJSON,
+} from "@/types/classes/Collection";
 import {
   OK_HTTP_RESPONSE_CODE,
   TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
@@ -59,6 +62,7 @@ const UserSavingComponent: NextPage<Props> = ({ user }) => {
   const [error, setError] = useState<
     T_AuthenticationRequestErrorCode | undefined
   >(undefined);
+
   const [selectedCollection, setSelectedCollection] =
     useState<CollectionDTO | null>(null);
 
@@ -74,13 +78,13 @@ const UserSavingComponent: NextPage<Props> = ({ user }) => {
   const fetchCollections = async () => {
     try {
       const response = await axiosCredentialInstance.get<
-        Response<Array<CollectionDTO>>
+        Response<Array<T_CollectionDTOConstructorParametersJSON>>
       >(`/collection/`);
 
       switch (response.status) {
         case OK_HTTP_RESPONSE_CODE:
           setError(undefined);
-          return response.data.data;
+          return response.data.data.map(CollectionDTO.createFromJSON);
         case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
           setError(TOO_MANY_REQUEST_HTTP_RESPONSE_CODE);
           return [];
@@ -98,12 +102,14 @@ const UserSavingComponent: NextPage<Props> = ({ user }) => {
     }
   };
 
+  const queryKey: readonly unknown[] = ["collections", user.getId()];
+  const queryClient = useQueryClient();
   const {
     isLoading,
     data: collections = [],
     refetch,
   } = useQuery({
-    queryKey: ["collections", user.getId()],
+    queryKey,
     queryFn: fetchCollections,
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
@@ -234,13 +240,15 @@ const UserSavingComponent: NextPage<Props> = ({ user }) => {
         isModalOpen={isCollectionUpdateModelOpen}
         setIsModalOpen={setIsCollectionUpdateModalOpen}
         collection={targetCollection}
-        refetchDataFunction={refetch}
+        queryClient={queryClient}
+        queryKey={queryKey}
       />
       <CollectionDeleteModal
         isModalOpen={isCollectionDeleteModelOpen}
         setIsModalOpen={setIsCollectionDeleteModalOpen}
         collection={targetCollection}
-        refetchDataFunction={refetch}
+        queryClient={queryClient}
+        queryKey={queryKey}
       />
     </Fragment>
   );

@@ -1,32 +1,43 @@
-import { T_AuthenticationRequestErrorCode, Response } from "@/types/response";
+import {
+  T_AuthenticationRequestErrorCode,
+  Response,
+  ResponseMessage,
+} from "@/types/response";
 
 import {
-  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
-  isAuthenticationRequestErrorCode,
-  isNoAuthenticationRequestErrorCode,
-  OK_HTTP_RESPONSE_CODE,
+  likeCommentAttachedToEntityAndReturnResponse,
   SOMETHING_WENT_WRONG_TOAST,
+  unlikeCommentAttachedToEntityAndReturnResponse,
 } from "@/util/utils";
 import { NextPage } from "next";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "../../../components/UI/LoadingSpinner";
 import EditCommentComponent from "../../../components/UI/EditCommentComponent";
 import { UserOwnDTO } from "@/types/classes/User";
 import {
+  CommentBaseDTO,
   CommentOwnDTO,
   CommentOwnNoteDTO,
   CommentOwnVerseDTO,
   T_CommentOwnNoteDTOConstructorParametersJSON,
   T_CommentOwnVerseDTOConstructorParametersJSON,
 } from "@/types/classes/Comment";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { addToast } from "@heroui/toast";
 import { getErrorComponent } from "@/util/reactUtil";
 import { Tab, Tabs } from "@heroui/tabs";
 import UserSettingsCommentsTabVerseComments from "./UserSettingsCommentsTabVerseComments";
 import UserSettingsCommentsTabNoteComments from "./UserSettingsCommentsTabNoteComments";
+import {
+  isAuthenticationRequestErrorCode,
+  OK_HTTP_RESPONSE_CODE,
+  isNoAuthenticationRequestErrorCode,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
+import { NoteOwnDTO } from "@/types/classes/Note";
+import { VerseBaseDTO } from "@/types/classes/Verse";
 
 interface Props {
   user: UserOwnDTO;
@@ -68,7 +79,9 @@ const UserSettingsComments: NextPage<Props> = ({ user }) => {
           <UserSettingsCommentsTabVerseComments
             comments={verseComments}
             user={user}
-            setEditCommand={setEditComment}
+            setEditComment={setEditComment}
+            isLoading={isLoading}
+            toggleLike={toggleLike}
           />
         </Tab>
         <Tab>
@@ -136,5 +149,36 @@ const fetchComments = async (): Promise<
       return INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE;
 
     return error.response.status;
+  }
+};
+
+const toggleLike = async (
+  comment: CommentBaseDTO,
+  entity: NoteOwnDTO | VerseBaseDTO
+) => {
+  let response: AxiosResponse<ResponseMessage> | null;
+
+  const entityId = entity.getId();
+  const isLiked = comment.isCommentLiked();
+
+  if (isLiked)
+    response = await likeCommentAttachedToEntityAndReturnResponse(
+      comment,
+      entityId
+    );
+  else
+    response = await unlikeCommentAttachedToEntityAndReturnResponse(
+      comment,
+      entityId
+    );
+
+  switch (response.data.message) {
+    case "You have successfully liked the comment!":
+      return;
+    case "Like that attached this comment is successfully deleted.":
+      return;
+
+    default:
+      return;
   }
 };

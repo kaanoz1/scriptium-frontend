@@ -3,15 +3,13 @@ import { UserOwnDTO } from "@/types/classes/User";
 import { VerseBaseDTO } from "@/types/classes/Verse";
 import { ResponseMessage } from "@/types/response";
 import { RefetchDataFunctionType } from "@/types/types";
-import {
-  displayErrorToast,
-  getFormattedNameAndSurname,
-  MAX_LENGTH_FOR_NOTE,
-  OK_HTTP_RESPONSE_CODE,
-} from "@/util/utils";
+import { OK_HTTP_RESPONSE_CODE, MAX_LENGTH_FOR_NOTE } from "@/util/constants";
+import { displayErrorToast, getFormattedNameAndSurname } from "@/util/utils";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/input";
+import { addToast } from "@heroui/toast";
+import axios from "axios";
 import { Dispatch, FC, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 
@@ -49,20 +47,99 @@ const CreateNoteComponent: FC<Props> = ({
         note
       );
 
-      switch (response.status) {
-        case OK_HTTP_RESPONSE_CODE:
-          await refetch();
-          setCreateNewComment(false);
-          return;
-        default:
-          return;
+      if (response.status === OK_HTTP_RESPONSE_CODE) {
+        addToast({
+          title: "Note Created!",
+          description: "Your note was successfully saved.",
+          color: "success",
+        });
+        await refetch();
+        setCreateNewComment(false);
+        return;
       }
+
+      // Unexpected status
+      addToast({
+        title: "Unexpected Response",
+        description: `Server responded with status ${response.status}`,
+        color: "warning",
+      });
     } catch (error) {
+      if (!axios.isAxiosError<ResponseMessage>(error)) {
+        addToast({
+          title: "Unexpected Error!",
+          description: "An unknown error occurred while creating the note.",
+          color: "danger",
+        });
+        console.error(error);
+        return;
+      }
+
+      if (error.code === "ERR_NETWORK") {
+        addToast({
+          title: "Network Error!",
+          description:
+            "Unable to reach the server. Please check your internet.",
+          color: "warning",
+        });
+        return;
+      }
+
+      switch (error.response?.status) {
+        case 400:
+          addToast({
+            title: "Invalid Note",
+            description:
+              "Please ensure your note is not empty and meets the requirements.",
+            color: "danger",
+          });
+          break;
+
+        case 401:
+          addToast({
+            title: "Unauthorized",
+            description: "Please log in to create a note.",
+            color: "danger",
+          });
+          break;
+
+        case 404:
+          addToast({
+            title: "Verse Not Found",
+            description: "The verse you're trying to annotate may not exist.",
+            color: "secondary",
+          });
+          break;
+
+        case 429:
+          addToast({
+            title: "Too Many Requests",
+            description: "You're creating notes too quickly. Try again later.",
+            color: "warning",
+          });
+          break;
+
+        case 500:
+          addToast({
+            title: "Server Error",
+            description:
+              "Something went wrong on the server while saving your note.",
+            color: "danger",
+          });
+          break;
+
+        default:
+          addToast({
+            title: "Error Creating Note",
+            description: `Unexpected error: ${
+              error.response?.data.message ?? "No message"
+            }`,
+            color: "warning",
+          });
+          break;
+      }
+
       console.error(error);
-
-      displayErrorToast(error);
-
-      return;
     }
   });
 

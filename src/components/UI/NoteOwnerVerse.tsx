@@ -1,23 +1,32 @@
-import { formatDate, getFormattedNameAndSurname } from "@/util/utils";
+import { T_ScriptureCode } from "@/types/types";
+import {
+  DEFAULT_LANG_CODE,
+  formatDate,
+  getFormattedNameAndSurname,
+} from "@/util/utils";
 import { Button } from "@heroui/button";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import {
-  DropdownMenu,
-  DropdownItem,
   Dropdown,
   DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from "@heroui/dropdown";
 import { Link } from "@heroui/link";
 import { User as HEROUIUserComponent } from "@heroui/user";
 import { NextPage } from "next";
-import { FaUser, FaHeart, FaRegCommentAlt } from "react-icons/fa";
-import { NoteOwnDTO, NoteOwnerDTO } from "@/types/classes/Note";
-import { UserOwnDTO } from "@/types/classes/User";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { Dispatch, SetStateAction } from "react";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaUser, FaHeart, FaRegCommentAlt } from "react-icons/fa";
+import { NoteOwnDTO, NoteOwnerVerseDTO } from "@/types/classes/Note";
+import { VerseUpperMeanDTO } from "@/types/classes/Verse";
+import { ChapterUpperMeanDTO } from "@/types/classes/Chapter";
+import { SectionUpperMeanDTO } from "@/types/classes/Section";
+import { ScriptureUpperMeanDTO } from "@/types/classes/Scripture";
+import { UserOwnDTO } from "@/types/classes/User";
 
 interface Props {
-  note: NoteOwnerDTO;
+  note: NoteOwnerVerseDTO;
   user: UserOwnDTO;
   handleNoteDelete: () => Promise<void>;
   toggleNoteLike: () => Promise<void>;
@@ -27,17 +36,39 @@ interface Props {
   showVerse?: boolean;
 }
 
-const NoteOwner: NextPage<Props> = ({
+const NoteOwnerVerse: NextPage<Props> = ({
   note,
   user,
   handleNoteDelete,
-  stateControlFunctionForSetEditNote,
   toggleNoteLike,
+  stateControlFunctionForSetEditNote,
+  showVerse = false,
 }) => {
   const noteCreator = note.getCreator();
   const imageUrl = noteCreator.getImage();
   const noteOwnerFormattedName = getFormattedNameAndSurname(noteCreator);
   const noteOwnerUsername = noteCreator.getUsername();
+
+  const verse: Readonly<VerseUpperMeanDTO> = note.getVerse();
+  const chapter: Readonly<ChapterUpperMeanDTO> = verse.getChapter();
+  const section: Readonly<SectionUpperMeanDTO> = chapter.getSection();
+  const scripture: Readonly<ScriptureUpperMeanDTO> = section.getScripture();
+
+  const scriptureMeaning: string =
+    scripture.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
+
+  const scriptureCode: T_ScriptureCode = scripture.getCode();
+
+  const scriptureNameInOwnLanguage: string = scripture.getName();
+
+  const sectionMeaning = section.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
+  const sectionNumber: number = section.getNumber();
+
+  const sectionNameInOwnLanguage: string = section.getName();
+
+  const chapterNumber: number = chapter.getNumber();
+
+  const verseNumber: number = verse.getNumber();
 
   const noteText: string = note.getText();
 
@@ -183,10 +214,24 @@ const NoteOwner: NextPage<Props> = ({
           <span className="text-xs text-foreground/90">
             {note.getReplyCount()}
           </span>
+
+          {showVerse && (
+            <div className="ml-auto px-5">
+              Attached on VerseDTO:{" "}
+              <Link
+                size="sm"
+                href={`${scriptureCode}/${sectionNumber}/${chapterNumber}/${verseNumber}`}
+              >
+                {scriptureMeaning} ({scriptureNameInOwnLanguage}),{" "}
+                {sectionMeaning} ({sectionNameInOwnLanguage}), Chapter{" "}
+                {chapterNumber}, {verseNumber}{" "}
+              </Link>
+            </div>
+          )}
         </footer>
       </CardFooter>
     </Card>
   );
 };
 
-export default NoteOwner;
+export default NoteOwnerVerse;

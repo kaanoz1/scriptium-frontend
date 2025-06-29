@@ -21,7 +21,10 @@ import VerseCollectionCard from "./VerseCollectionCard";
 import { Link } from "@heroui/link";
 import CreateCollectionCard from "./UI/CreateCollectionCard";
 import LoadingSpinner from "./UI/LoadingSpinner";
-import { CollectionWithVerseSavedInformationDTO } from "@/types/classes/Collection";
+import {
+  CollectionWithVerseSavedInformationDTO,
+  T_CollectionWithVerseSavedInformationDTOConstructorParametersJSON,
+} from "@/types/classes/Collection";
 import { UserOwnDTO } from "@/types/classes/User";
 import { VerseBaseDTO } from "@/types/classes/Verse";
 import {
@@ -50,13 +53,17 @@ const fetchCollections = async (
 ) => {
   try {
     const response = await axiosCredentialInstance.get<
-      Response<CollectionWithVerseSavedInformationDTO[]>
+      Response<
+        T_CollectionWithVerseSavedInformationDTOConstructorParametersJSON[]
+      >
     >(`/collection/verse/${verse.getId()}`);
 
     switch (response.status) {
       case OK_HTTP_RESPONSE_CODE:
         setStateFunctionForSetError(undefined);
-        return response.data.data;
+        return response.data.data.map(
+          CollectionWithVerseSavedInformationDTO.createFromJSON
+        );
       case NOT_FOUND_HTTP_RESPONSE_CODE:
         setStateFunctionForSetError(NOT_FOUND_HTTP_RESPONSE_CODE);
         return [];

@@ -12,15 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { Response, T_AuthenticationRequestErrorCode } from "@/types/response";
 import { RefetchDataFunctionType } from "@/types/types";
-import {
-  displayErrorToast,
-  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
-  METHOD_NOT_ALLOWED_HTTP_RESPONSE_CODE,
-  NOT_FOUND_HTTP_RESPONSE_CODE,
-  OK_HTTP_RESPONSE_CODE,
-  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
-  UNDEFINED_TRANSLATION_TEXT_DTO,
-} from "@/util/utils";
+import { displayErrorToast } from "@/util/utils";
 
 import LoadingSpinner from "./LoadingSpinner";
 import ServerErrorComponent from "./ServerErrorComponent";
@@ -38,8 +30,19 @@ import { Spinner } from "@heroui/spinner";
 import CollectionVerseTableRow from "./CollectionVerseTableRow";
 import { motion, Variants } from "framer-motion";
 import { CollectionDTO } from "@/types/classes/Collection";
-import { VerseBaseDTO, VerseUpperDTO } from "@/types/classes/Verse";
-import { TranslationTextDTO } from "@/types/classes/TranslationText";
+import {
+  T_VerseUpperDTOConstructorParametersJSON,
+  VerseBaseDTO,
+  VerseUpperDTO,
+} from "@/types/classes/Verse";
+import {
+  OK_HTTP_RESPONSE_CODE,
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+  METHOD_NOT_ALLOWED_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
+import { useScripturePreferences } from "@/hooks/useScripture";
 
 const ROWS_PER_PAGE: number = 30;
 
@@ -67,13 +70,13 @@ const fetchCollectionVerses = async (
 ): Promise<Array<VerseUpperDTO>> => {
   try {
     const response = await axiosCredentialInstance.get<
-      Response<VerseUpperDTO[]>
+      Response<T_VerseUpperDTOConstructorParametersJSON[]>
     >(`/collection/${collection.getId()}?page=${page}`);
 
     switch (response.status) {
       case OK_HTTP_RESPONSE_CODE:
         setError(undefined);
-        return response.data.data;
+        return response.data.data.map(VerseUpperDTO.createFromJSON);
       case NOT_FOUND_HTTP_RESPONSE_CODE:
         setError(NOT_FOUND_HTTP_RESPONSE_CODE);
         return [];
@@ -100,7 +103,7 @@ const fetchCollectionVerses = async (
 export const handleUnsaveClick = async (
   verse: VerseBaseDTO,
   collection: CollectionDTO,
-  refetchDataFunction: RefetchDataFunctionType<VerseBaseDTO>,
+  refetchDataFunction: RefetchDataFunctionType<unknown>,
   setStateActionFunctionForUnsaveLoading: Dispatch<SetStateAction<boolean>>
 ) => {
   try {
@@ -112,7 +115,7 @@ export const handleUnsaveClick = async (
       },
     });
 
-    if (response.status === OK_RESPONSE_CODE) {
+    if (response.status === OK_HTTP_RESPONSE_CODE) {
       await refetchDataFunction();
     }
   } finally {
@@ -130,7 +133,7 @@ const CollectionComponent: FC<Props> = ({ collection }) => {
   >(undefined);
   const [page, setPage] = useState<number>(1);
 
-  const { preferredScriptureContext } = useScripture();
+  const { preference } = useScripturePreferences("t");
 
   const {
     data = [],
@@ -145,39 +148,21 @@ const CollectionComponent: FC<Props> = ({ collection }) => {
 
   const getKeyValue = useCallback(
     (verse: VerseUpperDTO, columnKey: Key) => {
-      const preferredScriptureOptions =
-        preferredScriptureContext.preferencesByScripture[
-          verse.getChapter().getSection().getScripture().getCode()
-        ];
-
-      const translationText: TranslationTextDTO =
-        verse
-          .getTranslationTexts()
-          .find((t) =>
-            preferredScriptureOptions.preferredTranslationIdSingle.has(
-              t.getTranslation().getId().toString()
-            )
-          ) ?? UNDEFINED_TRANSLATION_TEXT_DTO;
-
       switch (columnKey) {
         case "verse":
           return (
             <CollectionVerseTableRow
-              verse={verse}
-              translationText={translationText}
-              font={preferredScriptureOptions.preferredScriptureFont}
-              variation={
-                preferredScriptureOptions.preferredScriptureVerseTextVariation
-              }
-              refetchDataFunction={refetch}
               collection={collection}
+              verse={verse}
+              preference={preference}
+              refetchDataFunction={refetch}
             />
           );
         default:
           return <></>;
       }
     },
-    [preferredScriptureContext, collection, refetch]
+    [collection, refetch]
   );
 
   const totalPages = useMemo(() => {
@@ -188,10 +173,10 @@ const CollectionComponent: FC<Props> = ({ collection }) => {
 
   if (isLoading) return <LoadingSpinner />;
 
-  if (error && error === NOT_FOUND_RESPONSE_CODE) return <></>; // TODO: NotFound handle.
-  if (error && error === TOO_MANY_REQUEST_RESPONSE_CODE)
+  if (error && error === NOT_FOUND_HTTP_RESPONSE_CODE) return <></>; // TODO: NotFound handle.
+  if (error && error === TOO_MANY_REQUEST_HTTP_RESPONSE_CODE)
     return <TooManyRequestComponent />;
-  if (error && error === INTERNAL_SERVER_ERROR_RESPONSE_CODE)
+  if (error && error === INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE)
     return <ServerErrorComponent />;
 
   return (

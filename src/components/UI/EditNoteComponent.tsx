@@ -1,119 +1,157 @@
+// EditNoteComponent.tsx
+
+import { Dispatch, FC, SetStateAction } from "react";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { NoteOwnDTO } from "@/types/classes/Note";
-import { UserOwnDTO } from "@/types/classes/User";
 import { ResponseMessage } from "@/types/response";
-import {
-  getFormattedNameAndSurname,
-  MAX_LENGTH_FOR_NOTE,
-  displayErrorToast,
-  OK_HTTP_RESPONSE_CODE,
-} from "@/util/utils";
-import { Avatar } from "@heroui/avatar";
-import { Button } from "@heroui/button";
-import { Textarea } from "@heroui/input";
-import { NextPage } from "next";
-import { Dispatch, SetStateAction } from "react";
-import { useForm } from "react-hook-form";
+import { NoteOwnDTO, NoteOwnVerseDTO } from "@/types/classes/Note";
+import { UserOwnDTO } from "@/types/classes/User";
+import { OK_HTTP_RESPONSE_CODE } from "@/util/constants";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { addToast } from "@heroui/toast";
+import axios from "axios";
+import NoteForm from "./NoteForm";
 
 interface Props {
-  editNote: NoteOwnDTO;
-  stateControlFunctionOfEditNote: Dispatch<SetStateAction<NoteOwnDTO | null>>;
+  note: NoteOwnDTO;
+  stateControlFunctionOfEditNote:
+    | Dispatch<SetStateAction<NoteOwnDTO | null>>
+    | Dispatch<SetStateAction<NoteOwnVerseDTO | null>>;
+  queryKey: readonly unknown[];
   user: UserOwnDTO;
 }
 
-type EditNoteForm = {
-  noteText: string;
-  noteId: number;
-};
-
-const EditNoteComponent: NextPage<Props> = ({
-  editNote: note,
-  stateControlFunctionOfEditNote,
+const EditNoteComponent: FC<Props> = ({
+  note,
   user,
+  queryKey,
+  stateControlFunctionOfEditNote,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<EditNoteForm>();
-
-  const onSubmit = handleSubmit(async (noteToUpdate: EditNoteForm) => {
-    noteToUpdate.noteId = note.getId();
-
-    try {
-      const response = await axiosCredentialInstance.put<ResponseMessage>(
-        `/note/update`,
-        noteToUpdate
-      );
-
-      switch (response.status) {
-        case OK_HTTP_RESPONSE_CODE:
-          note.setText(noteToUpdate.noteText);
-          stateControlFunctionOfEditNote(null);
-          return;
-        default:
-          return;
-      }
-    } catch (error) {
-      console.error(error);
-      displayErrorToast(error);
-      return;
-    }
-  });
+  const queryClient = useQueryClient();
 
   return (
-    <section className="w-full flex flex-col gap-4 p-2">
-      <form className="flex flex-col gap-2" onSubmit={onSubmit}>
-        <div className="flex items-start gap-2">
-          <Avatar
-            src={user.getImage()}
-            name={getFormattedNameAndSurname(user)}
-            size="md"
-          />
-          <Textarea
-            placeholder="Update your reflection..."
-            isClearable
-            className="w-full"
-            isRequired
-            minRows={10}
-            description={`Notes might contain up to ${MAX_LENGTH_FOR_NOTE} characters`}
-            defaultValue={note.getText()}
-            errorMessage={errors.noteText?.message}
-            isInvalid={!!errors.noteText}
-            maxLength={MAX_LENGTH_FOR_NOTE}
-            {...register("noteText", {
-              required: {
-                value: true,
-                message: "You cannot create a blank note",
-              },
-
-              validate: (value) =>
-                value.trim() !== "" || "You cannot create a blank note",
-              maxLength: {
-                value: MAX_LENGTH_FOR_NOTE,
-                message: `Reflections cannot exceed ${MAX_LENGTH_FOR_NOTE} characters`,
-              },
-            })}
-          />
-        </div>
-
-        <div className="flex justify-end gap-2 mt-1">
-          <Button
-            variant="light"
-            color="default"
-            onPress={() => stateControlFunctionOfEditNote(null)}
-            isDisabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-
-          <Button type="submit" color="success" isLoading={isSubmitting}>
-            Submit
-          </Button>
-        </div>
-      </form>
+    <section className="w-full flex flex-col gap-4">
+      <NoteForm
+        user={user}
+        defaultText={note.getText()}
+        onSubmitNote={async (text: string) =>
+          onSubmitNote(
+            text,
+            note,
+            queryKey,
+            queryClient,
+            stateControlFunctionOfEditNote
+          )
+        }
+        onCancel={() => stateControlFunctionOfEditNote(null)}
+        submitting={false}
+        placeholder="Update your note..."
+      />
     </section>
   );
 };
 
 export default EditNoteComponent;
+
+const onSubmitNote = async (
+  noteText: string,
+  note: NoteOwnDTO,
+  queryKey: readonly unknown[],
+  queryClient: QueryClient,
+  stateControlFunctionOfEditNote:
+    | Dispatch<SetStateAction<NoteOwnDTO | null>>
+    | Dispatch<SetStateAction<NoteOwnVerseDTO | null>>
+): Promise<void> => {
+  try {
+    const noteId = note.getId();
+
+    const response = await axiosCredentialInstance.put<ResponseMessage>(
+      `/note/update`,
+      {
+        noteId,
+        noteText,
+      }
+    );
+
+    if (response.status === OK_HTTP_RESPONSE_CODE) {
+      const updatedNote: NoteOwnDTO = Object.assign(
+        Object.create(Object.getPrototypeOf(note)),
+        note
+      );
+
+      updatedNote.setText(noteText);
+      updatedNote.setUpdatedAt(new Date());
+
+      queryClient.setQueryData<NoteOwnDTO[]>(
+        queryKey,
+        (prev) =>
+          prev?.map((n) => (n.getId() === noteId ? updatedNote : n)) ?? []
+      );
+
+      addToast({
+        title: "Updated!",
+        description: "Your note has been successfully updated.",
+        color: "success",
+      });
+
+      stateControlFunctionOfEditNote(null);
+      return;
+    }
+
+    throw new Error("Unexpected response status: " + response.status);
+  } catch (error) {
+    console.error(error);
+
+    if (!axios.isAxiosError<ResponseMessage>(error)) {
+      addToast({
+        title: "Unexpected Error!",
+        description: "An unknown error occurred while editing the note.",
+        color: "danger",
+      });
+      return;
+    }
+
+    if (error.code === "ERR_NETWORK") {
+      addToast({
+        title: "Network Error!",
+        description:
+          "Unable to reach the server. Please check your connection.",
+        color: "warning",
+      });
+      return;
+    }
+
+    switch (error.response?.status) {
+      case 401:
+        addToast({
+          title: "Unauthorized!",
+          description: "You must be logged in to edit your note.",
+          color: "danger",
+        });
+        break;
+
+      case 404:
+        addToast({
+          title: "Note Not Found!",
+          description: "The note you're trying to update doesn't exist.",
+          color: "secondary",
+        });
+        break;
+
+      case 429:
+        addToast({
+          title: "Too Many Requests!",
+          description: "You're editing too quickly. Please wait and try again.",
+          color: "warning",
+        });
+        break;
+
+      default:
+        addToast({
+          title: "Update Failed!",
+          description: error.response?.data?.message ?? "Unknown error.",
+          color: "danger",
+        });
+        break;
+    }
+  }
+};

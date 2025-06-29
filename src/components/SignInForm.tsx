@@ -30,6 +30,7 @@ import {
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
 } from "@/util/constants";
 import { TOOL_TIP_CLASS_NAMES } from "@/util/utils";
+import axios from "axios";
 
 type SignInForm = {
   email: string;
@@ -58,30 +59,78 @@ const SignInForm: FC = () => {
   const router = useRouter();
 
   const onSubmit = handleSubmit(async (formData: SignInForm) => {
-    const response = await axiosCredentialInstance.post<ResponseMessage>(
-      `/auth/login`,
-      {
-        email: formData.email,
-        password: formData.password,
+    try {
+      const response = await axiosCredentialInstance.post<ResponseMessage>(
+        `/auth/login`,
+        {
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+
+      switch (response.status) {
+        case OK_HTTP_RESPONSE_CODE:
+          await fetchUser();
+          router.push("/");
+          return;
+
+        case UNAUTHORIZED_HTTP_RESPONSE_CODE:
+          setError(UNAUTHORIZED_HTTP_RESPONSE_CODE);
+          setFormError("password", {
+            type: "manual",
+            message: response.data.message ?? "Invalid credentials.",
+          });
+          return;
+
+        default:
+          setError(response.status as T_NoAuthenticationRequestErrorCode);
+          return;
       }
-    );
-
-    switch (response.status) {
-      case OK_HTTP_RESPONSE_CODE:
-        await fetchUser();
-        router.push("/");
-        return;
-
-      case UNAUTHORIZED_HTTP_RESPONSE_CODE:
-        setError(UNAUTHORIZED_HTTP_RESPONSE_CODE);
-        setFormError("password", {
-          message: response.data.message,
+    } catch (error) {
+      if (!axios.isAxiosError<ResponseMessage>(error)) {
+        console.error("Unexpected error: ", error);
+        setError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
+        setFormError("email", {
+          type: "manual",
+          message: "Something went wrong. Please try again later.",
         });
         return;
+      }
 
-      default:
-        setError(response.status as T_NoAuthenticationRequestErrorCode);
+      if (error.code === "ERR_NETWORK") {
+        setError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
+        setFormError("email", {
+          type: "manual",
+          message:
+            "Network error. Please check your connection and try again later.",
+        });
         return;
+      }
+
+      switch (error.response?.status) {
+        case UNAUTHORIZED_HTTP_RESPONSE_CODE:
+          setError(UNAUTHORIZED_HTTP_RESPONSE_CODE);
+          setFormError("password", {
+            type: "manual",
+            message:
+              error.response?.data.message ?? "Invalid email or password.",
+          });
+          return;
+
+        case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
+          setError(TOO_MANY_REQUEST_HTTP_RESPONSE_CODE);
+          return;
+
+        case INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE:
+        default:
+          setError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
+          setFormError("email", {
+            type: "manual",
+            message:
+              "Server error occurred. Please try again later or contact support.",
+          });
+          return;
+      }
     }
   });
 
@@ -298,7 +347,7 @@ const SignInForm: FC = () => {
               exit={{ opacity: 0 }}
               transition={{ type: "linear", duration: 0.1 }}
             >
-              Don&apos;t have an account?
+              Don't have an account?
               <Tooltip
                 showArrow
                 placement="right"

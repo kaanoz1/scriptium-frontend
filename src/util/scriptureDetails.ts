@@ -143,8 +143,11 @@ export class ScriptureDetail {
     const sectionIndex: number = sectionNumber - 1;
     const chapterIndex: number = chapterNumber - 1;
 
-    return Boolean(
-      this._verseCountIndicatorArray.at(sectionIndex)?.at(chapterIndex)
+    if (chapterIndex < 0 || sectionIndex < 0) return false;
+
+    return (
+      this._verseCountIndicatorArray.at(sectionIndex)?.at(chapterIndex) !==
+      undefined
     );
   }
 

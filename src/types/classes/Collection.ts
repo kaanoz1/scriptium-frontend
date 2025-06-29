@@ -25,13 +25,31 @@ export class CollectionProcessResultDTO {
   }
 }
 
+export type T_CollectionDTOConstructorParameters = {
+  id: number;
+  name: string;
+  description: string | null;
+  saveCount: number;
+};
+
+export type T_CollectionDTOConstructorParametersJSON = {
+  id: number;
+  name: string;
+  description: string | null;
+  saveCount: number;
+};
 export class CollectionDTO {
-  constructor(
-    private readonly id: number,
-    private readonly name: string,
-    private readonly description: string | null,
-    private readonly saveCount: number
-  ) {}
+  private readonly id: number;
+  private readonly name: string;
+  private readonly description: string | null;
+  private readonly saveCount: number;
+
+  constructor(data: T_CollectionDTOConstructorParameters) {
+    this.id = data.id;
+    this.name = data.name;
+    this.description = data.description;
+    this.saveCount = data.saveCount;
+  }
 
   getId(): number {
     return this.id;
@@ -48,14 +66,36 @@ export class CollectionDTO {
   getSaveCount(): number {
     return this.saveCount;
   }
+
+  static createFromJSON(data: T_CollectionDTOConstructorParametersJSON) {
+    return new CollectionDTO({ ...data });
+  }
 }
 
+export type T_CollectionWithVerseSavedInformationDTOConstructorParameters = {
+  name: string;
+  description: string | null;
+  isSaved: boolean;
+};
+
+export type T_CollectionWithVerseSavedInformationDTOConstructorParametersJSON =
+  {
+    name: string;
+    description: string | null;
+    isSaved: boolean;
+  };
+
 export class CollectionWithVerseSavedInformationDTO {
+  private readonly name: string;
+  private readonly description: string | null;
+  private readonly isSaved: boolean;
   constructor(
-    private readonly name: string,
-    private readonly description: string | null,
-    private readonly isSaved: boolean
-  ) {}
+    data: T_CollectionWithVerseSavedInformationDTOConstructorParameters
+  ) {
+    this.name = data.name;
+    this.description = data.description;
+    this.isSaved = data.isSaved;
+  }
 
   getName(): string {
     return this.name;
@@ -67,5 +107,11 @@ export class CollectionWithVerseSavedInformationDTO {
 
   getIsSaved(): boolean {
     return this.isSaved;
+  }
+
+  static createFromJSON(
+    data: T_CollectionWithVerseSavedInformationDTOConstructorParametersJSON
+  ) {
+    return new CollectionWithVerseSavedInformationDTO({ ...data });
   }
 }

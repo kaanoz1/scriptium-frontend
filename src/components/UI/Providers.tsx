@@ -24,7 +24,7 @@ const Providers: FC<Props> = ({ children }) => {
 
   return (
     <HeroUIProvider locale="en-US" navigate={router.push}>
-      <ToastProvider />
+      <ToastProvider toastOffset={57} />
       <QueryClientProvider client={queryClient}>
         <ScriptureProvider>
           <UserProvider>

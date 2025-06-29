@@ -1,7 +1,6 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { ResponseMessage } from "@/types/response";
 import { Toast } from "@/types/types";
-import { OK_HTTP_RESPONSE_CODE } from "@/util/utils";
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -14,6 +13,7 @@ import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
 import { addToast } from "@heroui/toast";
 import { UserFetchedDTO } from "@/types/classes/User";
+import { OK_HTTP_RESPONSE_CODE } from "@/util/constants";
 
 const handleRetrieve = async (
   userToBeProcessedOn: UserFetchedDTO,

@@ -1,20 +1,18 @@
 import { motion, Variants } from "framer-motion";
 import { GoBookmarkFill } from "react-icons/go";
 import { FC, useState } from "react";
-import { DEFAULT_LANG_CODE, PROJECT_URL } from "@/util/utils";
+import { DEFAULT_LANG_CODE } from "@/util/utils";
 import { BreadcrumbItem, Breadcrumbs } from "@heroui/breadcrumbs";
 import { FiExternalLink } from "react-icons/fi";
 import { Link } from "@heroui/link";
 import TranslatedTextWithFootnotes from "./TranslatedTextWithFootnotes";
 import { CollectionDTO } from "@/types/classes/Collection";
 import { VerseBaseDTO, VerseUpperDTO } from "@/types/classes/Verse";
-import { TranslationTextDTO } from "@/types/classes/TranslationText";
-import {
-  RefetchDataFunctionType,
-  T_OriginalScriptureTextVariationKey,
-  T_ScriptureCode,
-} from "@/types/types";
+import { RefetchDataFunctionType, T_ScriptureCode } from "@/types/types";
 import { handleUnsaveClick } from "./CollectionComponent";
+import { PROJECT_URL } from "@/util/constants";
+import { ScripturePreference } from "@/types/classes/Scripture";
+import { ScripturesDetails } from "@/util/scriptureDetails";
 
 const containerVariants: Variants = {
   initial: {
@@ -39,65 +37,58 @@ const iconContainerVariants: Variants = {
 interface Props {
   collection: CollectionDTO;
   verse: VerseUpperDTO;
-  translationText: TranslationTextDTO;
-  font: string;
-  variation: T_OriginalScriptureTextVariationKey;
-  refetchDataFunction: RefetchDataFunctionType<VerseBaseDTO>;
+  preference: ScripturePreference;
+  refetchDataFunction: RefetchDataFunctionType<unknown>;
 }
 
 const CollectionVerseTableRow: FC<Props> = ({
   verse,
-  font,
-  translationText,
   refetchDataFunction,
   collection,
-  variation,
+  preference,
 }) => {
   const [isUnsaveLoading, setIsUnsaveLoading] = useState(false);
 
-  const verseText: string =
-    verse.getVariation().getTextWithVariation(variation) ??
-    verse.getVariation().getUsual();
-  const scriptureMeaning: string =
+  const variation = preference.getPreferredOriginalScriptureTextVariationKey();
+
+  const verseText: string = verse.getTextOfVariationOrUsual(variation);
+
+  const chapter = verse.getChapter();
+  const section = chapter.getSection();
+  const scripture = section.getScripture();
+
+  const font = preference.getPreferredFont();
+
+  const preferredTranslationId = preference.getPreferredTranslationId();
+
+  const translationText =
     verse
-      .getChapter()
-      .getSection()
-      .getScripture()
-      .getMeanings()
-      .find((e) => e.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
-      ?.getText() ?? "Scripture";
+      .getTranslationTexts()
+      .find((tt) => tt.getTranslation().getId() == preferredTranslationId) ||
+    verse
+      .getTranslationTexts()
+      .find(
+        (tt) =>
+          tt.getTranslation().getId() ==
+          ScripturesDetails[scriptureCode].getDefaultTranslationId()
+      )!;
+
+  const scriptureMeaning: string =
+    scripture.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
 
   const sectionMeaning: string =
-    verse
-      .getChapter()
-      .getSection()
-      .getMeanings()
-      .find((e) => e.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
-      ?.getText() ?? "Section";
+    section.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
 
-  const transliteration: string | JSX.Element = verse
-    .getTransliterations()
-    .find((t) => t.getLanguage().getLangCode() === DEFAULT_LANG_CODE)
-    ?.getTransliteration() ?? (
-    <span className="italic">No transliteration available.</span>
-  );
+  const transliteration: string | JSX.Element =
+    verse.getTransliterationTextOrNull(DEFAULT_LANG_CODE) ?? (
+      <span className="italic">No transliteration available.</span>
+    );
 
-  const scriptureCode: T_ScriptureCode = verse
-    .getChapter()
-    .getSection()
-    .getScripture()
-    .getCode();
-  const scriptureNameInOwnLanguage: string = verse
-    .getChapter()
-    .getSection()
-    .getScripture()
-    .getName();
-  const sectionNumber: number = verse.getChapter().getSection().getNumber();
-  const sectionNameInOwnLanguage: string = verse
-    .getChapter()
-    .getSection()
-    .getName();
-  const chapterNumber: number = verse.getChapter().getNumber();
+  const scriptureCode: T_ScriptureCode = scripture.getCode();
+  const scriptureNameInOwnLanguage: string = scripture.getName();
+  const sectionNumber: number = section.getNumber();
+  const sectionNameInOwnLanguage: string = section.getName();
+  const chapterNumber: number = chapter.getNumber();
   const verseNumber: number = verse.getNumber();
 
   return (

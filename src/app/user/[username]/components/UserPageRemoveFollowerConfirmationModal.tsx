@@ -1,6 +1,6 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { Toast } from "@/types/types";
-import { displayErrorToast, OK_HTTP_RESPONSE_CODE } from "@/util/utils";
+import { displayErrorToast } from "@/util/utils";
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -14,6 +14,7 @@ import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { addToast } from "@heroui/toast";
 import { UserFetchedDTO } from "@/types/classes/User";
+import { OK_HTTP_RESPONSE_CODE } from "@/util/constants";
 
 interface Props {
   isModalOpen: boolean;

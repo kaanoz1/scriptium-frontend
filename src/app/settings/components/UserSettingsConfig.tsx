@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Card, CardBody } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { OK_HTTP_RESPONSE_CODE } from "@/util/utils";
 import {
   Modal,
   ModalContent,
@@ -17,6 +16,7 @@ import {
 import { useForm } from "react-hook-form";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { UserOwnDTO } from "@/types/classes/User";
+import { OK_HTTP_RESPONSE_CODE } from "@/util/constants";
 
 type ChangePasswordForm = {
   oldPassword: string;

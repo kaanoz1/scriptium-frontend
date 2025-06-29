@@ -19,7 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { NextPage } from "next";
 import { useParams } from "next/navigation";
-import { Fragment, ReactNode, useState } from "react";
+import { Fragment, useState } from "react";
 import { GoBookmark, GoBookmarkFill } from "react-icons/go";
 import { GrNext, GrPrevious, GrShareOption } from "react-icons/gr";
 import { IoPlayOutline, IoSettingsOutline } from "react-icons/io5";
@@ -29,7 +29,6 @@ import { Tooltip } from "@heroui/tooltip";
 import VersePageTranslationModal from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageTranslationModal";
 import { useUser } from "@/hooks/useUser";
 import VersePageNotFoundComponent from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageNotFoundComponent";
-import VersePageTranslationBoxComponent from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageTranslationBoxComponent";
 import VersePageShareModal from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageShareModal";
 import { addToast } from "@heroui/toast";
 import { ScriptureDTO } from "@/types/classes/Scripture";
@@ -141,9 +140,6 @@ const Page: NextPage<Props> = ({}) => {
   const options = preference.getOptions();
 
   const verseNumber = verse.getNumber();
-  const verseText: string = verse.getTextOfVariationOrUsual(
-    options.getVariation()
-  );
 
   const chapter: Readonly<ChapterUpperDTO> = verse.getChapter();
   const chapterNumber = chapter.getNumber();
@@ -159,11 +155,6 @@ const Page: NextPage<Props> = ({}) => {
   const scriptureMeaning: string =
     scripture.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
   const scriptureNameInOwnLanguage: string = scripture.getName();
-
-  const transliteration: string | ReactNode =
-    verse.getTransliterationTextOrNull(DEFAULT_LANG_CODE) ?? (
-      <span className="italic">No transliteration available.</span>
-    );
 
   const { doesNextVerseExists, doesPreviousVerseExists } =
     scriptureDetail.getVerseInformation(
@@ -182,11 +173,7 @@ const Page: NextPage<Props> = ({}) => {
   );
 
   const showFootnotes = options.getShowFootnotes();
-  const showTransliteration = options.getShowTransliteration();
-  const showOriginalText = options.getShowOriginalText();
-  const showTranslation = options.getShowTranslation();
   const textVariation = options.getVariation();
-  const preferredFont = preference.getPreferredFont();
 
   const selectedTranslations: Array<TranslationDTO> = scriptureDetail
     .getTranslations()
@@ -364,7 +351,6 @@ const Page: NextPage<Props> = ({}) => {
         setIsModalOpen={setIsTranslationModelOpen}
         preference={preference}
         scriptureDetail={scriptureDetail}
-        verse={verse}
         setTranslationIdMultiple={setTranslationIdMultiple}
       />
 

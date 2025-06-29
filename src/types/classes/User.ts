@@ -12,8 +12,6 @@ export type T_UserDTOConstructorParameters = {
 export type T_UserDTOConstructorParametersJSON = T_UserDTOConstructorParameters;
 
 export class UserDTO {
-  private cachedImageBase64: string | null = null;
-
   private readonly id: string;
   private readonly username: string;
   private readonly name: string;
@@ -61,13 +59,7 @@ export class UserDTO {
   }
 
   getImage(): string | null {
-    if (this.cachedImageBase64 !== null) return this.cachedImageBase64;
-
-    if (!this.image) return null;
-
-    const base64 = Buffer.from(this.image).toString("base64");
-    this.cachedImageBase64 = base64;
-    return base64;
+    return this.image ? `data:image/jpeg;base64,${this.image}` : null;
   }
 }
 
@@ -224,14 +216,8 @@ export class UserFetchedDTO {
     return this.image ? Object.freeze(this.image) : null;
   }
 
-  getImage(): string {
-    if (this.cachedImageBase64 !== null) return this.cachedImageBase64;
-
-    if (!this.image) return String();
-
-    const base64 = Buffer.from(this.image).toString("base64");
-    this.cachedImageBase64 = base64;
-    return base64;
+  getImage(): string | null {
+    return this.image ? `data:image/jpeg;base64,${this.image}` : null;
   }
 
   getSurname(): string | null {
@@ -302,8 +288,6 @@ export type T_UserOwnDTOConstructorParametersJSON = {
 };
 
 export class UserOwnDTO {
-  private cachedImageBase64: string | null = null;
-
   private readonly id: string;
   private readonly username: string;
   private readonly name: string;
@@ -442,24 +426,16 @@ export class UserOwnDTO {
     return this.gender;
   }
 
-  getImage(): string {
-    if (this.cachedImageBase64 !== null) {
-      return this.cachedImageBase64;
-    }
-
-    if (!this.image) {
-      return String();
-    }
-
-    const base64 = Buffer.from(this.image).toString("base64");
-    this.cachedImageBase64 = base64;
-    return base64;
+  getImage(): string | null {
+    return this.image ? `data:image/jpeg;base64,${this.image}` : null;
   }
 
   static createFromJSON(
     data: T_UserOwnDTOConstructorParametersJSON
   ): UserOwnDTO {
-    return new UserOwnDTO({ ...data });
+    return new UserOwnDTO({
+      ...data,
+    });
   }
 }
 

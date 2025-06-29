@@ -1,13 +1,9 @@
 "use client";
 import { NextPage } from "next";
 import {
-  CONFLICT_HTTP_RESPONSE_CODE,
   displayErrorToast,
   formatDate,
   getFormattedNameAndSurname,
-  NOT_FOUND_HTTP_RESPONSE_CODE,
-  OK_HTTP_RESPONSE_CODE,
-  PROJECT_URL,
   TOOL_TIP_CLASS_NAMES,
 } from "@/util/utils";
 import { useState, useMemo, Key } from "react";
@@ -41,6 +37,12 @@ import { Column, Toast } from "@/types/types";
 import UserSettingsPageUnblockConfirmationModal from "../../../components/UserSettingsPageUnblockConfirmationModal";
 import { addToast } from "@heroui/toast";
 import { BlockDTO } from "@/types/classes/Block";
+import {
+  CONFLICT_HTTP_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  PROJECT_URL,
+} from "@/util/constants";
 
 type GetBlockedResponse = {
   data: Array<BlockDTO>;

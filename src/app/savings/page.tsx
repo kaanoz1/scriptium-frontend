@@ -3,11 +3,11 @@
 import UIWrapper from "@/components/UI/UIWrapper";
 import UserSavingComponent from "@/components/UserSavingComponent";
 import { useUser } from "@/hooks/useUser";
-import { SIGN_IN_URL } from "@/util/utils";
 import { NextPage } from "next";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
+import { SIGN_IN_URL } from "@/util/constants";
 
 const Page: NextPage = () => {
   const { user, isUserLoading } = useUser();

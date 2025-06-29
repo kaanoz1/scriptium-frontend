@@ -1,7 +1,6 @@
 "use client";
 import UserSettingsAccountPrivacy from "@/app/settings/components/UserSettingsAccountPrivacy";
 import UserSettingsBlocked from "@/app/settings/components/UserSettingsBlocked";
-import UserSettingsComments from "@/app/settings/components/UserSettingsComments";
 import UserSettingsEditUser from "@/app/settings/components/UserSettingsEditUser";
 import UserSettingsFollowerFollowings from "@/app/settings/components/UserSettingsFollowerFollowings";
 import UserSettingsLikes from "@/app/settings/components/UserSettingsLikes";
@@ -9,23 +8,19 @@ import UserSettingsNote from "@/app/settings/components/UserSettingsNote";
 import { useUser } from "@/hooks/useUser";
 import { Tab, Tabs } from "@heroui/tabs";
 import { NextPage } from "next";
-import {
-  AiOutlineUser,
-  AiOutlineLock,
-  AiOutlineHeart,
-  AiOutlineBell,
-} from "react-icons/ai";
+import { AiOutlineUser, AiOutlineLock, AiOutlineHeart } from "react-icons/ai";
 import { FiUserPlus } from "react-icons/fi";
-import { HiOutlineBan, HiOutlineChat } from "react-icons/hi";
+import { HiOutlineBan } from "react-icons/hi";
 import { MdOutlineStickyNote2 } from "react-icons/md";
 import { GrConfigure } from "react-icons/gr";
 import UserSettingsConfig from "@/app/settings/components/UserSettingsConfig";
 import { useRouter } from "next/navigation";
-import { SIGN_UP_URL } from "@/util/utils";
 import UIWrapper from "@/components/UI/UIWrapper";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
 import { ReactNode } from "react";
-import UserSettingsNotifications from "@/components/UserSettingsNotifications";
+import { SIGN_UP_URL } from "@/util/constants";
+
+
 interface Props {}
 
 const Page: NextPage<Props> = ({}) => {
@@ -49,7 +44,6 @@ const Page: NextPage<Props> = ({}) => {
           size="lg"
           aria-label="settings"
           isVertical={true}
-          className="space-y-4"
         >
           <Tab
             className="w-full flex justify-center"
@@ -57,14 +51,13 @@ const Page: NextPage<Props> = ({}) => {
             aria-label="userEditSettingTab"
             title={EDIT_USER_TAB_TITLE}
           >
-            <span>Will be implemented</span>
             <UserSettingsEditUser
               user={user}
               fetchUser={fetchUser}
               setUser={setUser}
             />
           </Tab>
-
+          {/* 
           <Tab
             className="w-full flex justify-center"
             key="notifications"
@@ -74,7 +67,7 @@ const Page: NextPage<Props> = ({}) => {
             <div className="w-[80%]">
               <UserSettingsNotifications />
             </div>
-          </Tab>
+          </Tab> */}
 
           <Tab
             className="w-full flex justify-center"
@@ -117,7 +110,7 @@ const Page: NextPage<Props> = ({}) => {
           >
             <UserSettingsLikes user={user} />
           </Tab>
-
+          {/* 
           <Tab
             className="w-full flex justify-center"
             key="reflections"
@@ -125,7 +118,7 @@ const Page: NextPage<Props> = ({}) => {
             title={COMMENTS_TAB_TITLE}
           >
             <UserSettingsComments user={user} />
-          </Tab>
+          </Tab> */}
 
           <Tab
             className="w-full flex justify-center"
@@ -196,14 +189,14 @@ const LIKES_TAB_TITLE: ReactNode = (
   </div>
 );
 
-const COMMENTS_TAB_TITLE: ReactNode = (
-  <div className="flex items-center gap-2 justify-start">
-    <HiOutlineChat className="text-2xl text-neutral-600 dark:text-neutral-300" />
-    <span className="text-sm text-neutral-700 dark:text-neutral-200">
-      Reflections
-    </span>
-  </div>
-);
+// const COMMENTS_TAB_TITLE: ReactNode = (
+//   <div className="flex items-center gap-2 justify-start">
+//     <HiOutlineChat className="text-2xl text-neutral-600 dark:text-neutral-300" />
+//     <span className="text-sm text-neutral-700 dark:text-neutral-200">
+//       Reflections
+//     </span>
+//   </div>
+// );
 
 const NOTES_TAB_TITLE: ReactNode = (
   <div className="flex items-center gap-2 justify-start">
@@ -214,11 +207,11 @@ const NOTES_TAB_TITLE: ReactNode = (
   </div>
 );
 
-const NOTIFICATIONS_TAB_TITLE: ReactNode = (
-  <div className="flex items-center gap-2 justify-start">
-    <AiOutlineBell className="text-2xl text-neutral-600 dark:text-neutral-300" />
-    <span className="text-sm text-neutral-700 dark:text-neutral-200">
-      Notifications
-    </span>
-  </div>
-);
+// const NOTIFICATIONS_TAB_TITLE: ReactNode = (
+//   <div className="flex items-center gap-2 justify-start">
+//     <AiOutlineBell className="text-2xl text-neutral-600 dark:text-neutral-300" />
+//     <span className="text-sm text-neutral-700 dark:text-neutral-200">
+//       Notifications
+//     </span>
+//   </div>
+// );

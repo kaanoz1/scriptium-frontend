@@ -19,7 +19,7 @@ import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaUser, FaEdit, FaRegTrashAlt, FaHeart } from "react-icons/fa";
-import { NoteOwnDTO } from "@/types/classes/Note";
+import { NoteOwnDTO, NoteOwnVerseDTO } from "@/types/classes/Note";
 import { UserOwnDTO } from "@/types/classes/User";
 import { VerseUpperMeanDTO } from "@/types/classes/Verse";
 import { ChapterUpperMeanDTO } from "@/types/classes/Chapter";
@@ -27,10 +27,12 @@ import { SectionUpperMeanDTO } from "@/types/classes/Section";
 import { ScriptureUpperMeanDTO } from "@/types/classes/Scripture";
 
 interface Props {
-  note: NoteOwnDTO;
+  note: NoteOwnVerseDTO;
   user: UserOwnDTO;
   deleteNote: () => void;
-  setEditNote: Dispatch<SetStateAction<NoteOwnDTO | null>>;
+  setEditNote:
+    | Dispatch<SetStateAction<NoteOwnDTO | null>>
+    | Dispatch<SetStateAction<NoteOwnVerseDTO | null>>;
   toggleNoteLike: () => void;
   showVerse?: boolean;
 }
@@ -75,7 +77,7 @@ const NoteOwn: NextPage<Props> = ({
             description: "text-xs",
           }}
           avatarProps={{
-            src: imageUrl ?? undefined,
+            src: imageUrl ?? "",
             size: "sm",
           }}
           name={noteOwnerFormattedName}
@@ -91,7 +93,7 @@ const NoteOwn: NextPage<Props> = ({
             {formatDate(noteCreatedAt)}
             {noteUpdatedAt && ` (Updated: ${formatDate(noteUpdatedAt)})`}
           </span>
-          (
+
           <Dropdown>
             <DropdownTrigger>
               <Button
@@ -136,7 +138,6 @@ const NoteOwn: NextPage<Props> = ({
               </DropdownSection>
             </DropdownMenu>
           </Dropdown>
-          )
         </div>
       </CardHeader>
 
@@ -174,7 +175,7 @@ const NoteOwn: NextPage<Props> = ({
 
           {showVerse && (
             <div className="ml-auto px-5">
-              Attached on VerseDTO:{" "}
+              Verse:
               <Link
                 size="sm"
                 href={`${scriptureCode}/${sectionNumber}/${chapterNumber}/${verseNumber}`}

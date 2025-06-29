@@ -9,7 +9,8 @@ import { NoteOwnDTO } from "@/types/classes/Note";
 import { UserOwnDTO } from "@/types/classes/User";
 import { VerseBaseDTO } from "@/types/classes/Verse";
 import { Toast } from "@/types/types";
-import { displayErrorToast, OK_HTTP_RESPONSE_CODE } from "@/util/utils";
+import { OK_HTTP_RESPONSE_CODE } from "@/util/constants";
+import { displayErrorToast } from "@/util/utils";
 import { Input } from "@heroui/input";
 import {
   Selection,

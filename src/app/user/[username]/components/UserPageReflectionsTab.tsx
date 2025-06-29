@@ -5,10 +5,7 @@ import {
   ResponseMessage,
 } from "@/types/response";
 import {
-  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
-  isAuthenticationRequestErrorCode,
   likeCommentAttachedToEntityAndReturnResponse,
-  OK_HTTP_RESPONSE_CODE,
   SOMETHING_WENT_WRONG_TOAST,
   unlikeCommentAttachedToEntityAndReturnResponse,
 } from "@/util/utils";
@@ -31,6 +28,11 @@ import { NoteOwnDTO } from "@/types/classes/Note";
 import { VerseBaseDTO } from "@/types/classes/Verse";
 import UserPageReflectionsTabVerseComments from "./UserPageReflectionsTabVerseComments";
 import UserPageReflectionsTabNoteComments from "./UserPageReflectionsTabNoteComments";
+import {
+  isAuthenticationRequestErrorCode,
+  OK_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
 
 interface Props {
   userInspected: UserFetchedDTO;
@@ -46,7 +48,7 @@ const UserPageReflectionsTab: NextPage<Props> = ({ userInspected }) => {
     refetchInterval: 1000 * 60,
   });
 
-  if (helper == null || isAuthenticationRequestErrorCode(helper))
+  if (helper === null || isAuthenticationRequestErrorCode(helper))
     return getErrorComponent({ code: helper });
 
   if (isLoading) return <LoadingSpinner />;
@@ -55,24 +57,31 @@ const UserPageReflectionsTab: NextPage<Props> = ({ userInspected }) => {
   const noteComments = helper.getNoteComments();
 
   return (
-    <Tabs>
-      <Tab>
-        <UserPageReflectionsTabVerseComments
-          comments={verseComments}
-          userInspected={userInspected}
-          toggleLike={toggleLike}
-          isLoading={isLoading}
-        />
-      </Tab>
-      <Tab>
-        <UserPageReflectionsTabNoteComments
-          comments={noteComments}
-          userInspected={userInspected}
-          toggleLike={toggleLike}
-          isLoading={isLoading}
-        />
-      </Tab>
-    </Tabs>
+    <div>
+      <Tabs
+        aria-label="User reflections"
+        variant="underlined"
+        color="primary"
+        classNames={{ base: "flex", tabList: "w-full" }}
+      >
+        <Tab key="verse reflections" title="Verse reflections">
+          <UserPageReflectionsTabVerseComments
+            comments={verseComments}
+            userInspected={userInspected}
+            toggleLike={toggleLike}
+            isLoading={isLoading}
+          />
+        </Tab>
+        <Tab key="note reflections" title="Note reflections">
+          <UserPageReflectionsTabNoteComments
+            comments={noteComments}
+            userInspected={userInspected}
+            toggleLike={toggleLike}
+            isLoading={isLoading}
+          />
+        </Tab>
+      </Tabs>
+    </div>
   );
 };
 

@@ -12,7 +12,6 @@ export type T_NoteOwnDTOConstructorParameters = {
   likeCount: number;
   replyCount: number;
   isLiked: boolean;
-  verse: VerseUpperMeanDTO;
 };
 
 export type T_NoteOwnDTOConstructorParametersJSON = {
@@ -23,39 +22,20 @@ export type T_NoteOwnDTOConstructorParametersJSON = {
   likeCount: number;
   replyCount: number;
   isLiked: boolean;
-  verse: T_VerseUpperMeanDTOConstructorParametersJSON;
 };
 
 export class NoteOwnDTO {
   private readonly id: number;
   private text: string;
   private readonly createdAt: Readonly<Date>;
-  private readonly updatedAt: Readonly<Date> | null;
+  private updatedAt: Date | null;
   private likeCount: number;
   private readonly replyCount: number;
   private isLiked: boolean = false;
-  private readonly _verse: Readonly<VerseUpperMeanDTO>;
 
-  constructor(data: {
-    id: number;
-    text: string;
-    createdAt: Readonly<Date>;
-    updatedAt: Readonly<Date> | null;
-    likeCount: number;
-    replyCount: number;
-    isLiked: boolean;
-    _verse: Readonly<VerseUpperMeanDTO>;
-  }) {
-    const {
-      id,
-      text,
-      createdAt,
-      updatedAt,
-      likeCount,
-      replyCount,
-      isLiked,
-      _verse,
-    } = data;
+  constructor(data: T_NoteOwnDTOConstructorParameters) {
+    const { id, text, createdAt, updatedAt, likeCount, replyCount, isLiked } =
+      data;
     this.id = id;
     this.text = text;
     this.createdAt = createdAt;
@@ -63,20 +43,22 @@ export class NoteOwnDTO {
     this.isLiked = isLiked;
     this.likeCount = likeCount;
     this.replyCount = replyCount;
-    this._verse = _verse;
   }
 
   static createFromJSON(
     data: T_NoteOwnDTOConstructorParametersJSON
   ): NoteOwnDTO {
-    const _verse = VerseUpperMeanDTO.createFromJSON(data.verse);
     const createdAt = new Date(data.createdAt);
     const updatedAt = data.updatedAt ? new Date(data.updatedAt) : null;
-    return new NoteOwnDTO({ ...data, _verse, createdAt, updatedAt });
+    return new NoteOwnDTO({ ...data, createdAt, updatedAt });
   }
 
   getId(): number {
     return this.id;
+  }
+
+  setUpdatedAt(updatedAt: Date) {
+    this.updatedAt = updatedAt;
   }
 
   getText(): string {
@@ -124,9 +106,33 @@ export class NoteOwnDTO {
   setIsNoteLiked(isLiked: boolean): void {
     this.isLiked = isLiked;
   }
+}
 
-  getVerse(): Readonly<VerseUpperMeanDTO> {
-    return this._verse;
+export type T_NoteOwnVerseDTOConstructorParameters =
+  T_NoteOwnDTOConstructorParameters & {
+    verse: VerseUpperMeanDTO;
+  };
+
+export type T_NoteOwnVerseDTOConstructorParametersJSON =
+  T_NoteOwnDTOConstructorParametersJSON & {
+    verse: T_VerseUpperMeanDTOConstructorParametersJSON;
+  };
+export class NoteOwnVerseDTO extends NoteOwnDTO {
+  private verse: VerseUpperMeanDTO;
+  constructor(data: T_NoteOwnVerseDTOConstructorParameters) {
+    super({ ...data });
+    this.verse = data.verse;
+  }
+
+  static override createFromJSON(
+    data: T_NoteOwnVerseDTOConstructorParametersJSON
+  ): NoteOwnVerseDTO {
+    const verse = VerseUpperMeanDTO.createFromJSON(data.verse);
+    return new NoteOwnVerseDTO({ ...data, verse });
+  }
+
+  getVerse(): VerseUpperMeanDTO {
+    return this.verse;
   }
 }
 
@@ -141,18 +147,8 @@ export type T_NoteOwnerDTOConstructorParametersJSON =
   };
 
 export class NoteOwnerDTO extends NoteOwnDTO {
-  readonly creator: Readonly<UserDTO>;
-  constructor(data: {
-    id: number;
-    text: string;
-    createdAt: Readonly<Date>;
-    updatedAt: Readonly<Date> | null;
-    likeCount: number;
-    replyCount: number;
-    creator: UserDTO;
-    isLiked: boolean;
-    _verse: VerseUpperMeanDTO;
-  }) {
+  readonly creator: UserDTO;
+  constructor(data: T_NoteOwnerDTOConstructorParameters) {
     super({ ...data });
     this.creator = data.creator;
   }
@@ -160,14 +156,43 @@ export class NoteOwnerDTO extends NoteOwnDTO {
   static override createFromJSON(
     data: T_NoteOwnerDTOConstructorParametersJSON
   ): NoteOwnerDTO {
-    const _verse = VerseUpperMeanDTO.createFromJSON(data.verse);
     const createdAt = new Date(data.createdAt);
     const updatedAt = data.updatedAt ? new Date(data.updatedAt) : null;
     const creator = UserDTO.createFromJSON(data.creator);
-    return new NoteOwnerDTO({ ...data, _verse, createdAt, updatedAt, creator });
+    return new NoteOwnerDTO({ ...data, createdAt, updatedAt, creator });
   }
 
   getCreator(): Readonly<UserDTO> {
     return this.creator;
+  }
+}
+
+export type T_NoteOwnerVerseDTOConstructorParameters =
+  T_NoteOwnerDTOConstructorParameters & {
+    verse: VerseUpperMeanDTO;
+  };
+
+export type T_NoteOwnerVerseDTOConstructorParametersJSON =
+  T_NoteOwnerDTOConstructorParametersJSON & {
+    verse: T_VerseUpperMeanDTOConstructorParametersJSON;
+  };
+export class NoteOwnerVerseDTO extends NoteOwnerDTO {
+  private verse: VerseUpperMeanDTO;
+  constructor(data: T_NoteOwnerVerseDTOConstructorParameters) {
+    super({ ...data });
+
+    this.verse = data.verse;
+  }
+
+  static override createFromJSON(
+    data: T_NoteOwnerVerseDTOConstructorParametersJSON
+  ): NoteOwnerVerseDTO {
+    const verse = VerseUpperMeanDTO.createFromJSON(data.verse);
+    const creator = UserDTO.createFromJSON(data.creator);
+    return new NoteOwnerVerseDTO({ ...data, verse, creator });
+  }
+
+  getVerse(): VerseUpperMeanDTO {
+    return this.verse;
   }
 }

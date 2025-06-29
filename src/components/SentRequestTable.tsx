@@ -1,12 +1,9 @@
 import { Response } from "@/types/response";
 import { Column } from "@/types/types";
 import {
-  CONFLICT_HTTP_RESPONSE_CODE,
   displayErrorToast,
   formatDate,
   getFormattedNameAndSurname,
-  OK_HTTP_RESPONSE_CODE,
-  PROJECT_URL,
   TOOL_TIP_CLASS_NAMES,
 } from "@/util/utils";
 import { Button } from "@heroui/button";
@@ -37,6 +34,11 @@ import {
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import LoadingSpinner from "./UI/LoadingSpinner";
 import { FollowedUserDTO } from "@/types/classes/Follow";
+import {
+  OK_HTTP_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
+  PROJECT_URL,
+} from "@/util/constants";
 
 interface Props {}
 

@@ -1,135 +1,161 @@
+// Refactored CreateCommentComponent.tsx
+
+import { FC, useState } from "react";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import { ResponseMessage } from "@/types/response";
-import { RefetchDataFunctionType } from "@/types/types";
+import { displayErrorToast } from "@/util/utils";
 import {
-  displayErrorToast,
-  getFormattedNameAndSurname,
-  MAX_LENGTH_FOR_COMMENT,
-  OK_HTTP_RESPONSE_CODE,
-} from "@/util/utils";
-import { Avatar } from "@heroui/avatar";
-import { Button } from "@heroui/button";
-import { Textarea } from "@heroui/input";
-import { NextPage } from "next";
-import { useForm } from "react-hook-form";
-import ReplyingComment from "./ReplyingComment";
-import { Dispatch, SetStateAction } from "react";
+  CommentOwnDTO,
+  CommentOwnerDTO,
+  CommentOwnerVerseDTO,
+  ParentCommentDTO,
+} from "@/types/classes/Comment";
+import { NoteOwnDTO } from "@/types/classes/Note";
+import { VerseSimpleDTO } from "@/types/classes/Verse";
 import { UserOwnDTO } from "@/types/classes/User";
-import { CommentOwnDTO, ParentCommentDTO } from "@/types/classes/Comment";
+import { RefetchDataFunctionType } from "@/types/types";
+import ReplyingComment from "./ReplyingComment";
+import CommentForm from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/CommentForm";
+import { addToast } from "@heroui/toast";
+import axios from "axios";
 
 interface Props {
   user: UserOwnDTO;
   entityType?: "verse" | "note";
-  parentComment?: ParentCommentDTO;
+  parentComment: CommentOwnerDTO | null;
   refetchDataFunction: RefetchDataFunctionType<unknown>;
-  stateControlFunctionOfCreateNewComment: Dispatch<
-    SetStateAction<CommentOwnDTO | boolean>
-  >;
-  entityId: number;
+  stateControlFunctionOfCreateNewComment: (
+    val: CommentOwnerVerseDTO | boolean
+  ) => void;
+  entity: NoteOwnDTO | VerseSimpleDTO;
 }
 
-type CreateCommentForm = {
-  entityId: number;
-  commentText: string;
-  parentCommentId: number | null;
-};
-
-const CreateCommentComponent: NextPage<Props> = ({
+const CreateCommentComponent: FC<Props> = ({
   user,
   entityType = "verse",
   parentComment,
   refetchDataFunction,
   stateControlFunctionOfCreateNewComment,
-  entityId,
+  entity,
 }) => {
-  const {
-    register,
-    handleSubmit,
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    formState: { errors, isSubmitting },
-  } = useForm<CreateCommentForm>();
-
-  const onSubmit = handleSubmit(async (comment: CreateCommentForm) => {
-    comment.entityId = entityId;
-
-    comment.parentCommentId = parentComment?.getId() ?? null;
+  const onSubmitComment = async (text: string) => {
+    const parentCommentId = parentComment?.getId() ?? null;
 
     try {
+      setIsLoading(true);
       const response = await axiosCredentialInstance.post<ResponseMessage>(
         `/comment/create/${entityType}`,
-        comment
+        {
+          entityId: entity.getId(),
+          commentText: text,
+          parentCommentId,
+        }
       );
 
-      switch (response.status) {
-        case OK_HTTP_RESPONSE_CODE:
-          await refetchDataFunction();
-          stateControlFunctionOfCreateNewComment(false);
-          return;
-        default:
-          return;
-      }
-    } catch (error) {
-      console.error(error);
-      displayErrorToast(error);
-      return;
-    }
-  });
+      if (response.status === 200) {
+        addToast({
+          title: "Comment created successfully!",
+          description: "Your comment has been posted.",
+          color: "success",
+        });
 
-  const imagePath: string | undefined = user.getImage() ?? undefined;
+        await refetchDataFunction();
+        stateControlFunctionOfCreateNewComment(false);
+        return;
+      }
+
+      throw new Error("Unexpected status code: " + response.status);
+    } catch (error) {
+      if (!axios.isAxiosError<ResponseMessage>(error)) {
+        addToast({
+          title: "Something went wrong!",
+          description: "An unexpected error occurred.",
+          color: "warning",
+        });
+        console.error(error);
+        return;
+      }
+
+      if (error.code === "ERR_NETWORK") {
+        addToast({
+          title: "Network Error!",
+          description: "Please check your internet connection.",
+          color: "warning",
+        });
+        console.error(error);
+        return;
+      }
+
+      switch (error.response?.status) {
+        case 401: // Unauthorized
+          addToast({
+            title: "Unauthorized!",
+            description: "Please log in to submit a comment.",
+            color: "danger",
+          });
+          break;
+
+        case 404: // Not Found
+          addToast({
+            title: "Resource Not Found!",
+            description: "The associated entity could not be found.",
+            color: "secondary",
+          });
+          break;
+
+        case 429: // Too Many Requests
+          addToast({
+            title: "Too many requests!",
+            description: "You are commenting too frequently. Please slow down.",
+            color: "warning",
+          });
+          break;
+
+        case 400: // Bad Request
+          addToast({
+            title: "Invalid Comment",
+            description:
+              "Your comment could not be processed. Check your input.",
+            color: "danger",
+          });
+          break;
+
+        case 500: // Internal Server Error
+          addToast({
+            title: "Server Error!",
+            description:
+              "A server error occurred while submitting your comment.",
+            color: "danger",
+          });
+          break;
+
+        default:
+          addToast({
+            title: "Unexpected Error!",
+            description: "Something went wrong while submitting your comment.",
+            color: "warning",
+          });
+          break;
+      }
+
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="w-full flex flex-col gap-4 p-2">
+    <div className="w-full flex flex-col gap-4">
       {parentComment && <ReplyingComment parentComment={parentComment} />}
 
-      <form className="flex flex-col gap-2" onSubmit={onSubmit}>
-        <div className="flex items-start gap-2">
-          <Avatar
-            src={imagePath}
-            name={getFormattedNameAndSurname(user)}
-            size="md"
-          />
-          <Textarea
-            placeholder="Write your reflection..."
-            isClearable
-            className="w-full"
-            description={`Reflections might contain up to ${MAX_LENGTH_FOR_COMMENT} characters`}
-            isRequired
-            errorMessage={errors.commentText?.message}
-            isInvalid={!!errors.commentText}
-            maxLength={MAX_LENGTH_FOR_COMMENT}
-            {...register("commentText", {
-              required: {
-                value: true,
-                message: "You cannot create a blank reflection",
-              },
-              maxLength: {
-                value: MAX_LENGTH_FOR_COMMENT,
-                message: `Reflections cannot exceed ${MAX_LENGTH_FOR_COMMENT} characters`,
-              },
-            })}
-          />
-        </div>
-
-        <div className="flex justify-end gap-2 mt-1">
-          <Button
-            variant="light"
-            color="default"
-            onPress={() => stateControlFunctionOfCreateNewComment(false)}
-            isDisabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-
-          <Button
-            type="submit"
-            color="success"
-            isLoading={isSubmitting}
-            isDisabled={isSubmitting}
-          >
-            Submit
-          </Button>
-        </div>
-      </form>
+      <CommentForm
+        user={user}
+        onSubmitComment={onSubmitComment}
+        onCancel={() => stateControlFunctionOfCreateNewComment(false)}
+        submitting={isLoading} // passed inside CommentForm, could be enhanced later
+      />
     </div>
   );
 };

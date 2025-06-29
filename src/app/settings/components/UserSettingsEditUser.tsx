@@ -1,16 +1,7 @@
 "use client";
 
 import { NextPage } from "next";
-import {
-  CONFLICT_HTTP_RESPONSE_CODE,
-  getFormattedNameAndSurnameFromString,
-  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
-  OK_HTTP_RESPONSE_CODE,
-  PROJECT_URL,
-  SIGN_IN_URL,
-  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
-  SystemLanguages,
-} from "@/util/utils";
+
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { FieldErrors, useForm, UseFormRegister } from "react-hook-form";
@@ -23,7 +14,6 @@ import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "@heroui/modal";
 import { Input, Textarea } from "@heroui/input";
-import { Select, SelectItem } from "@heroui/select";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import InternalServerError from "../../../components/UI/InternalServerError";
 import TooManyRequest from "../../../components/UI/TooManyRequest";
@@ -33,6 +23,15 @@ import {
   ResponseMessage,
 } from "@/types/response";
 import { UserOwnDTO } from "@/types/classes/User";
+import {
+  OK_HTTP_RESPONSE_CODE,
+  SIGN_IN_URL,
+  CONFLICT_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  PROJECT_URL,
+} from "@/util/constants";
+import { getFormattedNameAndSurnameFromString } from "@/util/utils";
 
 type Props = {
   user: UserOwnDTO;
@@ -244,8 +243,6 @@ const UserSettingsEditUser: NextPage<Props> = ({
   );
 
   //TODO: Implement crop model.
-
-  const langId = user.getLangId();
 
   return (
     <Fragment>

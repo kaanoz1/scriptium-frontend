@@ -10,11 +10,9 @@ import { Select, SelectItem } from "@heroui/select";
 import { NextPage } from "next";
 import { Dispatch, Key, SetStateAction } from "react";
 import { ScripturePreference } from "@/types/classes/Scripture";
-import { VerseBothDTO } from "@/types/classes/Verse";
 import { ScriptureDetail } from "@/util/scriptureDetails";
 
 interface Props {
-  verse: VerseBothDTO;
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   scriptureDetail: Readonly<ScriptureDetail>;
@@ -23,7 +21,6 @@ interface Props {
 }
 
 const VersePageTranslationModal: NextPage<Props> = ({
-  verse,
   isModalOpen,
   setIsModalOpen,
   scriptureDetail,

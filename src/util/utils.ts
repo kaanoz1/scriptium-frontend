@@ -8,6 +8,7 @@ import { addToast } from "@heroui/toast";
 import { TextVariationDTO, VerseDTO } from "@/types/classes/Verse";
 import { TranslationDTO } from "@/types/classes/Translation";
 import {
+  T_TranslationTextWithVerseUpperMeanDTOConstructorParametersJSON,
   TranslationTextDTO,
   TranslationTextWithVerseUpperMeanDTO,
 } from "@/types/classes/TranslationText";
@@ -123,7 +124,7 @@ export function getFormattedNameAndSurname(
     | UserOwnDTO
 ): string {
   const name: string = user.getName();
-  const surname: string | null = user.getSurname();
+  const surname: string = user.getSurname() ?? "";
 
   return `${name} ${surname}`.trim();
 }
@@ -143,7 +144,7 @@ export function getFormattedNameAndSurnameFromString(
   name: string,
   surname: string | null | undefined
 ) {
-  return `${name} ${surname}`.trim();
+  return `${name} ${surname ?? ""}`.trim();
 }
 
 export const unlikeCommentAttachedToEntityAndReturnResponse = async (
@@ -181,10 +182,16 @@ export const TOOL_TIP_CLASS_NAMES: SlotsToClasses<
 export const fetchQuery = async (query: string) => {
   try {
     const response = await axiosNoCredentialInstance.get<
-      Response<TranslationTextWithVerseUpperMeanDTO[]>
+      Response<
+        T_TranslationTextWithVerseUpperMeanDTOConstructorParametersJSON[]
+      >
     >(`/query/search?query=${encodeURIComponent(query)}`);
 
-    return response.data.data ?? [];
+    return (
+      response.data.data.map(
+        TranslationTextWithVerseUpperMeanDTO.createFromJSON
+      ) ?? []
+    );
   } catch (error) {
     console.error(error);
     addToast(SOMETHING_WENT_WRONG_TOAST);

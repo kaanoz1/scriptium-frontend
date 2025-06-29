@@ -1,15 +1,15 @@
 import { NextPage } from "next";
-import VersePageTabTranslations from "./VersePageTabTranslations";
-import VersePageTabComments from "./VersePageTabComments";
-import VersePageTabNotes from "./VersePageTabNotes";
 
 import { Tab, Tabs } from "@heroui/tabs";
-import { IoBookOutline } from "react-icons/io5";
-import { CiStickyNote } from "react-icons/ci";
-import { BiCommentDetail } from "react-icons/bi";
 import { TranslationTextDTO } from "@/types/classes/TranslationText";
 import { VerseBothDTO } from "@/types/classes/Verse";
 import { UserOwnDTO } from "@/types/classes/User";
+import VersePageTabComments from "./VersePageTabComments";
+import { IoBookOutline } from "react-icons/io5";
+import VersePageTabTranslations from "./VersePageTabTranslations";
+import VersePageTabNotes from "./VersePageTabNotes";
+import { CiStickyNote } from "react-icons/ci";
+import { BiCommentDetail } from "react-icons/bi";
 
 interface Props {
   readonly translationTexts: ReadonlyArray<TranslationTextDTO>;
@@ -18,7 +18,9 @@ interface Props {
   user: UserOwnDTO | null;
 }
 
-const VersePageTabs: NextPage<Props> = () => {
+const VersePageTabs: NextPage<Props> = ({ user, showFootnotes, verse }) => {
+  const translationTexts = verse.getTranslationTexts();
+
   return (
     <div className="flex w-full flex-col bg-white dark:bg-black rounded-md shadow-sm border border-gray-300 dark:border-gray-700">
       <Tabs
@@ -33,46 +35,24 @@ const VersePageTabs: NextPage<Props> = () => {
         }}
       >
         <Tab
-          key="translations-guest"
+          key="translations"
           title={
             <div className="flex items-center space-x-2">
+              <IoBookOutline
+                size={18}
+                className="text-gray-500 dark:text-gray-400"
+              />
               <span>Translations</span>
             </div>
           }
-        />
-      </Tabs>
-      {/* {user ? (
-        <Tabs
-          aria-label="user-tabs"
-          color="primary"
-          variant="underlined"
-          className="w-full"
-          classNames={{
-            tabList:
-              "w-full relative flex items-center border-b border-gray-300 dark:border-gray-700 gap-4 px-4 bg-white dark:bg-black",
-            tab: "px-0 h-12 text-base font-medium transition-colors data-[selected=true]:text-primary text-foreground/60 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-400 inline-flex items-center",
-            panel:
-              "pt-4 px-4 bg-white dark:bg-black text-gray-800 dark:text-gray-200",
-          }}
         >
-          <Tab
-            key="translations"
-            title={
-              <div className="flex items-center space-x-2">
-                <IoBookOutline
-                  size={18}
-                  className="text-gray-500 dark:text-gray-400"
-                />
-                <span>Translations</span>
-              </div>
-            }
-          >
-            <VersePageTabTranslations
-              showFootnotes={showFootnotes}
-              translationTexts={translationTexts}
-            />
-          </Tab>
+          <VersePageTabTranslations
+            showFootnotes={showFootnotes}
+            translationTexts={translationTexts}
+          />
+        </Tab>
 
+        {user && [
           <Tab
             key="comments"
             title={
@@ -86,8 +66,7 @@ const VersePageTabs: NextPage<Props> = () => {
             }
           >
             <VersePageTabComments verse={verse} user={user} />
-          </Tab>
-
+          </Tab>,
           <Tab
             key="notes"
             title={
@@ -101,30 +80,9 @@ const VersePageTabs: NextPage<Props> = () => {
             }
           >
             <VersePageTabNotes user={user} verse={verse} />
-          </Tab>
-        </Tabs>
-      ) : (
-        <Tabs
-          aria-label="guest-tabs"
-          color="primary"
-          variant="underlined"
-          className="w-full"
-          classNames={{
-            tabList: `w-full relative  flex items-center border-b border-gray-300 dark:border-gray-700  gap-4 px-4 bg-white dark:bg-black`,
-            tab: `px-0 h-12 text-base font-medium transition-colors data-[selected=true]:text-primary text-foreground/60 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-400 inline-flex items-center`,
-            panel: `pt-4 px-4 bg-white dark:bg-black text-gray-800 dark:text-gray-200`,
-          }}
-        >
-          <Tab
-            key="translations-guest"
-            title={
-              <div className="flex items-center space-x-2">
-                <span>Translations</span>
-              </div>
-            }
-          />
-        </Tabs>
-      )} */}
+          </Tab>,
+        ]}
+      </Tabs>
     </div>
   );
 };

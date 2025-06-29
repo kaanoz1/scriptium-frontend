@@ -1,11 +1,4 @@
 import { NextPage } from "next";
-import {
-  CONFLICT_HTTP_RESPONSE_CODE,
-  displayErrorToast,
-  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
-  OK_HTTP_RESPONSE_CODE,
-  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
-} from "@/util/utils";
 import { useState } from "react";
 import { Switch } from "@heroui/switch";
 import { FaLock } from "react-icons/fa";
@@ -15,6 +8,14 @@ import TooManyRequestComponent from "../../../components/UI/TooManyRequest";
 import ServerErrorComponent from "../../../components/UI/ServerErrorComponent";
 import { UserOwnDTO } from "@/types/classes/User";
 import { T_NoAuthenticationRequestErrorCode } from "@/types/response";
+import {
+  OK_HTTP_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
+import { addToast } from "@heroui/toast";
+import axios from "axios";
 
 interface Props {
   user: UserOwnDTO;
@@ -22,13 +23,14 @@ interface Props {
 }
 
 const UserSettingsAccountPrivacy: NextPage<Props> = ({ user, setUser }) => {
-  const [isPrivate, setIsPrivate] = useState<boolean>(false);
+  const [isPrivate, setIsPrivate] = useState<boolean>(!!user.getPrivateFrom());
   const [error, setError] = useState<
     T_NoAuthenticationRequestErrorCode | undefined
   >(undefined);
 
   const handleToggle = async () => {
-    setIsPrivate((prev) => !prev);
+    const previousValue = isPrivate;
+    setIsPrivate(!previousValue);
 
     try {
       const response = await axiosCredentialInstance.put(`/session/alter`);
@@ -36,25 +38,74 @@ const UserSettingsAccountPrivacy: NextPage<Props> = ({ user, setUser }) => {
       switch (response.status) {
         case OK_HTTP_RESPONSE_CODE:
           user.togglePrivateFrom();
-          setUser(Object.create(user));
+          setUser(user);
+          addToast({
+            title: previousValue
+              ? "Account is now public"
+              : "Account is now private",
+            description: previousValue
+              ? "Your account is visible to everyone."
+              : "Only your approved followers can see your profile.",
+            color: "success",
+          });
           return;
+
         case CONFLICT_HTTP_RESPONSE_CODE:
-          setIsPrivate((prev) => !prev);
+          setIsPrivate(previousValue); // Geri al
+          addToast({
+            title: "Conflict Detected",
+            description:
+              "Privacy setting could not be updated due to a conflict.",
+            color: "warning",
+          });
           return;
+
         case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
+          setIsPrivate(previousValue); // Geri al
           setError(429);
-          return undefined;
+          addToast({
+            title: "Too Many Requests",
+            description: "You're switching too fast. Please wait a moment.",
+            color: "warning",
+          });
+          return;
+
         default:
+          setIsPrivate(previousValue); // Geri al
           setError(500);
-          return undefined;
+          addToast({
+            title: "Unexpected Error",
+            description: "Something went wrong while updating your settings.",
+            color: "danger",
+          });
+          return;
       }
     } catch (error) {
       console.error(error);
+      setIsPrivate(previousValue);
       setError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
 
-      displayErrorToast(error);
-
-      return undefined;
+      if (!axios.isAxiosError(error)) {
+        addToast({
+          title: "Unknown Error",
+          description: "An unexpected error occurred.",
+          color: "danger",
+        });
+      } else if (error.code === "ERR_NETWORK") {
+        addToast({
+          title: "Network Error",
+          description: "Please check your internet connection.",
+          color: "warning",
+        });
+      } else {
+        addToast({
+          title: "Server Error",
+          description:
+            error.response?.data?.message ??
+            "Unable to update privacy settings.",
+          color: "danger",
+        });
+      }
     }
   };
 

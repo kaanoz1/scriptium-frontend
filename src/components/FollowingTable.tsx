@@ -1,11 +1,9 @@
 import { Response } from "@/types/response";
 import { Column } from "@/types/types";
 import {
-  CONFLICT_HTTP_RESPONSE_CODE,
   displayErrorToast,
   formatDate,
-  getFormattedNameAndSurname, OK_HTTP_RESPONSE_CODE,
-  PROJECT_URL,
+  getFormattedNameAndSurname,
 } from "@/util/utils";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
@@ -28,6 +26,11 @@ import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import LoadingSpinner from "./UI/LoadingSpinner";
 import FollowingTableUnfollowFollowingsConfirmationModal from "./FollowingTableUnfollowFollowingsConfirmationModal";
 import { FollowedUserDTO } from "@/types/classes/Follow";
+import {
+  OK_HTTP_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
+  PROJECT_URL,
+} from "@/util/constants";
 
 interface Props {}
 
