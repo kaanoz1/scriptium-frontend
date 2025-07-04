@@ -65,6 +65,7 @@ const SignInForm: FC = () => {
         {
           email: formData.email,
           password: formData.password,
+          rememberMe: formData.rememberMe
         }
       );
 
@@ -268,8 +269,9 @@ const SignInForm: FC = () => {
                 </div>
                 <Link
                   underline="hover"
-                  href="#"
+                  href="/auth/forgot-password"
                   className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                  
                 >
                   Forgot Password?
                 </Link>

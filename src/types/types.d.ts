@@ -89,3 +89,6 @@ export type T_CreateCollectionForm = {
   collectionName: string;
   description: string | null;
 };
+
+
+export type T_SharePlatform ="twitter" | "threads" | "direct"

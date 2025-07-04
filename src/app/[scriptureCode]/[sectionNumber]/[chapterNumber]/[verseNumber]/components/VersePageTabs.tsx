@@ -4,12 +4,10 @@ import { Tab, Tabs } from "@heroui/tabs";
 import { TranslationTextDTO } from "@/types/classes/TranslationText";
 import { VerseBothDTO } from "@/types/classes/Verse";
 import { UserOwnDTO } from "@/types/classes/User";
-import VersePageTabComments from "./VersePageTabComments";
 import { IoBookOutline } from "react-icons/io5";
 import VersePageTabTranslations from "./VersePageTabTranslations";
 import VersePageTabNotes from "./VersePageTabNotes";
 import { CiStickyNote } from "react-icons/ci";
-import { BiCommentDetail } from "react-icons/bi";
 
 interface Props {
   readonly translationTexts: ReadonlyArray<TranslationTextDTO>;
@@ -53,20 +51,20 @@ const VersePageTabs: NextPage<Props> = ({ user, showFootnotes, verse }) => {
         </Tab>
 
         {user && [
-          <Tab
-            key="comments"
-            title={
-              <div className="flex items-center space-x-2">
-                <BiCommentDetail
-                  size={18}
-                  className="text-gray-500 dark:text-gray-400"
-                />
-                <span>Reflections</span>
-              </div>
-            }
-          >
-            <VersePageTabComments verse={verse} user={user} />
-          </Tab>,
+          // <Tab
+          //   key="comments"
+          //   title={
+          //     <div className="flex items-center space-x-2">
+          //       <BiCommentDetail
+          //         size={18}
+          //         className="text-gray-500 dark:text-gray-400"
+          //       />
+          //       <span>Reflections</span>
+          //     </div>
+          //   }
+          // >
+          //   <VersePageTabComments verse={verse} user={user} /> //Temporarily disabled
+          // </Tab>,
           <Tab
             key="notes"
             title={

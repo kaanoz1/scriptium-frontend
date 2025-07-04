@@ -8,26 +8,26 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/modal";
-import { Dispatch, FC, SetStateAction } from "react";
+import { Dispatch, FC, ReactNode, SetStateAction } from "react";
 import { BsTwitterX } from "react-icons/bs";
 import { FaThreads } from "react-icons/fa6";
 import { LuCopy } from "react-icons/lu";
-import {handleCopy} from "@/util/utils";
+import { handleCopy } from "@/util/utils";
+import { handleShare } from "@/util/func";
+import { T_SharePlatform } from "@/types/types";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   shareTextState: string;
   stateControlFunctionOfShareTextState: Dispatch<SetStateAction<string>>;
-  handleShareFunction: (platform: string) => Promise<void>;
 }
 
-const VersePageShareModal: FC<Props> = ({
+const ShareModel: FC<Props> = ({
   isModalOpen,
   setIsModalOpen,
   shareTextState,
   stateControlFunctionOfShareTextState,
-  handleShareFunction,
 }) => {
   return (
     <Modal
@@ -61,42 +61,22 @@ const VersePageShareModal: FC<Props> = ({
               <Divider className="h-0.5 w-full" />
             </div>
 
-            <Button
-              color="primary"
-              variant="solid"
-              className="flex items-center gap-2"
-              onPress={() => {
-                handleShareFunction("twitter").then(() =>
-                  setIsModalOpen(false)
-                );
-              }}
-            >
-              <BsTwitterX size={20} />
-              Share on Twitter
-            </Button>
-            <Button
-              color="primary"
-              variant="solid"
-              className="flex items-center gap-2"
-              onPress={() => {
-                handleShareFunction("threads").then(() =>
-                  setIsModalOpen(false)
-                );
-              }}
-            >
-              <FaThreads size={20} />
-              Share on Threads
-            </Button>
-            <Button
-              variant="light"
-              className="flex items-center gap-2"
-              onPress={() => {
-                handleShareFunction("direct").then(() => setIsModalOpen(false));
-              }}
-            >
-              <LuCopy size={20} />
-              Copy the direct link
-            </Button>
+            {platforms.map(({ id, label, icon, variant = "solid" }) => (
+              <Button
+                key={id}
+                color="primary"
+                variant={variant}
+                className="flex items-center gap-2"
+                onPress={() => {
+                  handleShare(id, shareTextState).then(() =>
+                    setIsModalOpen(false)
+                  );
+                }}
+              >
+                {icon}
+                {label}
+              </Button>
+            ))}
           </div>
         </ModalBody>
         <ModalFooter>
@@ -109,4 +89,20 @@ const VersePageShareModal: FC<Props> = ({
   );
 };
 
-export default VersePageShareModal;
+export default ShareModel;
+
+const platforms: {
+  id: T_SharePlatform;
+  label: string;
+  icon: ReactNode;
+  variant?: "solid" | "light" | "shadow" | "bordered";
+}[] = [
+  { id: "twitter", label: "Share on Twitter", icon: <BsTwitterX size={20} /> },
+  { id: "threads", label: "Share on Threads", icon: <FaThreads size={20} /> },
+  {
+    id: "direct",
+    label: "Copy the direct link",
+    icon: <LuCopy size={20} />,
+    variant: "light",
+  },
+];

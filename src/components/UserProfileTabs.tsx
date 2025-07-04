@@ -10,9 +10,15 @@ interface Props {
   isOwnProfile: boolean;
   userInspected: UserFetchedDTO;
   user: UserOwnDTO;
+  hasUserInspectingPermissionToContentOfUserInspected: boolean;
 }
 
-const UserProfileTabs: FC<Props> = ({ isOwnProfile, user, userInspected }) => {
+const UserProfileTabs: FC<Props> = ({
+  isOwnProfile,
+  user,
+  userInspected,
+  hasUserInspectingPermissionToContentOfUserInspected,
+}) => {
   return (
     <div className="mt-6 w-full">
       <Tabs
@@ -28,7 +34,13 @@ const UserProfileTabs: FC<Props> = ({ isOwnProfile, user, userInspected }) => {
         </Tab> */}
         <Tab key="notes" title={NOTES_TITLE_TAB}>
           <div>
-            <UserPageNotesTab user={user} notesOfUser={userInspected} />
+            <UserPageNotesTab
+              hasUserInspectingPermissionToContentOfUserInspected={
+                hasUserInspectingPermissionToContentOfUserInspected
+              }
+              user={user}
+              notesOfUser={userInspected}
+            />
           </div>
         </Tab>
         {isOwnProfile && (

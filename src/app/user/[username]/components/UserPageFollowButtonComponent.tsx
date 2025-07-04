@@ -1,5 +1,4 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { Toast } from "@/types/types";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { NextPage } from "next";
@@ -7,52 +6,11 @@ import { Dispatch, SetStateAction } from "react";
 import { FaBan, FaUserCheck, FaHourglass, FaUserPlus } from "react-icons/fa";
 import { addToast } from "@heroui/toast";
 import { UserFetchedDTO } from "@/types/classes/User";
+import { NOT_FOUND_HTTP_RESPONSE_CODE, TOO_MANY_REQUEST_HTTP_RESPONSE_CODE, INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE, CONFLICT_HTTP_RESPONSE_CODE } from "@/util/constants";
+import { displayErrorToast } from "@/util/utils";
+import axios from "axios";
 
-const handleFollow = async (
-  userToBeFollowed: UserFetchedDTO,
-  stateControlFunctionOfUserToBeProcessedOn: (
-    updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
-  ) => void
-) => {
-  const response = await axiosCredentialInstance.post(`/follow/follow`, {
-    username: userToBeFollowed.getUsername(),
-  });
 
-  switch (response.data.message) {
-    case "You are successfully following the user!":
-      stateControlFunctionOfUserToBeProcessedOn((prev) => {
-        if (!prev) return null;
-
-        prev.setFollowStatusUserInspecting("Accepted");
-
-        prev.increaseFollowerCount();
-
-        return prev;
-      });
-      return;
-
-    case "Follow request sent successfully.":
-      stateControlFunctionOfUserToBeProcessedOn((prev) => {
-        if (!prev) return null;
-        prev.setFollowStatusUserInspecting("Pending");
-        return prev;
-      });
-      return;
-
-    default:
-      const couldntSendRequestToast: Toast = {
-        title: "Process couldn't made!",
-        description:
-          "You may already follow this user or you have a pending request.",
-        color: "danger",
-      };
-
-      addToast(couldntSendRequestToast);
-      return;
-  }
-};
 
 interface Props {
   isOwnProfile: boolean;
@@ -100,6 +58,7 @@ const UserPageFollowButtonComponent: NextPage<Props> = ({
 
   const followStatusUserInspecting =
     userFetched.getFollowStatusUserInspecting();
+
 
   switch (followStatusUserInspecting) {
     case "Accepted":
@@ -151,3 +110,98 @@ const UserPageFollowButtonComponent: NextPage<Props> = ({
 };
 
 export default UserPageFollowButtonComponent;
+
+
+const handleFollow = async (
+  userToBeFollowed: UserFetchedDTO,
+  stateControlFunctionOfUserToBeProcessedOn: (
+    updater:
+      | UserFetchedDTO
+      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+  ) => void
+) => {
+  try {
+    const response = await axiosCredentialInstance.post(`/follow/follow`, {
+      username: userToBeFollowed.getUsername(),
+    });
+
+   
+    switch (response.data.message) {
+      case "You are successfully following the user!":
+        stateControlFunctionOfUserToBeProcessedOn((prev) => {
+          if (!prev) return null;
+          prev.setFollowStatusUserInspecting("Accepted");
+          prev.increaseFollowerCount();
+          return prev;
+        });
+        return;
+
+      case "Follow request sent successfully.":
+        stateControlFunctionOfUserToBeProcessedOn((prev) => {
+          if (!prev) return null;
+          prev.setFollowStatusUserInspecting("Pending");
+          return prev;
+        });
+        return;
+
+      default:
+        addToast({
+          title: "Follow request failed",
+          description:
+            "You may already be following this user or a request is pending.",
+          color: "danger",
+        });
+        return;
+    }
+  } catch (error) {
+    if (!axios.isAxiosError(error)) {
+      console.error(error);
+      addToast({
+        title: "Unexpected error",
+        description: "Something went wrong. Please try again later.",
+        color: "warning",
+      });
+      return;
+    }
+
+    if (error.code === "ERR_NETWORK") {
+      console.error(error);
+      addToast({
+        title: "Network Error",
+        description:
+          "We couldn’t connect to the server. Please check your internet connection.",
+        color: "warning",
+      });
+      return;
+    }
+
+    switch (error.response?.status) {
+      case NOT_FOUND_HTTP_RESPONSE_CODE:
+        addToast({
+          title: "User Not Found",
+          description:
+            "The user might not exist, be frozen, or you are blocked by the user.",
+          color: "secondary",
+        });
+        break;
+      case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
+        addToast({
+          title: "Too Many Requests",
+          description: "You’re making requests too quickly. Try again later.",
+          color: "warning",
+        });
+        break;
+      case CONFLICT_HTTP_RESPONSE_CODE:
+        addToast({
+          title: "Already Following",
+          description: "You already follow this user or the request is pending.",
+          color: "secondary",
+        });
+        break;
+      case INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE:
+      default:
+        displayErrorToast(error);
+        break;
+    }
+  }
+};

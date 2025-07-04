@@ -20,11 +20,10 @@ import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
 import { ReactNode } from "react";
 import { SIGN_UP_URL } from "@/util/constants";
 
-
 interface Props {}
 
 const Page: NextPage<Props> = ({}) => {
-  const { user, isUserLoading, setUser, fetchUser } = useUser();
+  const { user, isUserLoading, setUser } = useUser();
   const router = useRouter();
 
   if (isUserLoading) return <LoadingSpinnerFullH />;
@@ -51,11 +50,7 @@ const Page: NextPage<Props> = ({}) => {
             aria-label="userEditSettingTab"
             title={EDIT_USER_TAB_TITLE}
           >
-            <UserSettingsEditUser
-              user={user}
-              fetchUser={fetchUser}
-              setUser={setUser}
-            />
+            <UserSettingsEditUser user={user} setUser={setUser} />
           </Tab>
           {/* 
           <Tab

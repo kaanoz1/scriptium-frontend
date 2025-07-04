@@ -12,7 +12,7 @@ import {
 } from "@/types/response";
 import { useUser } from "@/hooks/useUser";
 import { Toast, UserPageParams } from "@/types/types";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import GetUserRoleSymbolsComponent from "@/components/GetUserRoleSymbolsComponent";
 import PrivateAccountIcon from "@/components/UI/PrivateAccountIcon";
@@ -72,31 +72,16 @@ const Page: NextPage = () => {
 
   const { user, isUserLoading } = useUser();
 
+  const queryKey: readonly unknown[] = ["user-page", usernameParam];
+
   const { data: userFetched = null, isLoading } = useQuery({
-    queryKey: ["user-page", usernameParam],
+    queryKey: queryKey,
     queryFn: async () => await fetchUserByUsername(usernameParam),
     staleTime: 1000 * 10,
     refetchInterval: 1000 * 60,
   });
 
   const queryClient = useQueryClient();
-
-  const setUserFetched = (
-    updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
-  ) => {
-    queryClient.setQueryData<UserFetchedDTO | null>(
-      ["user-page", usernameParam],
-      (prev) => {
-        if (typeof updater === "function") {
-          const result = updater(prev ?? null);
-          return result === undefined ? prev : result;
-        }
-        return updater;
-      }
-    );
-  };
 
   if (isLoading || isUserLoading) return <UserPageSkeleton />;
 
@@ -127,17 +112,27 @@ const Page: NextPage = () => {
 
   const formattedName = getFormattedNameAndSurname(userFetched);
 
+  const isUserInspectedPrivate = !!userFetched.getPrivateFrom();
+
+  const isUserInspectedBlocked = userFetched.getIsUserInspectedBlocked();
+
+  const isUserInspectingFollowingUserInspected =
+    userFetched.getFollowStatusUserInspecting() == "Accepted";
+
   const hasPermissionToSeeUserProfile =
-    (!userFetched.getIsFrozen() ||
-      (userFetched.getIsFrozen() &&
-        userFetched.getFollowStatusUserInspecting() == "Accepted") ||
-      isOwnProfile) &&
-    !userFetched.getIsUserInspectedBlocked();
+    isOwnProfile ||
+    !isUserInspectedPrivate ||
+    (isUserInspectedPrivate &&
+      isUserInspectingFollowingUserInspected &&
+      !isUserInspectedBlocked);
 
   const userFetchedPrivateFrom: Readonly<Date> | null =
     userFetched.getPrivateFrom();
   const userFetchedUsername: string = userFetched.getUsername();
   const userFetchedBiography: string | null = userFetched.getBiography();
+
+  const setUserFetchedAndUpdateQuery = (updater: Dispatch) =>
+    setUserFetched(updater, queryClient, queryKey);
 
   return (
     <Fragment>
@@ -175,7 +170,9 @@ const Page: NextPage = () => {
                       setIsUnblockConfirmationOpen
                     }
                     userFetched={userFetched}
-                    stateControlFunctionOfUserToBeProcessedOn={setUserFetched}
+                    stateControlFunctionOfUserToBeProcessedOn={
+                      setUserFetchedAndUpdateQuery
+                    }
                   />
 
                   {!isOwnProfile && (
@@ -205,6 +202,9 @@ const Page: NextPage = () => {
           {hasPermissionToSeeUserProfile ? (
             <UserProfileTabs
               user={user}
+              hasUserInspectingPermissionToContentOfUserInspected={
+                hasPermissionToSeeUserProfile
+              }
               userInspected={userFetched}
               isOwnProfile={isOwnProfile}
             />
@@ -218,11 +218,13 @@ const Page: NextPage = () => {
         isModalOpen={isFollowOperationConfirmationModelOpen}
         setIsModalOpen={setIsFollowOperationConfirmationModelOpen}
         userToBeProcessedOn={userFetched}
-        stateControlFunctionOfUserToBeProcessedOn={setUserFetched}
+        stateControlFunctionOfUserToBeProcessedOn={setUserFetchedAndUpdateQuery}
       />
 
       <UserPageInformationModal
-        stateControlFunctionOfUserToBeInformedWith={setUserFetched}
+        stateControlFunctionOfUserToBeInformedWith={
+          setUserFetchedAndUpdateQuery
+        }
         isModalOpen={isInformationModelOpen}
         setIsModalOpen={setIsInformationModelOpen}
         userToBeInformedWith={userFetched}
@@ -250,7 +252,7 @@ const Page: NextPage = () => {
 
       <UserPageRemoveFollowerConfirmationModal
         userToBeRemoved={userFetched}
-        stateControlFunctionOfUserToBeRemoved={setUserFetched}
+        stateControlFunctionOfUserToBeRemoved={setUserFetchedAndUpdateQuery}
         isModalOpen={isRemoveFollowerConfirmOpen}
         setIsModalOpen={setIsRemoveFollowerConfirmOpen}
       />
@@ -259,7 +261,7 @@ const Page: NextPage = () => {
         isModalOpen={isRejectFollowerConfirmOpen}
         setIsModalOpen={setIsRejectFollowerConfirmOpen}
         userToBeRejected={userFetched}
-        stateControlFunctionOfUserToBeRejected={setUserFetched}
+        stateControlFunctionOfUserToBeRejected={setUserFetchedAndUpdateQuery}
       />
 
       <UserPageUnblockUserConfirmationModal
@@ -267,7 +269,7 @@ const Page: NextPage = () => {
         setIsModalOpen={setIsUnblockConfirmationOpen}
         stateControlFunctionOfInformationModal={setIsInformationModelOpen}
         userToBeUnblocked={userFetched}
-        stateControlFunctionOfUserToBeUnblocked={setUserFetched}
+        stateControlFunctionOfUserToBeUnblocked={setUserFetchedAndUpdateQuery}
       />
 
       <UserPageBlockUserConfirmationModal
@@ -275,7 +277,7 @@ const Page: NextPage = () => {
         setIsModalOpen={setIsBlockConfirmationOpen}
         stateControlFunctionOfInformationModalOpen={setIsInformationModelOpen}
         userToBeBlocked={userFetched}
-        stateControlFunctionOfSetUserToBeBlocked={setUserFetched}
+        stateControlFunctionOfSetUserToBeBlocked={setUserFetchedAndUpdateQuery}
       />
     </Fragment>
   );
@@ -345,4 +347,27 @@ const fetchUserByUsername = async (
         return INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE;
     }
   }
+};
+
+type Dispatch =
+  | UserFetchedDTO
+  | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null);
+
+const setUserFetched = (
+  updater: Dispatch,
+  queryClient: QueryClient,
+  queryKey: readonly unknown[]
+) => {
+  queryClient.setQueryData<UserFetchedDTO | null>(queryKey, (prev) => {
+    let updated: UserFetchedDTO | null;
+
+    if (typeof updater === "function") {
+      const result = updater(prev ?? null);
+      updated = result === undefined ? prev ?? null : result;
+    } else {
+      updated = updater;
+    }
+
+    return updated ? updated.getClone() : null;
+  });
 };

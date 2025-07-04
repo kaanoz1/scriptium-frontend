@@ -29,7 +29,6 @@ import { Tooltip } from "@heroui/tooltip";
 import VersePageTranslationModal from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageTranslationModal";
 import { useUser } from "@/hooks/useUser";
 import VersePageNotFoundComponent from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageNotFoundComponent";
-import VersePageShareModal from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/VersePageShareModal";
 import { addToast } from "@heroui/toast";
 import { ScriptureDTO } from "@/types/classes/Scripture";
 import {
@@ -54,6 +53,7 @@ import { getScriptureIfCodeIsValid } from "@/util/func";
 import { ScriptureDetail } from "@/util/scriptureDetails";
 import Verse from "@/components/verse/Verse";
 import { TranslationDTO } from "@/types/classes/Translation";
+import ShareModel from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/ShareModel";
 
 interface Props {}
 
@@ -366,12 +366,11 @@ const Page: NextPage<Props> = ({}) => {
         setOriginalTextVariation={setOriginalTextVariation}
       />
 
-      <VersePageShareModal
+      <ShareModel
         shareTextState={shareText}
         stateControlFunctionOfShareTextState={setShareText}
         isModalOpen={isShareModalOpen}
         setIsModalOpen={setIsShareModalOpen}
-        handleShareFunction={handleShare}
       />
 
       {user ? (
@@ -437,9 +436,4 @@ const fetchVerse = async (
 
     return error.response.status;
   }
-};
-
-const handleShare = async (platform: string) => {
-  console.log(`Sharing content to: ${platform}`);
-  //TODO: Will be implemented
 };

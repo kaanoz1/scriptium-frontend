@@ -89,8 +89,6 @@ export type T_UserFetchedDTOConstructorParametersJSON =
   T_UserFetchedDTOConstructorParameters;
 
 export class UserFetchedDTO {
-  private cachedImageBase64: string | null = null;
-
   private readonly id: string;
   private readonly username: string;
   private readonly name: string;
@@ -128,7 +126,7 @@ export class UserFetchedDTO {
     this.image = data.image;
     this.biography = data.biography;
     this.privateFrom = data.privateFrom;
-    this.followStatusUserInspecting = data.followStatusUserInspecting;
+    this.followStatusUserInspected = data.followStatusUserInspected;
     this.followStatusUserInspecting = data.followStatusUserInspecting;
     this.isUserInspectedBlocked = data.isUserInspectedBlocked;
   }
@@ -150,6 +148,30 @@ export class UserFetchedDTO {
 
   getName(): string {
     return this.name;
+  }
+
+  getClone(): UserFetchedDTO {
+    return new UserFetchedDTO({
+      id: this.id,
+      username: this.username,
+      name: this.name,
+      surname: this.surname,
+      followerCount: this.followerCount,
+      followedCount: this.followedCount,
+      reflectionCount: this.reflectionCount,
+      noteCount: this.noteCount,
+      suggestionCount: this.suggestionCount,
+      roles: [...this.roles],
+      createdAt: new Date(this.createdAt),
+      updateCount: this.updateCount,
+      isFrozen: this.isFrozen,
+      image: this.image ? this.image : null,
+      biography: this.biography,
+      privateFrom: this.privateFrom ? new Date(this.privateFrom) : null,
+      followStatusUserInspecting: this.followStatusUserInspecting,
+      followStatusUserInspected: this.followStatusUserInspected,
+      isUserInspectedBlocked: this.isUserInspectedBlocked,
+    });
   }
 
   getFollowerCount(): number {
@@ -289,15 +311,15 @@ export type T_UserOwnDTOConstructorParametersJSON = {
 
 export class UserOwnDTO {
   private readonly id: string;
-  private readonly username: string;
-  private readonly name: string;
+  private username: string;
+  private name: string;
   private readonly email: string;
   private readonly langId: T_SystemLanguageId;
   private readonly createdAt: Date;
   private readonly roles: ReadonlyArray<string>;
   private readonly image: Uint8Array | null = null;
-  private readonly surname: string | null = null;
-  private readonly biography: string | null = null;
+  private surname: string | null = null;
+  private biography: string | null = null;
   private privateFrom: Date | null = null;
   private readonly gender: string | null = null;
 
@@ -324,6 +346,7 @@ export class UserOwnDTO {
       : data.privateFrom;
     this.image = data.image;
     this.name = data.name;
+    this.surname = data.surname;
     this.langId = data.langId;
     this.roles = data.roles;
     this.email = data.email;
@@ -360,6 +383,22 @@ export class UserOwnDTO {
       privateFrom: this.privateFrom,
       gender: this.gender,
     };
+  }
+
+  setName(name: string) {
+    this.name = name;
+  }
+
+  setSurname(surname: string) {
+    this.surname = surname;
+  }
+
+  setUsername(username: string) {
+    this.username = username;
+  }
+
+  setBiography(biography: string) {
+    this.biography = biography;
   }
 
   setNameAndGetClone(name: string): UserOwnDTO {

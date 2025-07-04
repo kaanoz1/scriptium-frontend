@@ -42,9 +42,10 @@ import NoteOwnerVerse from "@/components/UI/NoteOwnerVerse";
 interface Props {
   notesOfUser: UserFetchedDTO;
   user: UserOwnDTO;
+  hasUserInspectingPermissionToContentOfUserInspected: boolean
 }
 
-const UserPageNotesTab: NextPage<Props> = ({ notesOfUser, user }) => {
+const UserPageNotesTab: NextPage<Props> = ({ notesOfUser, user, hasUserInspectingPermissionToContentOfUserInspected }) => {
   const queryKey: readonly unknown[] = ["notes-of", notesOfUser.getId()];
   const queryClient = useQueryClient();
   const {
@@ -57,6 +58,7 @@ const UserPageNotesTab: NextPage<Props> = ({ notesOfUser, user }) => {
     queryKey,
     queryFn: async () => await fetchUserNotes(notesOfUser),
     refetchInterval: 1000 * 60 * 60,
+    enabled: hasUserInspectingPermissionToContentOfUserInspected
   });
 
   const [editNote, setEditNote] = useState<NoteOwnDTO | null>(null);

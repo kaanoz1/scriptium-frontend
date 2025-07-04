@@ -14,13 +14,13 @@ const UserPageUserStatistics: NextPage<Props> = ({ statisticsOfUser }) => {
   return (
     <Fragment>
       <div className="flex mt-4 space-x-6">
-        {reflectionCountOfUser && (
+        {reflectionCountOfUser > 0 && (
           <span>
             <span className="font-semibold">{reflectionCountOfUser}</span>{" "}
             Reflections
           </span>
         )}
-        {noteCountOfUser && (
+        {noteCountOfUser > 0 && (
           <span>
             <span className="font-semibold">{noteCountOfUser}</span> Notes
           </span>

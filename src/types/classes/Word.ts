@@ -109,7 +109,7 @@ export type T_WordUpperDTOConstructorParametersJSON =
   };
 
 export class WordUpperDTO extends WordDTO {
-  private readonly verse: Readonly<VerseUpperDTO>;
+  private verse: VerseUpperDTO;
 
   constructor(data: T_WordUpperDTOConstructorParameters) {
     super({ ...data });
@@ -125,8 +125,8 @@ export class WordUpperDTO extends WordDTO {
     return new WordUpperDTO({ ...data, variation, meanings, verse });
   }
 
-  getVerse(): Readonly<VerseUpperDTO> {
-    return Object.freeze(this.verse);
+  getVerse(): VerseUpperDTO {
+    return this.verse;
   }
 }
 

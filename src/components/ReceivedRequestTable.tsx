@@ -22,7 +22,7 @@ import axiosCredentialInstance from "@/client/axiosCredentialInstance";
 import LoadingSpinner from "./UI/LoadingSpinner";
 import ReceivedRequestTableFollowerAcceptionConfirmationModal from "./ReceivedRequestTableFollowerAcceptionConfirmationModal";
 import ReceivedRequestTableFollowerRejectionConfirmationModal from "./ReceivedRequestTableFollowerRejectionConfirmationModal";
-import { FollowerUserDTO } from "@/types/classes/Follow";
+import { FollowerUserDTO, T_FollowerUserDTOConstructorParametersJSON } from "@/types/classes/Follow";
 import {
   OK_HTTP_RESPONSE_CODE,
   CONFLICT_HTTP_RESPONSE_CODE,
@@ -44,12 +44,12 @@ const columns: Array<Column> = [
 const fetchRequests = async (): Promise<Array<FollowerUserDTO>> => {
   try {
     const response = await axiosCredentialInstance.get<
-      Response<FollowerUserDTO[]>
+      Response<T_FollowerUserDTOConstructorParametersJSON[]>
     >(`/follow/follower/0`);
 
     switch (response.status) {
       case OK_HTTP_RESPONSE_CODE:
-        return response.data.data;
+        return response.data.data.map(FollowerUserDTO.createFromJSON);
       case CONFLICT_HTTP_RESPONSE_CODE:
         return [];
       default:

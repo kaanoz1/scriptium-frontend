@@ -13,13 +13,13 @@ import { BsTwitterX } from "react-icons/bs";
 import { FaThreads } from "react-icons/fa6";
 import { LuCopy } from "react-icons/lu";
 import {handleCopy} from "@/util/utils";
+import { handleShare } from "@/util/func";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   shareText: string;
   stateControlFunctionOfShareText: Dispatch<SetStateAction<string>>;
-  handleShareFunction: (platform: string) => void;
 }
 
 const ChapterPageShareModal: FC<Props> = ({
@@ -27,7 +27,6 @@ const ChapterPageShareModal: FC<Props> = ({
   setIsModalOpen,
   shareText,
   stateControlFunctionOfShareText,
-  handleShareFunction,
 }) => {
   return (
     <Modal
@@ -63,7 +62,7 @@ const ChapterPageShareModal: FC<Props> = ({
 
             <Button
               onPress={() => {
-                handleShareFunction("twitter");
+                handleShare("twitter", shareText);
                 setIsModalOpen(false);
               }}
             >
@@ -71,7 +70,7 @@ const ChapterPageShareModal: FC<Props> = ({
             </Button>
             <Button
               onPress={() => {
-                handleShareFunction("threads");
+                handleShare("threads", shareText);
                 setIsModalOpen(false);
               }}
             >
@@ -79,7 +78,7 @@ const ChapterPageShareModal: FC<Props> = ({
             </Button>
             <Button
               onPress={() => {
-                handleShareFunction("direct");
+                handleShare("direct", shareText);
                 setIsModalOpen(false);
               }}
             >

@@ -1,5 +1,5 @@
 import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { Toast, UnblockUserForm } from "@/types/types";
+import {  UnblockUserForm } from "@/types/types";
 
 import { Button } from "@heroui/button";
 import {
@@ -16,9 +16,12 @@ import { addToast } from "@heroui/toast";
 import { UserFetchedDTO } from "@/types/classes/User";
 import {
   CONFLICT_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
   OK_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
 } from "@/util/constants";
 import { displayErrorToast } from "@/util/utils";
+import axios from "axios";
 
 interface Props {
   isModalOpen: boolean;
@@ -52,40 +55,71 @@ const UserPageUnblockUserConfirmationModal: NextPage<Props> = ({
         data: formData,
       });
 
-      switch (response.status) {
-        case CONFLICT_HTTP_RESPONSE_CODE:
-        case OK_HTTP_RESPONSE_CODE:
-          stateControlFunctionOfUserToBeUnblocked((prev) => {
-            if (!prev) return null;
-
-            prev.setIsUserInspectedBlocked(false);
-            prev.setFollowStatusUserInspecting(null);
-            prev.setFollowStatusUserInspected(null);
-
-            return prev;
-          });
-          return;
-
-        default:
-          const couldnotUnblocked: Toast = {
-            title: "Couldn't be blocked.",
-            description:
-              "User may already be not-blocked by you. Try to refresh the page.",
-            color: "danger",
-          };
-
-          addToast(couldnotUnblocked);
-
-          return;
+      if (
+        response.status === OK_HTTP_RESPONSE_CODE ||
+        response.status === CONFLICT_HTTP_RESPONSE_CODE
+      ) {
+        stateControlFunctionOfUserToBeUnblocked((prev) => {
+          if (!prev) return null;
+          prev.setIsUserInspectedBlocked(false);
+          prev.setFollowStatusUserInspecting(null);
+          prev.setFollowStatusUserInspected(null);
+          return prev;
+        });
+        return;
       }
+
+      addToast({
+        title: "Could not unblock",
+        description:
+          "User may already be unblocked. Please refresh the page and try again.",
+        color: "danger",
+      });
     } catch (error) {
-      console.error(error);
+      if (!axios.isAxiosError(error)) {
+        console.error(error);
+        addToast({
+          title: "Unexpected Error",
+          description: "Something went wrong. Please try again later.",
+          color: "warning",
+        });
+        return;
+      }
 
-      displayErrorToast(error);
+      if (error.code === "ERR_NETWORK") {
+        console.error(error);
+        addToast({
+          title: "Network Error",
+          description:
+            "We couldn't connect to the server. Please check your internet connection.",
+          color: "warning",
+        });
+        return;
+      }
 
-      return;
+      switch (error.response?.status) {
+        case OK_HTTP_RESPONSE_CODE:
+          addToast({
+            title: "User Not Found",
+            description: "User may no longer exist or be frozen.",
+            color: "secondary",
+          });
+          break;
+        case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
+          addToast({
+            title: "Too Many Requests",
+            description: "Slow down and try again later.",
+            color: "warning",
+          });
+          break;
+        case INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE:
+        default:
+          displayErrorToast(error);
+          break;
+      }
     }
   });
+
 
   return (
     <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>

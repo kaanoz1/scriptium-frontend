@@ -13,7 +13,6 @@ import ChapterVerse from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/
 import axiosNoCredentialInstance from "@/client/axiosNoCredentialInstance";
 import VerseAndChapterPageSettingsModel from "@/components/VerseAndChapterPageSettingsModel";
 import ChapterPageTranslationModel from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/components/ChapterPageTranslationModel";
-import ChapterPageShareModal from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/components/ChapterPageShareModal";
 import LoadingSpinnerFullH from "@/components/UI/LoadingSpinnerFullH";
 import ChapterPageNotFoundComponent from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/components/ChapterPageNotFoundComponent";
 import { addToast } from "@heroui/toast";
@@ -36,6 +35,7 @@ import {
 } from "@/util/constants";
 import { getScriptureIfCodeIsValid } from "@/util/func";
 import { ScriptureDetail } from "@/util/scriptureDetails";
+import ShareModel from "./[verseNumber]/components/ShareModel";
 
 interface Props {}
 
@@ -232,12 +232,11 @@ const Page: NextPage<Props> = ({}): ReactNode => {
         setTranslationIdMultiple={setTranslationIdMultiple}
       />
 
-      <ChapterPageShareModal
+      <ShareModel
         isModalOpen={isShareModalOpen}
         setIsModalOpen={setIsShareModalOpen}
-        shareText={shareText}
-        stateControlFunctionOfShareText={setShareText}
-        handleShareFunction={handleShare}
+        shareTextState={shareText}
+        stateControlFunctionOfShareTextState={setShareText}
       />
     </Fragment>
   );
@@ -288,9 +287,4 @@ const fetchChapter = async (
 
     return error.response.status;
   }
-};
-
-const handleShare = (platform: string) => {
-  console.log(`Sharing content to: ${platform}`);
-  //TODO: Will be implemented.
 };

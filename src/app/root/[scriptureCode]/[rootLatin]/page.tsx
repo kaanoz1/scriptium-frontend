@@ -35,6 +35,7 @@ import {
 } from "@/util/constants";
 import { getScriptureIfCodeIsValid } from "@/util/func";
 import { ScriptureDetail } from "@/util/scriptureDetails";
+import ShareModel from "@/app/[scriptureCode]/[sectionNumber]/[chapterNumber]/[verseNumber]/components/ShareModel";
 
 const Page: NextPage = ({}) => {
   const { rootLatin: rootLatinParam, scriptureCode: scriptureCodeParam } =
@@ -44,6 +45,9 @@ const Page: NextPage = ({}) => {
     useState<boolean>(false);
   const [isSettingsModelOpen, setIsSettingsModelOpen] =
     useState<boolean>(false);
+
+  const [shareText, setShareText] = useState<string>("");
+  const [isShareModalOpen, setIsShareModelOpen] = useState<boolean>(false);
 
   const scriptureDetail: Readonly<ScriptureDetail> | null =
     getScriptureIfCodeIsValid(scriptureCodeParam);
@@ -95,16 +99,7 @@ const Page: NextPage = ({}) => {
   const verseCount: Readonly<number> = root.getWords().length;
   const words: ReadonlyArray<WordUpperDTO> = root.getWords();
 
-  const options = preference.getOptions();
-
-  const showFootnotes = options.getShowFootnotes();
-  const showOriginalText = options.getShowOriginalText();
-  const showTranslation = options.getShowTranslation();
-  const showTransliteration = options.getShowTransliteration();
   const preferredFont = preference.getPreferredFont();
-  const preferredTranslationId = preference.getPreferredTranslationId();
-  const textVariation =
-    preference.getPreferredOriginalScriptureTextVariationKey();
   return (
     <Fragment>
       <UIWrapper>
@@ -191,14 +186,11 @@ const Page: NextPage = ({}) => {
               >
                 <Root
                   word={word}
-                  showFootnotes={showFootnotes}
-                  showOriginalText={showOriginalText}
-                  showTranslation={showTranslation}
-                  showTransliteration={showTransliteration}
-                  variation={textVariation}
-                  preferredFont={preferredFont}
-                  preferredTranslationId={preferredTranslationId}
-                  scriptureDetails={scriptureDetail}
+                  variation={"usual"}
+                  scriptureDetail={scriptureDetail}
+                  preference={preference}
+                  setStateFunctionOfShareText={setShareText}
+                  setStateFunctionOfIsShareModelOpen={setIsShareModelOpen}
                 />
               </AccordionItem>
             );
@@ -224,6 +216,13 @@ const Page: NextPage = ({}) => {
         preference={preference}
         setShowTransliteration={setShowTransliterations}
         setOriginalTextVariation={setOriginalTextVariation}
+      />
+
+      <ShareModel
+        isModalOpen={isShareModalOpen}
+        setIsModalOpen={setIsShareModelOpen}
+        shareTextState={shareText}
+        stateControlFunctionOfShareTextState={setShareText}
       />
     </Fragment>
   );
