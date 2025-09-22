@@ -1,13 +1,11 @@
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import CommentOwn from "@/components/UI/CommentOwnVerse";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import {
-  CommentBaseDTO,
-  CommentOwnDTO,
-  CommentOwnVerseDTO,
-} from "@/types/classes/Comment";
-import { NoteOwnDTO } from "@/types/classes/Note";
-import { UserOwnDTO } from "@/types/classes/User";
-import { VerseBaseDTO } from "@/types/classes/Verse";
+  CommentBase,
+  CommentOwn,
+  CommentOwnVerse,
+} from "@/types/classes/model/Comment/Comment";
+import { UserOwn } from "@/types/classes/model/User/User";
+import { VerseBase } from "@/types/classes/model/Verse/VerseBase/VerseBase";
 import { Toast } from "@/types/types";
 import { OK_HTTP_RESPONSE_CODE } from "@/util/constants";
 import { displayErrorToast } from "@/util/utils";
@@ -32,15 +30,17 @@ import {
   useState,
 } from "react";
 import { CiSearch } from "react-icons/ci";
+import CommentOwnComponent from "@/components/comment/CommentOwnVerse";
+import { NoteOwn } from "@/types/classes/model/Note/NoteOwn/NoteOwn";
 
 type Props = {
-  comments: Array<CommentOwnVerseDTO>;
-  user: UserOwnDTO;
-  setEditComment: Dispatch<SetStateAction<CommentOwnDTO | null>>;
+  comments: Array<CommentOwnVerse>;
+  user: UserOwn;
+  setEditComment: Dispatch<SetStateAction<CommentOwn | null>>;
   isLoading: boolean;
   toggleLike: (
-    comment: CommentBaseDTO,
-    entity: NoteOwnDTO | VerseBaseDTO
+    comment: CommentBase,
+    entity: NoteOwn | VerseBase
   ) => Promise<void>;
 };
 
@@ -65,12 +65,12 @@ const UserSettingsCommentsTabVerseComments: NextPage<Props> = ({
   }, [comments, searchQuery]);
 
   const renderCell = useCallback(
-    (comment: CommentOwnVerseDTO, columnKey: Key) => {
+    (comment: CommentOwnVerse, columnKey: Key) => {
       switch (columnKey) {
         case "reflection":
           const verse = comment.getVerse();
           return (
-            <CommentOwn
+            <CommentOwnComponent
               user={user}
               deleteComment={() => deleteComment(comment)}
               comment={comment}
@@ -161,7 +161,7 @@ const columns = [
   },
 ];
 
-const deleteComment = async (comment: CommentOwnDTO) => {
+const deleteComment = async (comment: CommentOwn) => {
   try {
     const response = await axiosCredentialInstance.delete(`/comment/delete`, {
       data: { commentId: comment.getId() },

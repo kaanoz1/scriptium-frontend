@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -9,28 +11,28 @@ import {
 import { Select, SelectItem } from "@heroui/select";
 import { NextPage } from "next";
 import { Dispatch, Key, SetStateAction } from "react";
-import { ScripturePreference } from "@/types/classes/Scripture";
-import { ScriptureDetail } from "@/util/scriptureDetails";
+import { ScripturePreference } from "@/types/classes/client/Scripture/ScripturePreference/ScripturePreference";
+import { ScriptureHelper } from "@/types/classes/client/Scripture/ScriptureHelper/ScriptureHelper";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  scriptureDetail: Readonly<ScriptureDetail>;
-  preference: ScripturePreference;
+  scriptureHelper: Readonly<ScriptureHelper>;
+  preference: Readonly<ScripturePreference>;
   setTranslationIdMultiple: (keys: Set<Key>) => void;
 }
 
 const VersePageTranslationModal: NextPage<Props> = ({
   isModalOpen,
   setIsModalOpen,
-  scriptureDetail,
+  scriptureHelper,
   preference,
   setTranslationIdMultiple,
 }) => {
   const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
     setTranslationIdMultiple(new Set(e.target.value.split(",")));
 
-  const translations = scriptureDetail.getTranslations();
+  const translations = scriptureHelper.getTranslations();
   return (
     <Modal
       isOpen={isModalOpen}

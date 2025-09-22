@@ -1,14 +1,28 @@
-import { FC, ReactNode } from "react";
+import { FC, JSX, ReactNode } from "react";
 
 interface Props {
   children: ReactNode | JSX.Element;
 }
-
 const UIWrapper: FC<Props> = ({ children }) => {
   return (
-    <div className="flex justify-center min-h-[calc(100vh-130px)] bg-white dark:bg-dark">
-      <div className="w-full max-w-7xl p-6 mt-6 mx-auto bg-white dark:bg-dark">
-        <div className="flex w-full flex-col">{children}</div>
+    <div
+      className="
+        flex justify-center items-stretch          
+        bg-white dark:bg-dark
+        overflow-x-hidden 
+        overflow-y-hidden                   
+        md:min-h-[calc(100dvh-130px)]              
+      "
+    >
+      <div
+        className="
+          w-full max-w-7xl mx-auto
+          bg-white dark:bg-dark
+          p-4 sm:p-6 md:px-8 md:py-6               
+          mt-4 sm:mt-6                               
+        "
+      >
+        {children}
       </div>
     </div>
   );

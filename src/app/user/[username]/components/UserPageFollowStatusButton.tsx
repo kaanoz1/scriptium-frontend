@@ -1,4 +1,4 @@
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import { Toast } from "@/types/types";
 import { Button } from "@heroui/button";
 import { NextPage } from "next";
@@ -7,15 +7,15 @@ import { FaHourglass } from "react-icons/fa";
 import { FaUserCheck } from "react-icons/fa6";
 import { IoCheckmark } from "react-icons/io5";
 import { addToast } from "@heroui/toast";
-import { UserFetchedDTO } from "@/types/classes/User";
 import { OK_HTTP_RESPONSE_CODE } from "@/util/constants";
+import { UserFetched } from "@/types/classes/model/User/User";
 
 const handleAcceptFollower = async (
-  userToBeAccepted: UserFetchedDTO,
+  userToBeAccepted: UserFetched,
   stateControlFunctionOfUserInspected: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void
 ) => {
   const response = await axiosCredentialInstance.put(`/follow/accept`, {
@@ -49,11 +49,11 @@ const handleAcceptFollower = async (
 };
 
 interface Props {
-  userInspected: UserFetchedDTO;
+  userInspected: UserFetched;
   stateControlFunctionOfUserInspected: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void;
   stateControlFunctionOfRemoveFollowerConfirmationModal: Dispatch<
     SetStateAction<boolean>

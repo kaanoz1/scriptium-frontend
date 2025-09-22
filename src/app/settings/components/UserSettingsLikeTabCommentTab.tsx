@@ -1,73 +1,74 @@
-"use client";
-import { Column, RefetchDataFunctionType } from "@/types/types";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@heroui/table";
-import { NextPage } from "next";
-import { Key, useCallback } from "react";
-import { UserOwnDTO } from "@/types/classes/User";
+// This file is currently commented out and not in use.
+// "use client";
+// import { UserOwn } from "@/types/classes/model/User/User";
+// import { Column, RefetchDataFunctionType } from "@/types/types";
+// import {
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableColumn,
+//   TableHeader,
+//   TableRow,
+// } from "@heroui/table";
+// import { NextPage } from "next";
+// import { Key, useCallback } from "react";
 
-interface Props {
-  comments: LikedCommentDTO[];
-  refetch: RefetchDataFunctionType<unknown>;
+// interface Props {
+//   comments: LikedComment[];
+//   refetch: RefetchDataFunctionType<unknown>;
 
-  user: UserOwnDTO;
-}
+//   user: UserOwn;
+// }
 
-const UserSettingsLikeTabCommentTab: NextPage<Props> = ({
-  user,
-  comments,
-  refetch,
-}) => {
-  const renderCell = useCallback(
-    (item: LikedCommentDTO, columnKey: Key) => {
-      switch (columnKey) {
-        case "like":
-          return (
-            <LikedComment
-              comment={item}
-              user={user}
-              refetchFunction={refetch}
-            />
-          );
+// const UserSettingsLikeTabCommentTab: NextPage<Props> = ({
+//   user,
+//   comments,
+//   refetch,
+// }) => {
+//   const renderCell = useCallback(
+//     (item: LikedComment, columnKey: Key) => {
+//       switch (columnKey) {
+//         case "like":
+//           return (
+//             <LikedComment
+//               comment={item}
+//               user={user}
+//               refetchFunction={refetch}
+//             />
+//           );
 
-        default:
-          return <></>;
-      }
-    },
-    [user, refetch]
-  );
+//         default:
+//           return <></>;
+//       }
+//     },
+//     [user, refetch]
+//   );
 
-  const columns: Array<Column> = [{ key: "like", label: "REFLECTION" }];
+//   const columns: Array<Column> = [{ key: "like", label: "REFLECTION" }];
 
-  return (
-    <Table aria-label="Liked Reflections Table" selectionMode="none">
-      <TableHeader
-        aria-label="Liked Reflections Table Header"
-        columns={columns}
-      >
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-      </TableHeader>
-      <TableBody
-        aria-label="Liked Reflections Table Body"
-        items={comments}
-        emptyContent="You did not liked any reflections"
-      >
-        {(item: LikedCommentDTO) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-  );
-};
+//   return (
+//     <Table aria-label="Liked Reflections Table" selectionMode="none">
+//       <TableHeader
+//         aria-label="Liked Reflections Table Header"
+//         columns={columns}
+//       >
+//         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+//       </TableHeader>
+//       <TableBody
+//         aria-label="Liked Reflections Table Body"
+//         items={comments}
+//         emptyContent="You did not liked any reflections"
+//       >
+//         {(item: LikedComment) => (
+//           <TableRow key={item.id}>
+//             {(columnKey) => (
+//               <TableCell>{renderCell(item, columnKey)}</TableCell>
+//             )}
+//           </TableRow>
+//         )}
+//       </TableBody>
+//     </Table>
+//   );
+// };
 
-export default UserSettingsLikeTabCommentTab;
+// export default UserSettingsLikeTabCommentTab;

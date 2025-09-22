@@ -1,0 +1,12 @@
+export { default as greatVibes } from "./greatVibes";
+export { default as parisienne } from "./parisienne";
+export { default as dancingScript } from "./dancingScript";
+export { default as kaushan } from "./kaushan";
+export { default as allura } from "./allura";
+export { default as alexBrush } from "./alexBrush";
+export { default as tangerine } from "./tangerine";
+export { default as pinyonScript } from "./pinyonScript";
+export { default as italianno } from "./italianno";
+export { default as rougeScript } from "./rougeScript";
+export { default as mrDeHaviland } from "./mrDeHaviland";
+export { default as petitFormal } from "./petitFormal";

@@ -1,14 +1,14 @@
 import { Tab, Tabs } from "@heroui/tabs";
 import { NextPage } from "next";
 import { FaHourglass, FaUserCheck, FaUserPlus } from "react-icons/fa";
-import FollowerTable from "../../../components/FollowerTable";
-import FollowingTable from "../../../components/FollowingTable";
-import SentRequestTable from "../../../components/SentRequestTable";
-import ReceivedRequestTable from "../../../components/ReceivedRequestTable";
-import { UserOwnDTO } from "@/types/classes/User";
+import FollowerTable from "./FollowerTable";
+import FollowingTable from "./FollowingTable";
+import ReceivedRequestTable from "./ReceivedRequestTable";
+import { UserOwn } from "@/types/classes/model/User/User";
+import SentRequestTable from "./SentRequestTable";
 
 interface Props {
-  user: UserOwnDTO;
+  user: UserOwn;
 }
 
 const UserSettingsFollowerFollowings: NextPage<Props> = ({ user }) => {

@@ -1,11 +1,6 @@
 "use client";
 import { NextPage } from "next";
-import {
-  displayErrorToast,
-  formatDate,
-  getFormattedNameAndSurname,
-  TOOL_TIP_CLASS_NAMES,
-} from "@/util/utils";
+import { displayErrorToast } from "@/util/utils";
 import { useState, useMemo, Key } from "react";
 import {
   Table,
@@ -31,24 +26,25 @@ import {
   DropdownItem,
 } from "@heroui/dropdown";
 import { useQuery } from "@tanstack/react-query";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import LoadingSpinnerFullH from "../../../components/UI/LoadingSpinnerFullH";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
+import LoadingSpinnerFullHeight from "../../../components/UI/LoadingSpinnerFullHeight";
 import { Column, Toast } from "@/types/types";
-import UserSettingsPageUnblockConfirmationModal from "../../../components/UserSettingsPageUnblockConfirmationModal";
+import UserSettingsPageUnblockConfirmationModal from "./UserSettingsPageUnblockConfirmationModal";
 import { addToast } from "@heroui/toast";
-import { BlockDTO } from "@/types/classes/Block";
+import { Block } from "@/types/classes/model/Block/Block";
 import {
   CONFLICT_HTTP_RESPONSE_CODE,
   OK_HTTP_RESPONSE_CODE,
   NOT_FOUND_HTTP_RESPONSE_CODE,
-  PROJECT_URL,
+  TOOL_TIP_CLASS_NAMES,
 } from "@/util/constants";
+import { formatDate } from "@/util/func";
 
 type GetBlockedResponse = {
-  data: Array<BlockDTO>;
+  data: Array<Block>;
 };
 
-const fetchBlockedUsers = async (): Promise<BlockDTO[]> => {
+const fetchBlockedUsers = async (): Promise<Block[]> => {
   try {
     const response = await axiosCredentialInstance.get<GetBlockedResponse>(
       `/block`
@@ -76,7 +72,7 @@ const UserSettingsBlocked: NextPage = () => {
     isLoading,
     isError,
     refetch,
-  } = useQuery<BlockDTO[]>({
+  } = useQuery<Block[]>({
     queryKey: ["blocked-users"],
     queryFn: async () => await fetchBlockedUsers(),
     refetchInterval: 1000 * 30,
@@ -106,12 +102,12 @@ const UserSettingsBlocked: NextPage = () => {
         await refetch();
         return;
       default:
-        const couldnotUnblockToast: Toast = {
+        const couldNotUnblockToast: Toast = {
           title: "Couldn't be blocked.",
           description:
             "User may already unblocked or it has never been blocked.",
         };
-        addToast(couldnotUnblockToast);
+        addToast(couldNotUnblockToast);
 
         return;
     }
@@ -202,24 +198,23 @@ const UserSettingsBlocked: NextPage = () => {
     },
   ];
 
-  const renderCell = (dto: BlockDTO, columnKey: Key) => {
-    const cellValue = dto[columnKey as keyof BlockDTO];
+  const renderCell = (dto: Block, columnKey: Key) => {
+    const cellValue = dto[columnKey as keyof Block];
     const blockedUser = dto.getBlockedUser();
     const usernameOfBlockedUser = blockedUser.getUsername();
     const blockReason = dto.getReason();
-    const imagePath = blockedUser.getImage();
 
     switch (columnKey) {
       case "user":
         return (
           <User
             avatarProps={{ radius: "lg", src: "" }}
-            name={getFormattedNameAndSurname(blockedUser)}
+            name={blockedUser.getFormattedName()}
           />
         );
       case "username":
         return (
-          <Link href={`${PROJECT_URL}/user/${usernameOfBlockedUser}`} size="sm">
+          <Link href={`/user/${usernameOfBlockedUser}`} size="sm">
             @{usernameOfBlockedUser}
           </Link>
         );
@@ -258,7 +253,7 @@ const UserSettingsBlocked: NextPage = () => {
     }
   };
 
-  if (isLoading) return <LoadingSpinnerFullH />;
+  if (isLoading) return <LoadingSpinnerFullHeight />;
 
   if (isError)
     return (

@@ -1,11 +1,13 @@
+"use client";
+
 import { Button } from "@heroui/button";
 import { NextPage } from "next";
 import { Dispatch, SetStateAction, useState } from "react";
 import { GoPlusCircle } from "react-icons/go";
 import { IoIosInformationCircleOutline } from "react-icons/io";
-import NoteInformationModal from "../../../../../../components/NoteInformationModal";
-import CreateNoteComponent from "../../../../../../components/UI/CreateNoteComponent";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import NoteInformationModal from "../../../../../../components/note/NoteInformationModal";
+import CreateNoteComponent from "../../../../../../components/note/CreateNoteComponent";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -13,17 +15,7 @@ import {
   ResponseMessage,
   T_AuthenticationRequestErrorCode,
 } from "@/types/response";
-import ServerErrorComponent from "../../../../../../components/UI/ServerErrorComponent";
-import TooManyRequestComponent from "../../../../../../components/UI/TooManyRequest";
-import LoadingSpinner from "../../../../../../components/UI/LoadingSpinner";
-import {
-  NoteOwnDTO,
-  NoteOwnerDTO,
-  T_NoteOwnerDTOConstructorParametersJSON,
-} from "@/types/classes/Note";
-import { VerseBaseDTO, VerseBothDTO } from "@/types/classes/Verse";
-import { UserOwnDTO } from "@/types/classes/User";
-import NoteOwner from "../../../../../../components/UI/NoteOwner";
+
 import {
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
   NOT_FOUND_HTTP_RESPONSE_CODE,
@@ -32,11 +24,23 @@ import {
 } from "@/util/constants";
 import { addToast } from "@heroui/toast";
 import axios from "axios";
-import EditNoteComponent from "@/components/UI/EditNoteComponent";
+import LoadingSpinner from "@/components/UI/LoadingSpinner";
+import TooManyRequest from "@/components/UI/TooManyRequest";
+import EditNoteComponent from "@/components/note/EditNoteComponent";
+import ServerError from "@/components/UI/ServerError";
+import NoteOwnerComponent from "@/components/note/NoteOwner";
+import {
+  NoteOwner,
+  T_NoteOwnerConstructorParametersJSON,
+} from "@/types/classes/model/Note/NoteOwner/NoteOwner";
+import { UserOwn } from "@/types/classes/model/User/User";
+import { VerseBoth } from "@/types/classes/model/Verse/Verse/VerseBoth/VerseBoth";
+import { VerseBase } from "@/types/classes/model/Verse/VerseBase/VerseBase";
+import { NoteOwn } from "@/types/classes/model/Note/NoteOwn/NoteOwn";
 
 interface Props {
-  verse: VerseBothDTO;
-  user: UserOwnDTO;
+  verse: VerseBoth;
+  user: UserOwn;
 }
 
 const VersePageTabNotes: NextPage<Props> = ({ verse, user }) => {
@@ -45,7 +49,7 @@ const VersePageTabNotes: NextPage<Props> = ({ verse, user }) => {
   >(undefined);
 
   const [createNewNote, setCreateNewNote] = useState<boolean>(false);
-  const [editNote, setEditNote] = useState<NoteOwnDTO | null>(null);
+  const [editNote, setEditNote] = useState<NoteOwn | null>(null);
 
   const [isInformationModalOpen, setIsInformationModalOpen] =
     useState<boolean>(false);
@@ -58,7 +62,7 @@ const VersePageTabNotes: NextPage<Props> = ({ verse, user }) => {
     data: notes = [],
     isLoading,
     refetch,
-  } = useQuery<NoteOwnerDTO[]>({
+  } = useQuery<NoteOwner[]>({
     queryKey,
     queryFn: async () => await fetchNotes(verse, setError),
   });
@@ -66,10 +70,10 @@ const VersePageTabNotes: NextPage<Props> = ({ verse, user }) => {
   if (isLoading) return <LoadingSpinner />;
 
   if (error && error === TOO_MANY_REQUEST_HTTP_RESPONSE_CODE)
-    return <TooManyRequestComponent />;
+    return <TooManyRequest />;
 
   if (error && error === INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE)
-    return <ServerErrorComponent />;
+    return <ServerError />;
 
   return (
     <div className="space-y-6">
@@ -120,7 +124,7 @@ const VersePageTabNotes: NextPage<Props> = ({ verse, user }) => {
       )}
 
       {notes.map((n) => (
-        <NoteOwner
+        <NoteOwnerComponent
           key={`note-${n.getId()}`}
           note={n}
           user={user}
@@ -145,19 +149,19 @@ const VersePageTabNotes: NextPage<Props> = ({ verse, user }) => {
 export default VersePageTabNotes;
 
 const fetchNotes = async (
-  verse: VerseBaseDTO,
+  verse: VerseBase,
   setStateActionFunctionForError: Dispatch<
     SetStateAction<T_AuthenticationRequestErrorCode | undefined>
   >
-): Promise<NoteOwnerDTO[]> => {
+): Promise<NoteOwner[]> => {
   try {
     const response = await axiosCredentialInstance.get<
-      Response<T_NoteOwnerDTOConstructorParametersJSON[]>
+      Response<T_NoteOwnerConstructorParametersJSON[]>
     >(`/note/${verse.getId()}`);
 
     if (response.status === OK_HTTP_RESPONSE_CODE) {
       setStateActionFunctionForError(undefined);
-      return response.data.data.map(NoteOwnerDTO.createFromJSON);
+      return response.data.data.map(NoteOwner.createFromJSON);
     }
 
     setStateActionFunctionForError(INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE);
@@ -251,7 +255,7 @@ const fetchNotes = async (
 };
 
 const deleteNoteAndUpdateQuery = async (
-  note: NoteOwnDTO,
+  note: NoteOwn,
   queryClient: QueryClient,
   queryKey: unknown[]
 ): Promise<void> => {
@@ -263,7 +267,7 @@ const deleteNoteAndUpdateQuery = async (
     if (response.status === OK_HTTP_RESPONSE_CODE) {
       addToast({ title: "Deleted!", color: "success" });
 
-      queryClient.setQueryData<NoteOwnerDTO[]>(
+      queryClient.setQueryData<NoteOwner[]>(
         queryKey,
         (prev) => prev?.filter((n) => n.getId() !== note.getId()) ?? []
       );
@@ -325,14 +329,14 @@ const deleteNoteAndUpdateQuery = async (
   }
 };
 const toggleNoteLikeAndUpdateQuery = async (
-  note: NoteOwnerDTO,
+  note: NoteOwner,
   queryKey: unknown[],
   queryClient: QueryClient
 ): Promise<void> => {
   const isLiked = note.isNoteLiked();
   const noteId = note.getId();
 
-  const updatedNote: NoteOwnerDTO = Object.assign(
+  const updatedNote: NoteOwner = Object.assign(
     Object.create(Object.getPrototypeOf(note)),
     note
   );
@@ -373,7 +377,7 @@ const toggleNoteLikeAndUpdateQuery = async (
       });
     }
 
-    queryClient.setQueryData<NoteOwnerDTO[]>(
+    queryClient.setQueryData<NoteOwner[]>(
       queryKey,
       (prev) => prev?.map((n) => (n.getId() === noteId ? updatedNote : n)) ?? []
     );
@@ -427,7 +431,6 @@ const toggleNoteLikeAndUpdateQuery = async (
 
       case 404:
         if (isLiked && message.includes("no")) {
-          // Zaten unlike edilmiş
           updatedNote.setIsNoteLiked(false);
           updatedNote.setLikeCount(Math.max(0, note.getLikeCount() - 1));
           addToast({
@@ -446,7 +449,6 @@ const toggleNoteLikeAndUpdateQuery = async (
 
       case 409:
         if (!isLiked && message.includes("already liked")) {
-          // Zaten beğenilmiş
           updatedNote.setIsNoteLiked(true);
           updatedNote.setLikeCount(note.getLikeCount() + 1);
           addToast({
@@ -480,8 +482,7 @@ const toggleNoteLikeAndUpdateQuery = async (
         break;
     }
 
-    // 🔄 Her durumda queryClient güncellenir
-    queryClient.setQueryData<NoteOwnerDTO[]>(
+    queryClient.setQueryData<NoteOwner[]>(
       queryKey,
       (prev) => prev?.map((n) => (n.getId() === noteId ? updatedNote : n)) ?? []
     );

@@ -1,14 +1,14 @@
 import { NextPage } from "next";
 
-import { UserOwnDTO } from "@/types/classes/User";
 import ChangePasswordCard from "./ChangePasswordCard";
 import DeleteAccountCard from "./DeleteAccountCard";
 import FreezeAccountCard from "./FreezeAccountCard";
 import ChangeEmailCard from "./ChangeEmailCard";
+import { UserOwn } from "@/types/classes/model/User/User";
 
 type Props = {
-  user: UserOwnDTO;
-  setUser: (user: UserOwnDTO | null) => void;
+  user: UserOwn;
+  setUser: (user: UserOwn | null) => void;
 };
 
 const UserSettingsConfig: NextPage<Props> = ({ setUser }) => {

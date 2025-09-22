@@ -1,13 +1,13 @@
 import { NextPage } from "next";
 import { Tab, Tabs } from "@heroui/tabs";
 import { MdOutlineStickyNote2 } from "react-icons/md";
-import { UserOwnDTO } from "@/types/classes/User";
 
 import UserSettingsLikeTabNoteTab from "./UserSettingsLikeTabNoteTab";
 import { ReactNode } from "react";
+import { UserOwn } from "@/types/classes/model/User/User";
 
 interface Props {
-  user: UserOwnDTO;
+  user: UserOwn;
 }
 
 const UserSettingsLikes: NextPage<Props> = ({ user }) => {

@@ -1,0 +1,27 @@
+FROM node:lts-alpine
+
+WORKDIR /app
+
+
+ARG NEXT_PUBLIC_SERVER_URL
+ARG PRIVATE_SERVER_URL
+ARG REDIS_URL
+
+# env olarak set et
+ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
+ENV PRIVATE_SERVER_URL=$PRIVATE_SERVER_URL
+ENV REDIS_URL=$REDIS_URL
+
+# deps
+COPY package.json pnpm-lock.yaml* yarn.lock* package-lock.json* ./
+RUN corepack enable && \
+    ( [ -f pnpm-lock.yaml ] && pnpm i || \
+      [ -f yarn.lock ] && yarn --frozen-lockfile || \
+      [ -f package-lock.json ] && npm ci )
+
+COPY . .
+
+ENV NODE_ENV=development
+EXPOSE 3000
+
+CMD ["npm","run","dev","--","-p","3000","--hostname","0.0.0.0"]

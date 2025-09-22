@@ -1,26 +1,29 @@
+"use client";
+
 import { NextPage } from "next";
 
 import { Tab, Tabs } from "@heroui/tabs";
-import { TranslationTextDTO } from "@/types/classes/TranslationText";
-import { VerseBothDTO } from "@/types/classes/Verse";
-import { UserOwnDTO } from "@/types/classes/User";
+
 import { IoBookOutline } from "react-icons/io5";
 import VersePageTabTranslations from "./VersePageTabTranslations";
 import VersePageTabNotes from "./VersePageTabNotes";
 import { CiStickyNote } from "react-icons/ci";
+import { UserOwn } from "@/types/classes/model/User/User";
+import { VerseBoth } from "@/types/classes/model/Verse/Verse/VerseBoth/VerseBoth";
+import { TranslationText } from "@/types/classes/model/TranslationText/TranslationText/TranslationText";
 
 interface Props {
-  readonly translationTexts: ReadonlyArray<TranslationTextDTO>;
+  readonly translationTexts: ReadonlyArray<TranslationText>;
   showFootnotes: boolean;
-  verse: VerseBothDTO;
-  user: UserOwnDTO | null;
+  verse: VerseBoth;
+  user: UserOwn | null;
 }
 
 const VersePageTabs: NextPage<Props> = ({ user, showFootnotes, verse }) => {
   const translationTexts = verse.getTranslationTexts();
 
   return (
-    <div className="flex w-full flex-col bg-white dark:bg-black rounded-md shadow-sm border border-gray-300 dark:border-gray-700">
+    <div className="flex w-full flex-col bg-white dark:bg-dark rounded-md shadow-sm border border-gray-300 dark:border-gray-700 dark:text-gray-200">
       <Tabs
         aria-label="guest-tabs"
         color="primary"

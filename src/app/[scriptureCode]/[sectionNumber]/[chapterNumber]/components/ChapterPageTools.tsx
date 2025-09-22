@@ -1,22 +1,23 @@
-import { Dispatch, FC, ReactNode, SetStateAction } from "react";
+"use client";
+
+import { FC, Fragment, ReactNode } from "react";
 import { Link } from "@heroui/link";
 import { GrNext, GrPrevious, GrShareOption } from "react-icons/gr";
 import { Tooltip } from "@heroui/tooltip";
-import { DEFAULT_LANG_CODE, TOOL_TIP_CLASS_NAMES } from "@/util/utils";
 import { IoPlayOutline, IoSettingsOutline } from "react-icons/io5";
 import { MdTranslate } from "react-icons/md";
-import { ChapterUpperAndOneLevelLowerDTO } from "@/types/classes/Chapter";
 import { T_ScriptureCode } from "@/types/types";
-import { PROJECT_NAME } from "@/util/constants";
-import { ScriptureDetail } from "@/util/scriptureDetails";
+import { DEFAULT_LANG_CODE, TOOL_TIP_CLASS_NAMES } from "@/util/constants";
+import { ChapterUpperAndOneLevelLower } from "@/types/classes/model/Chapter/Chapter/ChapterUpper/ChapterUpperAndOneLevelLower/ChapterUpperAndOneLevelLower";
+import { ScriptureHelper } from "@/types/classes/client/Scripture/ScriptureHelper/ScriptureHelper";
 
 type Props = {
-  chapter: ChapterUpperAndOneLevelLowerDTO;
-  scriptureDetail: Readonly<ScriptureDetail>;
+  chapter: ChapterUpperAndOneLevelLower;
+  scriptureDetail: Readonly<ScriptureHelper>;
   functionWhichOpensSettingsModal: () => void;
   functionWhichOpensTranslationModal: () => void;
   functionWhichOpensShareModal: () => void;
-  shareTextSetStateFunction: Dispatch<SetStateAction<string>>;
+  functionWhichSetsShareText: (shareText: string) => void;
 };
 
 const ChapterPageTools: FC<Props> = ({
@@ -25,7 +26,7 @@ const ChapterPageTools: FC<Props> = ({
   functionWhichOpensTranslationModal,
   functionWhichOpensSettingsModal,
   functionWhichOpensShareModal,
-  shareTextSetStateFunction,
+  functionWhichSetsShareText,
 }): ReactNode => {
   const chapterNumber = chapter.getNumber();
 
@@ -39,30 +40,32 @@ const ChapterPageTools: FC<Props> = ({
   const scriptureMeaning = scripture.getMeaningTextOrDefault(DEFAULT_LANG_CODE);
   const scriptureNameInOwnLanguage = scripture.getName();
 
-  const { doesPreviousChapterExists, doesNextChapterExists } =
-    scriptureDetail.getChapterInformation(sectionNumber, chapterNumber); //Since we already checked in fetchChapter function
+  const doesPreviousChapterExists = scriptureDetail.isChapterExist(
+    sectionNumber,
+    chapterNumber - 1
+  );
+
+  const doesNextChapterExists = scriptureDetail.isChapterExist(
+    sectionNumber,
+    chapterNumber + 1
+  );
 
   return (
-    <div className="py-1 px-2 flex items-center justify-evenly gap-5">
+    <Fragment>
       <Link
         color="foreground"
         href={`/${scriptureCode}/${sectionNumber}/${chapterNumber - 1}`}
         isDisabled={!doesPreviousChapterExists}
       >
-        <GrPrevious
-          size={18}
-          className="cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-        />
+        <GrPrevious className="w-4 h-4 md:w-5 md:h-5 cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors" />
       </Link>
+
       <Link
         color="foreground"
         href={`/${scriptureCode}/${sectionNumber}/${chapterNumber + 1}`}
         isDisabled={!doesNextChapterExists}
       >
-        <GrNext
-          size={18}
-          className="cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-        />
+        <GrNext className="w-4 h-4 md:w-5 md:h-5 cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors" />
       </Link>
 
       <Tooltip
@@ -73,33 +76,32 @@ const ChapterPageTools: FC<Props> = ({
         closeDelay={0}
       >
         <span className="flex items-center justify-center">
-          {/*Since items-center tag does not affect this span as it is located in Tooltip, I had to adjust it again. */}
-          <Link isDisabled={true} color="foreground">
-            <IoPlayOutline size={21} />
+          <Link isDisabled color="foreground">
+            <IoPlayOutline className="w-4 h-4 md:w-5 md:h-5" />
           </Link>
         </span>
       </Tooltip>
+
       <IoSettingsOutline
-        className="cursor-pointer hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
         onClick={functionWhichOpensSettingsModal}
-        size={19}
+        className="w-4 h-4 md:w-5 md:h-5 cursor-pointer hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
       />
+
       <MdTranslate
-        className="cursor-pointer hover:text-red-600 dark:hover:text-red-500 transition-colors"
         onClick={functionWhichOpensTranslationModal}
-        size={19}
+        className="w-4 h-4 md:w-5 md:h-5 cursor-pointer hover:text-red-600 dark:hover:text-red-500 transition-colors"
       />
+
       <GrShareOption
-        size={19}
-        className="cursor-pointer hover:text-teal-700 dark:hover:text-teal-500 transition-colors"
         onClick={() => {
           functionWhichOpensShareModal();
-          shareTextSetStateFunction(
-            `${PROJECT_NAME},\n${scriptureMeaning}(${scriptureNameInOwnLanguage}), ${sectionMeaning} (${sectionNameInOwnLanguage}), Chapter: ${chapterNumber} \n\n${window.location.href}`
+          functionWhichSetsShareText(
+            `${scriptureMeaning} (${scriptureNameInOwnLanguage}), ${sectionMeaning} (${sectionNameInOwnLanguage}), Chapter: ${chapterNumber}\n\n${window.location.href}`
           );
         }}
+        className="w-4 h-4 md:w-5 md:h-5 cursor-pointer hover:text-teal-700 dark:hover:text-teal-500 transition-colors"
       />
-    </div>
+    </Fragment>
   );
 };
 

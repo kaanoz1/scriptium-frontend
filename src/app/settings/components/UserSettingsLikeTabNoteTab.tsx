@@ -9,20 +9,13 @@ import {
   TableCell,
 } from "@heroui/table";
 import { Key, useCallback, useState } from "react";
-import { UserOwnDTO } from "@/types/classes/User";
-import NoteOwn from "../../../components/UI/NoteOwn";
-import {
-  NoteOwnDTO,
-  NoteOwnVerseDTO,
-  T_NoteOwnVerseDTOConstructorParametersJSON,
-} from "@/types/classes/Note";
+
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import {
   OK_HTTP_RESPONSE_CODE,
   NOT_FOUND_HTTP_RESPONSE_CODE,
   TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
-  isAuthenticationRequestErrorCode,
 } from "@/util/constants";
 import { addToast } from "@heroui/toast";
 import axios from "axios";
@@ -31,35 +24,43 @@ import {
   ResponseMessage,
   T_AuthenticationRequestErrorCode,
 } from "@/types/response";
-import EditNoteComponent from "@/components/UI/EditNoteComponent";
 import { getErrorComponent } from "@/util/reactUtil";
+import EditNoteComponent from "@/components/note/EditNoteComponent";
+import NoteOwnComponent from "@/components/note/NoteOwn";
+import {
+  NoteOwnVerse,
+  T_NoteOwnVerseConstructorParametersJSON,
+} from "@/types/classes/model/Note/NoteOwn/NoteOwnVerse/NoteOwnVerse";
+import { UserOwn } from "@/types/classes/model/User/User";
+import { isAuthenticationRequestErrorCode } from "@/util/func";
+import { NoteOwn } from "@/types/classes/model/Note/NoteOwn/NoteOwn";
 
 interface Props {
-  user: UserOwnDTO;
+  user: UserOwn;
 }
 
 const UserSettingsLikeTabNoteTab: NextPage<Props> = ({ user }) => {
   const queryClient = useQueryClient();
 
-  const [editNote, setEditNote] = useState<NoteOwnVerseDTO | null>(null);
+  const [editNote, setEditNote] = useState<NoteOwnVerse | null>(null);
 
   const queryKey: readonly unknown[] = ["liked-notes", user.getId()];
 
   const { data: notes = null, isLoading } = useQuery<
-    NoteOwnVerseDTO[] | T_AuthenticationRequestErrorCode
+    NoteOwnVerse[] | T_AuthenticationRequestErrorCode
   >({
     queryKey,
     queryFn: fetchLikedNotes,
   });
 
   const renderCell = useCallback(
-    (item: NoteOwnVerseDTO, columnKey: Key) => {
+    (item: NoteOwnVerse, columnKey: Key) => {
       const note = item;
 
       switch (columnKey) {
         case "like":
           return (
-            <NoteOwn
+            <NoteOwnComponent
               note={note}
               user={user}
               showVerse={true}
@@ -109,7 +110,7 @@ const UserSettingsLikeTabNoteTab: NextPage<Props> = ({ user }) => {
           items={notes}
           emptyContent="You did not liked any notes."
         >
-          {(item: NoteOwnVerseDTO) => (
+          {(item: NoteOwnVerse) => (
             <TableRow key={item.getId()}>
               {(columnKey) => (
                 <TableCell>{renderCell(item, columnKey)}</TableCell>
@@ -125,7 +126,7 @@ const UserSettingsLikeTabNoteTab: NextPage<Props> = ({ user }) => {
 export default UserSettingsLikeTabNoteTab;
 
 const deleteNoteAndUpdateQuery = async (
-  note: NoteOwnDTO,
+  note: NoteOwn,
   queryClient: QueryClient,
   queryKey: readonly unknown[]
 ): Promise<void> => {
@@ -137,7 +138,7 @@ const deleteNoteAndUpdateQuery = async (
     if (response.status === OK_HTTP_RESPONSE_CODE) {
       addToast({ title: "Deleted!", color: "success" });
 
-      queryClient.setQueryData<NoteOwnVerseDTO[]>(
+      queryClient.setQueryData<NoteOwnVerse[]>(
         queryKey,
         (prev) => prev?.filter((n) => n.getId() !== note.getId()) ?? []
       );
@@ -200,14 +201,14 @@ const deleteNoteAndUpdateQuery = async (
 };
 
 const toggleNoteLikeAndUpdateQuery = async (
-  note: NoteOwnVerseDTO,
+  note: NoteOwnVerse,
   queryClient: QueryClient,
   queryKey: readonly unknown[]
 ): Promise<void> => {
   const isLiked = note.isNoteLiked();
   const noteId = note.getId();
 
-  const updatedNote: NoteOwnVerseDTO = Object.assign(
+  const updatedNote: NoteOwnVerse = Object.assign(
     Object.create(Object.getPrototypeOf(note)),
     note
   );
@@ -248,7 +249,7 @@ const toggleNoteLikeAndUpdateQuery = async (
       });
     }
 
-    queryClient.setQueryData<NoteOwnVerseDTO[]>(
+    queryClient.setQueryData<NoteOwnVerse[]>(
       queryKey,
       (prev) => prev?.map((n) => (n.getId() === noteId ? updatedNote : n)) ?? []
     );
@@ -320,7 +321,7 @@ const toggleNoteLikeAndUpdateQuery = async (
 
       case 409:
         if (!isLiked && message.includes("already liked")) {
-          // Zaten beğenilmiş
+          
           updatedNote.setIsNoteLiked(true);
           updatedNote.setLikeCount(note.getLikeCount() + 1);
           addToast({
@@ -354,7 +355,7 @@ const toggleNoteLikeAndUpdateQuery = async (
         break;
     }
 
-    queryClient.setQueryData<NoteOwnVerseDTO[]>(
+    queryClient.setQueryData<NoteOwnVerse[]>(
       queryKey,
       (prev) => prev?.map((n) => (n.getId() === noteId ? updatedNote : n)) ?? []
     );
@@ -366,15 +367,15 @@ const toggleNoteLikeAndUpdateQuery = async (
 const columns: Array<Column> = [{ key: "like", label: "NOTE" }];
 
 const fetchLikedNotes = async (): Promise<
-  Array<NoteOwnVerseDTO> | T_AuthenticationRequestErrorCode
+  Array<NoteOwnVerse> | T_AuthenticationRequestErrorCode
 > => {
   try {
     const response = await axiosCredentialInstance.get<
-      Response<Array<T_NoteOwnVerseDTOConstructorParametersJSON>>
+      Response<Array<T_NoteOwnVerseConstructorParametersJSON>>
     >("like/note");
 
     if (response.status === OK_HTTP_RESPONSE_CODE) {
-      return response.data.data.map(NoteOwnVerseDTO.createFromJSON);
+      return response.data.data.map(NoteOwnVerse.createFromJSON);
     }
 
     addToast({

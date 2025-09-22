@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -7,16 +9,16 @@ import {
   ModalFooter,
 } from "@heroui/modal";
 import { Select, SelectItem } from "@heroui/select";
-import { Dispatch, FC, Key, SetStateAction } from "react";
-import { ScripturePreference } from "@/types/classes/Scripture";
-import { ScriptureDetail } from "@/util/scriptureDetails";
+import { FC, Key } from "react";
+import { ScripturePreference } from "@/types/classes/client/Scripture/ScripturePreference/ScripturePreference";
+import { ScriptureHelper } from "@/types/classes/client/Scripture/ScriptureHelper/ScriptureHelper";
 
 interface Props {
   isModalOpen: boolean;
-  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+  setIsModalOpen: (open: boolean) => void;
   preference: ScripturePreference;
   setTranslationIdMultiple: (key: Set<Key>) => void;
-  scriptureDetail: Readonly<ScriptureDetail>;
+  scriptureHelper: Readonly<ScriptureHelper>;
 }
 
 const ChapterPageTranslationModel: FC<Props> = ({
@@ -24,9 +26,9 @@ const ChapterPageTranslationModel: FC<Props> = ({
   setIsModalOpen,
   preference,
   setTranslationIdMultiple,
-  scriptureDetail,
+  scriptureHelper,
 }) => {
-  const translations = scriptureDetail.getTranslations();
+  const translations = scriptureHelper.getTranslations();
 
   return (
     <Modal
@@ -56,7 +58,7 @@ const ChapterPageTranslationModel: FC<Props> = ({
               }
             >
               {translations.map((t) => {
-                const translationId = t.getId().toString(); // ensure string
+                const translationId = t.getId().toString();
                 const translationName = t.getName();
                 const translatorsNameGathered = t
                   .getTranslators()

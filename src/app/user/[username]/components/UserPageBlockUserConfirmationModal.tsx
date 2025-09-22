@@ -1,4 +1,4 @@
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import { ResponseMessage } from "@/types/response";
 import { BlockReason, Toast } from "@/types/types";
 
@@ -15,21 +15,21 @@ import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { addToast } from "@heroui/toast";
-import { UserFetchedDTO } from "@/types/classes/User";
 import {
   CONFLICT_HTTP_RESPONSE_CODE,
   OK_HTTP_RESPONSE_CODE,
 } from "@/util/constants";
+import { UserFetched } from "@/types/classes/model/User/User";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   stateControlFunctionOfInformationModalOpen: Dispatch<SetStateAction<boolean>>;
-  userToBeBlocked: UserFetchedDTO;
+  userToBeBlocked: UserFetched;
   stateControlFunctionOfSetUserToBeBlocked: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void;
 }
 

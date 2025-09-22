@@ -1,50 +1,50 @@
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { SOMETHING_WENT_WRONG_TOAST } from "@/util/utils";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import { Button } from "@heroui/button";
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import { NextPage } from "next";
 import { useState } from "react";
 import { IoIosInformationCircleOutline } from "react-icons/io";
-import NoteInformationModal from "../../../components/NoteInformationModal";
+import NoteInformationModal from "../../../components/note/NoteInformationModal";
 import LoadingSpinner from "../../../components/UI/LoadingSpinner";
-import NoteOwn from "../../../components/UI/NoteOwn";
 import {
   Response,
   ResponseMessage,
   T_AuthenticationRequestErrorCode,
 } from "@/types/response";
-import { UserOwnDTO } from "@/types/classes/User";
-import {
-  NoteOwnDTO,
-  NoteOwnVerseDTO,
-  T_NoteOwnVerseDTOConstructorParametersJSON,
-} from "@/types/classes/Note";
+
 import { addToast } from "@heroui/toast";
 import axios from "axios";
 import { getErrorComponent } from "@/util/reactUtil";
 import {
-  isAuthenticationRequestErrorCode,
   OK_HTTP_RESPONSE_CODE,
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
   TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+  SOMETHING_WENT_WRONG_TOAST,
 } from "@/util/constants";
-import EditNoteComponent from "@/components/UI/EditNoteComponent";
-
+import EditNoteComponent from "@/components/note/EditNoteComponent";
+import {
+  NoteOwnVerse,
+  T_NoteOwnVerseConstructorParametersJSON,
+} from "@/types/classes/model/Note/NoteOwn/NoteOwnVerse/NoteOwnVerse";
+import { UserOwn } from "@/types/classes/model/User/User";
+import { isAuthenticationRequestErrorCode } from "@/util/func";
+import { NoteOwn } from "@/types/classes/model/Note/NoteOwn/NoteOwn";
+import NoteOwnComponent from "@/components/note/NoteOwn";
 interface Props {
-  user: UserOwnDTO;
+  user: UserOwn;
 }
 
 const UserSettingsNote: NextPage<Props> = ({ user }) => {
   const [isInformationModalOpen, setIsInformationModalOpen] =
     useState<boolean>(false);
 
-  const [editNote, setEditNote] = useState<NoteOwnDTO | null>(null);
+  const [editNote, setEditNote] = useState<NoteOwn | null>(null);
 
   const queryClient = useQueryClient();
   const queryKey: readonly unknown[] = ["notes"];
 
   const { data: notes = null, isLoading } = useQuery<
-    Array<NoteOwnVerseDTO> | T_AuthenticationRequestErrorCode | null
+    Array<NoteOwnVerse> | T_AuthenticationRequestErrorCode | null
   >({
     queryKey: queryKey,
     queryFn: fetchNotes,
@@ -87,7 +87,7 @@ const UserSettingsNote: NextPage<Props> = ({ user }) => {
       )}
 
       {notes.map((n) => (
-        <NoteOwn
+        <NoteOwnComponent
           key={`note-${n.getId()}`}
           note={n}
           user={user}
@@ -114,10 +114,10 @@ export default UserSettingsNote;
 const fetchNotes = async () => {
   try {
     const response = await axiosCredentialInstance.get<
-      Response<Array<T_NoteOwnVerseDTOConstructorParametersJSON>>
+      Response<Array<T_NoteOwnVerseConstructorParametersJSON>>
     >(`/note/notes`);
     if (response.status === OK_HTTP_RESPONSE_CODE)
-      return response.data.data.map(NoteOwnVerseDTO.createFromJSON);
+      return response.data.data.map(NoteOwnVerse.createFromJSON);
     throw new Error("Unexpected result. Status: " + response.status);
   } catch (error) {
     addToast(SOMETHING_WENT_WRONG_TOAST);
@@ -135,7 +135,7 @@ const fetchNotes = async () => {
 };
 
 const deleteNoteAndUpdateQuery = async (
-  note: NoteOwnDTO,
+  note: NoteOwn,
   queryClient: QueryClient,
   queryKey: readonly unknown[]
 ): Promise<void> => {
@@ -147,7 +147,7 @@ const deleteNoteAndUpdateQuery = async (
     if (response.status === OK_HTTP_RESPONSE_CODE) {
       addToast({ title: "Deleted!", color: "success" });
 
-      queryClient.setQueryData<NoteOwnVerseDTO[]>(
+      queryClient.setQueryData<NoteOwnVerse[]>(
         queryKey,
         (prev) => prev?.filter((n) => n.getId() !== note.getId()) ?? []
       );
@@ -210,14 +210,14 @@ const deleteNoteAndUpdateQuery = async (
 };
 
 const toggleNoteLikeAndUpdateQuery = async (
-  note: NoteOwnVerseDTO,
+  note: NoteOwnVerse,
   queryClient: QueryClient,
   queryKey: readonly unknown[]
 ): Promise<void> => {
   const isLiked = note.isNoteLiked();
   const noteId = note.getId();
 
-  const updatedNote: NoteOwnVerseDTO = Object.assign(
+  const updatedNote: NoteOwnVerse = Object.assign(
     Object.create(Object.getPrototypeOf(note)),
     note
   );
@@ -258,7 +258,7 @@ const toggleNoteLikeAndUpdateQuery = async (
       });
     }
 
-    queryClient.setQueryData<NoteOwnVerseDTO[]>(
+    queryClient.setQueryData<NoteOwnVerse[]>(
       queryKey,
       (prev) => prev?.map((n) => (n.getId() === noteId ? updatedNote : n)) ?? []
     );
@@ -330,7 +330,6 @@ const toggleNoteLikeAndUpdateQuery = async (
 
       case 409:
         if (!isLiked && message.includes("already liked")) {
-          // Zaten beğenilmiş
           updatedNote.setIsNoteLiked(true);
           updatedNote.setLikeCount(note.getLikeCount() + 1);
           addToast({
@@ -364,7 +363,7 @@ const toggleNoteLikeAndUpdateQuery = async (
         break;
     }
 
-    queryClient.setQueryData<NoteOwnVerseDTO[]>(
+    queryClient.setQueryData<NoteOwnVerse[]>(
       queryKey,
       (prev) => prev?.map((n) => (n.getId() === noteId ? updatedNote : n)) ?? []
     );

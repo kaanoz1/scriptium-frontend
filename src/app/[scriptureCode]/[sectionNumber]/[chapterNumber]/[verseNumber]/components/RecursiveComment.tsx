@@ -1,33 +1,36 @@
-// Updated: RecursiveComment.tsx — NO recursive nesting
+"use client";
 
 import { Dispatch, FC, SetStateAction } from "react";
 import VersePageComment from "./VersePageComment";
-import { CommentOwnDTO, CommentOwnerDTO } from "@/types/classes/Comment";
-import { UserOwnDTO } from "@/types/classes/User";
+import {
+  CommentOwn,
+  CommentOwner,
+} from "@/types/classes/model/Comment/Comment";
 import { RefetchDataFunctionType } from "@/types/types";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import { OK_HTTP_RESPONSE_CODE } from "@/util/constants";
 import { ResponseMessage } from "@/types/response";
 import { addToast } from "@heroui/toast";
 import axios from "axios";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
-import { VerseBaseDTO } from "@/types/classes/Verse";
+import { UserOwn } from "@/types/classes/model/User/User";
+import { VerseBase } from "@/types/classes/model/Verse/VerseBase/VerseBase";
 
 interface Props {
-  comment: CommentOwnerDTO;
-  allComments: CommentOwnerDTO[];
+  comment: CommentOwner;
+  allComments: CommentOwner[];
   queryKey: readonly unknown[];
-  user: UserOwnDTO;
-  verse: VerseBaseDTO;
+  user: UserOwn;
+  verse: VerseBase;
   refetch: RefetchDataFunctionType<unknown>;
   stateControlFunctionOfEditComment: Dispatch<
-    SetStateAction<CommentOwnDTO | null>
+    SetStateAction<CommentOwn | null>
   >;
   stateControlFunctionOfSelectedComment: Dispatch<
-    SetStateAction<CommentOwnerDTO | null>
+    SetStateAction<CommentOwner | null>
   >;
   stateControlFunctionOfCreateNewComment: Dispatch<
-    SetStateAction<CommentOwnerDTO | boolean>
+    SetStateAction<CommentOwner | boolean>
   >;
 }
 
@@ -121,7 +124,7 @@ const RecursiveComment: FC<Props> = ({
 export default RecursiveComment;
 
 const handleCommentDeleteAndUpdateQueryData = async (
-  comment: CommentOwnerDTO,
+  comment: CommentOwner,
   queryKey: readonly unknown[],
   queryClient: QueryClient
 ): Promise<void> => {
@@ -134,7 +137,7 @@ const handleCommentDeleteAndUpdateQueryData = async (
     );
 
     if (response.status === OK_HTTP_RESPONSE_CODE) {
-      queryClient.setQueryData<CommentOwnerDTO[]>(
+      queryClient.setQueryData<CommentOwner[]>(
         queryKey,
         (prev) => prev?.filter((c) => c.getId() !== comment.getId()) ?? []
       );
@@ -209,16 +212,16 @@ const handleCommentDeleteAndUpdateQueryData = async (
 };
 
 const toggleCommentLikeAndUpdateQueryData = async (
-  comment: CommentOwnerDTO,
+  comment: CommentOwner,
   queryKey: readonly unknown[],
   queryClient: QueryClient,
-  verse: VerseBaseDTO
+  verse: VerseBase
 ): Promise<void> => {
   const isLiked = comment.isCommentLiked();
   const commentId = comment.getId();
   const verseId = verse.getId();
 
-  const updatedComment: CommentOwnerDTO = Object.assign(
+  const updatedComment: CommentOwner = Object.assign(
     Object.create(Object.getPrototypeOf(comment)),
     comment
   );
@@ -262,7 +265,7 @@ const toggleCommentLikeAndUpdateQueryData = async (
       });
     }
 
-    queryClient.setQueryData<CommentOwnerDTO[]>(
+    queryClient.setQueryData<CommentOwner[]>(
       queryKey,
       (prev) =>
         prev?.map((c) => (c.getId() === commentId ? updatedComment : c)) ?? []
@@ -320,7 +323,6 @@ const toggleCommentLikeAndUpdateQueryData = async (
 
       case 404:
         if (isLiked && message.includes("no")) {
-          // ❗ Already unliked, update cache to reflect this
           updatedComment.setIsLiked(false);
           updatedComment.setLikedCount(Math.max(0, comment.getLikeCount() - 1));
           addToast({
@@ -339,7 +341,6 @@ const toggleCommentLikeAndUpdateQueryData = async (
 
       case 409:
         if (!isLiked && message.includes("already liked")) {
-          // ❗ Already liked, update cache to reflect this
           updatedComment.setIsLiked(true);
           updatedComment.setLikedCount(comment.getLikeCount() + 1);
           addToast({
@@ -374,8 +375,7 @@ const toggleCommentLikeAndUpdateQueryData = async (
         break;
     }
 
-    // 🔁 Mutlaka cache'i güncelle
-    queryClient.setQueryData<CommentOwnerDTO[]>(
+    queryClient.setQueryData<CommentOwner[]>(
       queryKey,
       (prev) =>
         prev?.map((c) => (c.getId() === commentId ? updatedComment : c)) ?? []

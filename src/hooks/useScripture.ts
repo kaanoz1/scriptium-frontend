@@ -1,7 +1,7 @@
 import { Key, useContext } from "react";
 import {
   T_OriginalScriptureTextFont,
-  T_OriginalScriptureTextVariationKey,
+  T_OriginalScriptureVocalizationKey,
   T_ScriptureCode,
 } from "@/types/types";
 import ScriptureProviderContext from "@/contexts/ScriptureContext";
@@ -72,7 +72,7 @@ export const useScripturePreferences = (code?: T_ScriptureCode) => {
   };
 
   const setOriginalTextVariation = (
-    variation: T_OriginalScriptureTextVariationKey
+    variation: T_OriginalScriptureVocalizationKey
   ) => {
     setPreferences((prev) => ({
       ...prev,

@@ -2,15 +2,14 @@
 import { FC, ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import FrozenRoute from "./FrozenRoute";
 import { HeroUIProvider } from "@heroui/system";
-import { UserProvider } from "@/contexts/UserContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ScriptureProvider } from "@/contexts/ScriptureContext";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { ToastProvider } from "@heroui/toast";
+import { ThemeProvider } from "next-themes";
 
 interface Props {
   children: ReactNode;
@@ -24,35 +23,32 @@ const Providers: FC<Props> = ({ children }) => {
 
   return (
     <HeroUIProvider locale="en-US" navigate={router.push}>
-      <ToastProvider toastOffset={57} />
-      <QueryClientProvider client={queryClient}>
-        <ScriptureProvider>
-          <UserProvider>
+      <ThemeProvider attribute="class" defaultTheme="system">
+        <ToastProvider toastOffset={57} />
+        <QueryClientProvider client={queryClient}>
+          <ScriptureProvider>
+            {/* <UserProvider> */}
+            {/*
+          This context is currently disabled and not in use since this project does not have adequate financial resources to afford legal processes to store, maintain and protect user data.
+           */}
             <AnimatePresence mode="wait">
               <motion.div key={pathname}>
-                <FrozenRoute>
-                  <Navbar showSearchBar={pathname != "/"} />
-                  {children}
-                  <Footer />
-                  <ReactQueryDevtools />
-                </FrozenRoute>
+                {/* <FrozenRoute> */}
+                <Navbar isMainPage={pathname != "/"} />
+                {children}
+                <Footer />
+                <ReactQueryDevtools />
+                {/* </FrozenRoute> */}
               </motion.div>
             </AnimatePresence>
-          </UserProvider>
-        </ScriptureProvider>
-      </QueryClientProvider>
+            {/* </UserProvider> */}
+          </ScriptureProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
     </HeroUIProvider>
   );
 };
 
-export default Providers;
+const queryClient = new QueryClient();
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 1000 * 60 * 60,
-    },
-  },
-});
+export default Providers;

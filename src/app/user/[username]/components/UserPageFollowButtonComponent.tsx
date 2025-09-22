@@ -1,28 +1,31 @@
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
 import { FaBan, FaUserCheck, FaHourglass, FaUserPlus } from "react-icons/fa";
 import { addToast } from "@heroui/toast";
-import { UserFetchedDTO } from "@/types/classes/User";
-import { NOT_FOUND_HTTP_RESPONSE_CODE, TOO_MANY_REQUEST_HTTP_RESPONSE_CODE, INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE, CONFLICT_HTTP_RESPONSE_CODE } from "@/util/constants";
+import {
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  CONFLICT_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
 import { displayErrorToast } from "@/util/utils";
 import axios from "axios";
-
-
+import { UserFetched } from "@/types/classes/model/User/User";
 
 interface Props {
   isOwnProfile: boolean;
-  userFetched: UserFetchedDTO;
+  userFetched: UserFetched;
   stateConfirmationModalOfUnblockModalOpen: Dispatch<SetStateAction<boolean>>;
   stateControlFunctionOfFollowOperationConfirmationModelOpen: Dispatch<
     SetStateAction<boolean>
   >;
   stateControlFunctionOfUserToBeProcessedOn: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void;
 }
 
@@ -58,7 +61,6 @@ const UserPageFollowButtonComponent: NextPage<Props> = ({
 
   const followStatusUserInspecting =
     userFetched.getFollowStatusUserInspecting();
-
 
   switch (followStatusUserInspecting) {
     case "Accepted":
@@ -111,13 +113,12 @@ const UserPageFollowButtonComponent: NextPage<Props> = ({
 
 export default UserPageFollowButtonComponent;
 
-
 const handleFollow = async (
-  userToBeFollowed: UserFetchedDTO,
+  userToBeFollowed: UserFetched,
   stateControlFunctionOfUserToBeProcessedOn: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void
 ) => {
   try {
@@ -125,7 +126,6 @@ const handleFollow = async (
       username: userToBeFollowed.getUsername(),
     });
 
-   
     switch (response.data.message) {
       case "You are successfully following the user!":
         stateControlFunctionOfUserToBeProcessedOn((prev) => {
@@ -194,7 +194,8 @@ const handleFollow = async (
       case CONFLICT_HTTP_RESPONSE_CODE:
         addToast({
           title: "Already Following",
-          description: "You already follow this user or the request is pending.",
+          description:
+            "You already follow this user or the request is pending.",
           color: "secondary",
         });
         break;

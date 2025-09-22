@@ -3,10 +3,9 @@ import { useState } from "react";
 import { Switch } from "@heroui/switch";
 import { FaLock } from "react-icons/fa";
 import { MdOutlinePublic } from "react-icons/md";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import TooManyRequestComponent from "../../../components/UI/TooManyRequest";
-import ServerErrorComponent from "../../../components/UI/ServerErrorComponent";
-import { UserOwnDTO } from "@/types/classes/User";
+import ServerError from "../../../components/UI/ServerError";
 import { T_NoAuthenticationRequestErrorCode } from "@/types/response";
 import {
   OK_HTTP_RESPONSE_CODE,
@@ -16,10 +15,11 @@ import {
 } from "@/util/constants";
 import { addToast } from "@heroui/toast";
 import axios from "axios";
+import { UserOwn } from "@/types/classes/model/User/User";
 
 interface Props {
-  user: UserOwnDTO;
-  setUser: (user: UserOwnDTO | null) => void;
+  user: UserOwn;
+  setUser: (user: UserOwn | null) => void;
 }
 
 const UserSettingsAccountPrivacy: NextPage<Props> = ({ user, setUser }) => {
@@ -51,7 +51,7 @@ const UserSettingsAccountPrivacy: NextPage<Props> = ({ user, setUser }) => {
           return;
 
         case CONFLICT_HTTP_RESPONSE_CODE:
-          setIsPrivate(previousValue); // Geri al
+          setIsPrivate(previousValue);
           addToast({
             title: "Conflict Detected",
             description:
@@ -61,7 +61,7 @@ const UserSettingsAccountPrivacy: NextPage<Props> = ({ user, setUser }) => {
           return;
 
         case TOO_MANY_REQUEST_HTTP_RESPONSE_CODE:
-          setIsPrivate(previousValue); // Geri al
+          setIsPrivate(previousValue);
           setError(429);
           addToast({
             title: "Too Many Requests",
@@ -71,7 +71,7 @@ const UserSettingsAccountPrivacy: NextPage<Props> = ({ user, setUser }) => {
           return;
 
         default:
-          setIsPrivate(previousValue); // Geri al
+          setIsPrivate(previousValue);
           setError(500);
           addToast({
             title: "Unexpected Error",
@@ -113,7 +113,7 @@ const UserSettingsAccountPrivacy: NextPage<Props> = ({ user, setUser }) => {
     return <TooManyRequestComponent />;
 
   if (error && error === INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE)
-    return <ServerErrorComponent />;
+    return <ServerError />;
 
   return (
     <div className="w-full flex flex-col gap-4">

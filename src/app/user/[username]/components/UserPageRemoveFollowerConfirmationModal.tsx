@@ -1,4 +1,4 @@
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import { displayErrorToast } from "@/util/utils";
 import { Button } from "@heroui/button";
 import {
@@ -12,18 +12,23 @@ import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { addToast } from "@heroui/toast";
-import { UserFetchedDTO } from "@/types/classes/User";
-import { INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE, NOT_FOUND_HTTP_RESPONSE_CODE, OK_HTTP_RESPONSE_CODE, TOO_MANY_REQUEST_HTTP_RESPONSE_CODE } from "@/util/constants";
+import {
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
 import axios from "axios";
+import { UserFetched } from "@/types/classes/model/User/User";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  userToBeRemoved: UserFetchedDTO;
+  userToBeRemoved: UserFetched;
   stateControlFunctionOfUserToBeRemoved: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void;
 }
 
@@ -42,15 +47,17 @@ const UserPageRemoveFollowerConfirmationModal: NextPage<Props> = ({
     formState: { isSubmitting, errors },
   } = useForm<RemoveFollowerForm>();
 
-
   const onRemoveFollowerSubmit = handleSubmit(
     async (formData: RemoveFollowerForm) => {
       formData.username = userToBeRemoved.getUsername();
 
       try {
-        const response = await axiosCredentialInstance.delete(`/follow/remove`, {
-          data: { username: formData.username },
-        });
+        const response = await axiosCredentialInstance.delete(
+          `/follow/remove`,
+          {
+            data: { username: formData.username },
+          }
+        );
 
         if (response.status === OK_HTTP_RESPONSE_CODE) {
           stateControlFunctionOfUserToBeRemoved((prev) => {

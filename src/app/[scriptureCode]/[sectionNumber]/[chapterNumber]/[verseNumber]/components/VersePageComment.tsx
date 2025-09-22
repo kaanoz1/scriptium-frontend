@@ -1,4 +1,4 @@
-// Updated: VersePageComment.tsx (refactored for cleaner props and separation)
+"use client";
 
 import React, { Dispatch, FC, SetStateAction } from "react";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
@@ -22,23 +22,26 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { formatDate } from "@/util/utils";
-import { CommentOwnDTO, CommentOwnerDTO } from "@/types/classes/Comment";
-import { UserOwnDTO } from "@/types/classes/User";
+import {
+  CommentOwn,
+  CommentOwner,
+} from "@/types/classes/model/Comment/Comment";
 import { RefetchDataFunctionType } from "@/types/types";
+import { UserOwn } from "@/types/classes/model/User/User";
+import { formatDate } from "@/util/func";
 
 interface Props {
-  comment: CommentOwnerDTO;
-  user: UserOwnDTO;
+  comment: CommentOwner;
+  user: UserOwn;
   refetchDataFunction: RefetchDataFunctionType<unknown>;
   stateControlFunctionOfEditComment: Dispatch<
-    SetStateAction<CommentOwnDTO | null>
+    SetStateAction<CommentOwn | null>
   >;
   stateControlFunctionOfSelectedComment: Dispatch<
-    SetStateAction<CommentOwnerDTO | null>
+    SetStateAction<CommentOwner | null>
   >;
   stateControlFunctionOfCreateNewComment: Dispatch<
-    SetStateAction<CommentOwnerDTO | boolean>
+    SetStateAction<CommentOwner | boolean>
   >;
   handleCommentDeleteAndUpdateQueryData: () => Promise<void>;
   toggleCommentLikeAndUpdateQueryData: () => Promise<void>;

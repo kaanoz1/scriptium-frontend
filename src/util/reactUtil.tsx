@@ -1,20 +1,21 @@
+import React from "react";
 import { Tooltip } from "@heroui/tooltip";
 import { MdVerified } from "react-icons/md";
 import {
   T_AuthenticationRequestErrorCode,
   T_NoAuthenticationRequestErrorCode,
 } from "@/types/response";
-import { ReactNode } from "react";
+import { JSX, ReactNode } from "react";
 import NotFound from "@/components/UI/NotFound";
 import TooManyRequest from "@/components/UI/TooManyRequest";
 import InternalServerError from "@/components/UI/InternalServerError";
 
-import { FootNoteDTO } from "@/types/classes/FootNote";
 import {
   NOT_FOUND_HTTP_RESPONSE_CODE,
   TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
 } from "./constants";
+import { Footnote } from "@/types/classes/model/Footnote/Footnote";
 
 export const RoleIcon: Record<
   string,
@@ -39,7 +40,7 @@ export const RoleIcon: Record<
 
 export function injectTooltips(
   text: string,
-  footnotes: FootNoteDTO[]
+  footnotes: Footnote[]
 ): Array<string | JSX.Element> {
   const sortedFootnotes = [...footnotes].sort(
     (a, b) => a.getIndex() - b.getIndex()

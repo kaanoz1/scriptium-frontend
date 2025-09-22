@@ -1,8 +1,9 @@
-import CommentOwnerVerse from "@/components/UI/CommentOwnerVerse";
-import { CommentBaseDTO, CommentOwnerVerseDTO } from "@/types/classes/Comment";
-import { NoteOwnDTO } from "@/types/classes/Note";
-import { UserFetchedDTO } from "@/types/classes/User";
-import { VerseBaseDTO } from "@/types/classes/Verse";
+import {
+  CommentBase,
+  CommentOwnerVerse,
+} from "@/types/classes/model/Comment/Comment";
+import { UserFetched } from "@/types/classes/model/User/User";
+import { VerseBase } from "@/types/classes/model/Verse/VerseBase/VerseBase";
 import { Spinner } from "@heroui/spinner";
 import {
   Table,
@@ -14,14 +15,16 @@ import {
 } from "@heroui/table";
 import { NextPage } from "next";
 import { Key, useCallback } from "react";
+import CommentOwnerVerseComponent from "@/components/comment/CommentOwnerVerse";
+import { NoteOwn } from "@/types/classes/model/Note/NoteOwn/NoteOwn";
 
 type Props = {
-  userInspected: UserFetchedDTO;
-  comments: Array<CommentOwnerVerseDTO>;
+  userInspected: UserFetched;
+  comments: Array<CommentOwnerVerse>;
   isLoading: boolean;
   toggleLike: (
-    comment: CommentBaseDTO,
-    entity: NoteOwnDTO | VerseBaseDTO
+    comment: CommentBase,
+    entity: NoteOwn | VerseBase
   ) => Promise<void>;
 };
 
@@ -32,12 +35,12 @@ const UserPageReflectionsTabVerseComments: NextPage<Props> = ({
   toggleLike,
 }) => {
   const renderCell = useCallback(
-    (comment: CommentOwnerVerseDTO, columnKey: Key) => {
+    (comment: CommentOwnerVerse, columnKey: Key) => {
       switch (columnKey) {
         case "comment":
           const verse = comment.getVerse();
           return (
-            <CommentOwnerVerse
+            <CommentOwnerVerseComponent
               comment={comment}
               toggleLike={() => toggleLike(comment, verse)}
               showVerse={true}

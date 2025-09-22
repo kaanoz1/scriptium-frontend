@@ -11,22 +11,18 @@ import { User as UserComponent } from "@heroui/user";
 import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
 import { Input, Textarea } from "@heroui/input";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import {
-  displayErrorToast,
-  getFormattedNameAndSurnameFromString,
-} from "@/util/utils";
-import { UserOwnDTO } from "@/types/classes/User";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
+import { displayErrorToast } from "@/util/utils";
 import {
   OK_HTTP_RESPONSE_CODE,
   CONFLICT_HTTP_RESPONSE_CODE,
-  PROJECT_URL,
 } from "@/util/constants";
 import { ResponseMessage } from "@/types/response";
+import { UserOwn } from "@/types/classes/model/User/User";
 
 interface Props {
-  user: UserOwnDTO;
-  setUser: (user: UserOwnDTO | null) => void;
+  user: UserOwn;
+  setUser: (user: UserOwn | null) => void;
 }
 
 interface FormValues {
@@ -80,7 +76,6 @@ const UserSettingsEditUser: NextPage<Props> = ({ user, setUser }) => {
       !biographyChanged &&
       !imageChanged
     ) {
-      console.log("NoChanges detected");
       displayErrorToast("No changes detected.");
       return;
     }
@@ -125,12 +120,15 @@ const UserSettingsEditUser: NextPage<Props> = ({ user, setUser }) => {
       }
     } catch (error) {
       console.error(error);
-      console.log("düştü");
       displayErrorToast(
         "An unexpected error occurred while updating your profile."
       );
     }
   });
+
+  const imagePath = user.getImage();
+
+  const formattedName = user.getFormattedName();
 
   return (
     <Fragment>
@@ -140,18 +138,22 @@ const UserSettingsEditUser: NextPage<Props> = ({ user, setUser }) => {
           <CardBody>
             <div className="flex items-center justify-between">
               <UserComponent
-                avatarProps={{
-                  src: user.getImage() ?? "",
-                  name: getFormattedNameAndSurnameFromString(
-                    user.getName(),
-                    user.getSurname()
-                  ),
-                  className: "h-20 w-20",
-                }}
+                avatarProps={
+                  imagePath
+                    ? {
+                        src: imagePath,
+                        name: formattedName,
+                        className: "h-20 w-20",
+                      }
+                    : {
+                        name: formattedName,
+                        className: "h-20 w-20",
+                      }
+                }
                 name={user.getName()}
                 description={
                   <Link
-                    href={`${PROJECT_URL}/user/${user.getUsername()}`}
+                    href={`/user/${user.getUsername()}`}
                     isExternal
                     size="sm"
                   >

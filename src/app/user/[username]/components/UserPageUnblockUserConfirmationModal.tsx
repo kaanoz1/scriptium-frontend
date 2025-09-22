@@ -1,5 +1,5 @@
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import {  UnblockUserForm } from "@/types/types";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
+import { UnblockUserForm } from "@/types/types";
 
 import { Button } from "@heroui/button";
 import {
@@ -13,7 +13,6 @@ import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { addToast } from "@heroui/toast";
-import { UserFetchedDTO } from "@/types/classes/User";
 import {
   CONFLICT_HTTP_RESPONSE_CODE,
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
@@ -22,16 +21,17 @@ import {
 } from "@/util/constants";
 import { displayErrorToast } from "@/util/utils";
 import axios from "axios";
+import { UserFetched } from "@/types/classes/model/User/User";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  userToBeUnblocked: UserFetchedDTO;
+  userToBeUnblocked: UserFetched;
   stateControlFunctionOfInformationModal: Dispatch<SetStateAction<boolean>>;
   stateControlFunctionOfUserToBeUnblocked: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void;
 }
 
@@ -119,7 +119,6 @@ const UserPageUnblockUserConfirmationModal: NextPage<Props> = ({
       }
     }
   });
-
 
   return (
     <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>

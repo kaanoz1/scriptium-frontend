@@ -1,3 +1,6 @@
+"use client";
+
+import { handleCopy, handleShare } from "@/util/copy";
 import { Button } from "@heroui/button";
 import { Divider } from "@heroui/divider";
 import { Textarea } from "@heroui/input";
@@ -12,8 +15,6 @@ import { Dispatch, FC, SetStateAction } from "react";
 import { BsTwitterX } from "react-icons/bs";
 import { FaThreads } from "react-icons/fa6";
 import { LuCopy } from "react-icons/lu";
-import {handleCopy} from "@/util/utils";
-import { handleShare } from "@/util/func";
 
 interface Props {
   isModalOpen: boolean;

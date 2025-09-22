@@ -1,15 +1,14 @@
-// Shared form component for both create and edit
+"use client";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/input";
 import { MAX_LENGTH_FOR_COMMENT } from "@/util/constants";
-import { getFormattedNameAndSurname } from "@/util/utils";
-import { UserOwnDTO } from "@/types/classes/User";
+import { UserOwn } from "@/types/classes/model/User/User";
 
 interface Props {
-  user: UserOwnDTO;
+  user: UserOwn;
   defaultText?: string;
   onCancel: () => void;
   onSubmitComment: (text: string) => Promise<void>;
@@ -43,13 +42,9 @@ const CommentForm: FC<Props> = ({
     <form className="flex flex-col gap-2 w-full p-2" onSubmit={onSubmit}>
       <div className="flex items-start gap-2">
         {imagePath ? (
-          <Avatar
-            src={imagePath}
-            name={getFormattedNameAndSurname(user)}
-            size="md"
-          />
+          <Avatar src={imagePath} name={user.getFormattedName()} size="md" />
         ) : (
-          <Avatar name={getFormattedNameAndSurname(user)} size="md" />
+          <Avatar name={user.getFormattedName()} size="md" />
         )}
         <Textarea
           placeholder={placeholder}

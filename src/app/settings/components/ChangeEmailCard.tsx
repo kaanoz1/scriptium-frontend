@@ -7,13 +7,9 @@ import { Button } from "@heroui/button";
 import { HiOutlineMail } from "react-icons/hi";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import {
-  displayErrorToast,
-} from "@/util/utils";
-import {
-  OK_HTTP_RESPONSE_CODE,
-} from "@/util/constants";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
+import { displayErrorToast } from "@/util/utils";
+import { OK_HTTP_RESPONSE_CODE } from "@/util/constants";
 import { ResponseMessage } from "@/types/response";
 import { addToast } from "@heroui/toast";
 
@@ -48,7 +44,7 @@ const ChangeEmailCard: FC = () => {
       );
 
       if (res.status === OK_HTTP_RESPONSE_CODE) {
-        addToast({title: "Email updated successfully!", color: "success"});
+        addToast({ title: "Email updated successfully!", color: "success" });
         reset();
       } else {
         displayErrorToast(res.data.message ?? "Failed to update email.");
@@ -90,9 +86,7 @@ const ChangeEmailCard: FC = () => {
           variant="underlined"
           isInvalid={!!errors.newEmail}
           errorMessage={errors.newEmail?.message}
-          startContent={
-            <HiOutlineMail size={20} className="text-gray-400" />
-          }
+          startContent={<HiOutlineMail size={20} className="text-gray-400" />}
         />
 
         <Input

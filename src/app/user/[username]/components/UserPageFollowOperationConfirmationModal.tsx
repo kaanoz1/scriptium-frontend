@@ -1,6 +1,5 @@
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import { ResponseMessage } from "@/types/response";
-import { Toast } from "@/types/types";
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -12,21 +11,24 @@ import {
 import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
 import { addToast } from "@heroui/toast";
-import { UserFetchedDTO } from "@/types/classes/User";
-import { INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE, NOT_FOUND_HTTP_RESPONSE_CODE, OK_HTTP_RESPONSE_CODE, TOO_MANY_REQUEST_HTTP_RESPONSE_CODE } from "@/util/constants";
+import {
+  INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  NOT_FOUND_HTTP_RESPONSE_CODE,
+  OK_HTTP_RESPONSE_CODE,
+  TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
+} from "@/util/constants";
 import { displayErrorToast } from "@/util/utils";
 import axios from "axios";
-
-
+import { UserFetched } from "@/types/classes/model/User/User";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  userToBeProcessedOn: UserFetchedDTO;
+  userToBeProcessedOn: UserFetched;
   stateControlFunctionOfUserToBeProcessedOn: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void;
 }
 
@@ -87,13 +89,12 @@ const UserPageFollowOperationConfirmationModal: NextPage<Props> = ({
 
 export default UserPageFollowOperationConfirmationModal;
 
-
 const handleRetrieve = async (
-  userToBeProcessedOn: UserFetchedDTO,
+  userToBeProcessedOn: UserFetched,
   stateControlFunctionOfUserToBeProcessedOn: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void
 ) => {
   try {
@@ -161,11 +162,11 @@ const handleRetrieve = async (
 };
 
 const handleUnfollow = async (
-  userToBeProcessedOn: UserFetchedDTO,
+  userToBeProcessedOn: UserFetched,
   stateControlFunctionOfUserToBeProcessedOn: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void
 ) => {
   try {
@@ -237,11 +238,11 @@ const handleUnfollow = async (
 };
 
 const handleFollowProcess = async (
-  userToBeProcessedOn: UserFetchedDTO,
+  userToBeProcessedOn: UserFetched,
   stateControlFunctionOfUserToBeProcessedOn: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void
 ) => {
   if (userToBeProcessedOn.getFollowStatusUserInspecting() === "Accepted") {

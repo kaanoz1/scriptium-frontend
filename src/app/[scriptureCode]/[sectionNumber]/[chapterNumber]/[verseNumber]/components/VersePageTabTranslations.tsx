@@ -1,9 +1,11 @@
+"use client";
+
 import { NextPage } from "next";
 import VersePageTabTranslationsRow from "./VersePageTabTranslationsRow";
-import { TranslationTextDTO } from "@/types/classes/TranslationText";
+import { TranslationText } from "@/types/classes/model/TranslationText/TranslationText/TranslationText";
 
 interface Props {
-  readonly translationTexts: ReadonlyArray<TranslationTextDTO>;
+  readonly translationTexts: ReadonlyArray<TranslationText>;
   showFootnotes: boolean;
 }
 

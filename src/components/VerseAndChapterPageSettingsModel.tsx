@@ -9,31 +9,31 @@ import {
 } from "@heroui/modal";
 import { Switch } from "@heroui/switch";
 import { NextPage } from "next";
-import VocalizationSwitch from "./UI/VocalizationSwitch";
 import { Dispatch, SetStateAction } from "react";
 
-import { T_OriginalScriptureTextVariationKey } from "@/types/types";
-import { ScripturePreference } from "@/types/classes/Scripture";
-import { ScriptureDetail } from "@/util/scriptureDetails";
+import { ScripturePreference } from "@/types/classes/client/Scripture/ScripturePreference/ScripturePreference";
+import VocalizationSwitch from "./VocalizationSwitch";
+import { T_OriginalScriptureVocalizationKey } from "@/types/types";
+import { ScriptureHelper } from "@/types/classes/client/Scripture/ScriptureHelper/ScriptureHelper";
 
 interface Props {
   isSettingsModelOpen: boolean;
   setIsSettingsModelOpen: Dispatch<SetStateAction<boolean>>;
-  scriptureDetail: Readonly<ScriptureDetail>;
+  scriptureHelper: Readonly<ScriptureHelper>;
   preference: ScripturePreference;
   setShowTranslation: (options: boolean) => void;
   setShowTransliteration: (options: boolean) => void;
   setShowFootnotes: (options: boolean) => void;
   setShowOriginalText: (options: boolean) => void;
   setOriginalTextVariation: (
-    variation: T_OriginalScriptureTextVariationKey
+    variation: T_OriginalScriptureVocalizationKey
   ) => void;
 }
 
 const VerseAndChapterPageSettingsModel: NextPage<Props> = ({
   isSettingsModelOpen,
   setIsSettingsModelOpen,
-  scriptureDetail,
+  scriptureHelper,
   preference,
   setShowTranslation,
   setShowTransliteration,
@@ -48,7 +48,7 @@ const VerseAndChapterPageSettingsModel: NextPage<Props> = ({
   const showTransliteration = options.getShowTransliteration();
   const textVariation = options.getVariation();
 
-  const variations = scriptureDetail.getVariationSymbols();
+  const variations = scriptureHelper.getVocalizationSymbols();
   const textSymbol = variations.getUsual();
   const textSimplifiedSymbol = variations.getSimplified();
   const textWithoutVowelSymbol = variations.getWithoutVowel();

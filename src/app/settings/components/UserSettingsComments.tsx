@@ -6,24 +6,21 @@ import {
 
 import {
   likeCommentAttachedToEntityAndReturnResponse,
-  SOMETHING_WENT_WRONG_TOAST,
   unlikeCommentAttachedToEntityAndReturnResponse,
 } from "@/util/utils";
 import { NextPage } from "next";
-import { SetStateAction, useState } from "react";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import { useState } from "react";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "../../../components/UI/LoadingSpinner";
-import EditCommentComponent from "../../../components/UI/EditCommentComponent";
-import { UserOwnDTO } from "@/types/classes/User";
 import {
-  CommentBaseDTO,
-  CommentOwnDTO,
-  CommentOwnNoteDTO,
-  CommentOwnVerseDTO,
-  T_CommentOwnNoteDTOConstructorParametersJSON,
-  T_CommentOwnVerseDTOConstructorParametersJSON,
-} from "@/types/classes/Comment";
+  CommentBase,
+  CommentOwn,
+  CommentOwnNote,
+  CommentOwnVerse,
+  T_CommentOwnNoteConstructorParametersJSON,
+  T_CommentOwnVerseConstructorParametersJSON,
+} from "@/types/classes/model/Comment/Comment";
 import axios, { AxiosResponse } from "axios";
 import { addToast } from "@heroui/toast";
 import { getErrorComponent } from "@/util/reactUtil";
@@ -31,27 +28,30 @@ import { Tab, Tabs } from "@heroui/tabs";
 import UserSettingsCommentsTabVerseComments from "./UserSettingsCommentsTabVerseComments";
 import UserSettingsCommentsTabNoteComments from "./UserSettingsCommentsTabNoteComments";
 import {
-  isAuthenticationRequestErrorCode,
   OK_HTTP_RESPONSE_CODE,
   isNoAuthenticationRequestErrorCode,
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  SOMETHING_WENT_WRONG_TOAST,
 } from "@/util/constants";
-import { NoteOwnDTO } from "@/types/classes/Note";
-import { VerseBaseDTO } from "@/types/classes/Verse";
+import EditCommentComponent from "@/components/comment/EditCommentComponent";
+import { UserOwn } from "@/types/classes/model/User/User";
+import { VerseBase } from "@/types/classes/model/Verse/VerseBase/VerseBase";
+import { isAuthenticationRequestErrorCode } from "@/util/func";
+import { NoteOwn } from "@/types/classes/model/Note/NoteOwn/NoteOwn";
 
 interface Props {
-  user: UserOwnDTO;
+  user: UserOwn;
 }
 
 const UserSettingsComments: NextPage<Props> = ({ user }) => {
-  const [editComment, setEditComment] = useState<CommentOwnDTO | null>(null);
+  const [editComment, setEditComment] = useState<CommentOwn | null>(null);
 
-  const {
-    data: comments = null,
-    refetch,
-    isLoading,
-  } = useQuery<CommentHelper | T_AuthenticationRequestErrorCode | null>({
-    queryKey: ["commentsOwn", user.getId()],
+  const queryKey = ["commentsOwn", user.getId()];
+
+  const { data: comments = null, isLoading } = useQuery<
+    CommentHelper | T_AuthenticationRequestErrorCode | null
+  >({
+    queryKey,
     queryFn: fetchComments,
   });
 
@@ -70,7 +70,7 @@ const UserSettingsComments: NextPage<Props> = ({ user }) => {
           comment={editComment}
           user={user}
           stateControlFunctionOfEditComment={setEditComment}
-          refetchDataFunction={refetch}
+          queryKey={queryKey}
         />
       )}
 
@@ -98,26 +98,26 @@ const UserSettingsComments: NextPage<Props> = ({ user }) => {
 export default UserSettingsComments;
 
 type T_CommentsPageResponseType = {
-  verseComments: Array<T_CommentOwnVerseDTOConstructorParametersJSON>;
-  noteComments: Array<T_CommentOwnNoteDTOConstructorParametersJSON>;
+  verseComments: Array<T_CommentOwnVerseConstructorParametersJSON>;
+  noteComments: Array<T_CommentOwnNoteConstructorParametersJSON>;
 };
 
 class CommentHelper {
-  private verseComments: Array<CommentOwnVerseDTO>;
-  private noteComments: Array<CommentOwnNoteDTO>;
+  private verseComments: Array<CommentOwnVerse>;
+  private noteComments: Array<CommentOwnNote>;
   constructor(
-    verseComments: Array<T_CommentOwnVerseDTOConstructorParametersJSON>,
-    noteComments: Array<T_CommentOwnNoteDTOConstructorParametersJSON>
+    verseComments: Array<T_CommentOwnVerseConstructorParametersJSON>,
+    noteComments: Array<T_CommentOwnNoteConstructorParametersJSON>
   ) {
-    this.verseComments = verseComments.map(CommentOwnVerseDTO.createFromJSON);
-    this.noteComments = noteComments.map(CommentOwnNoteDTO.createFromJSON);
+    this.verseComments = verseComments.map(CommentOwnVerse.createFromJSON);
+    this.noteComments = noteComments.map(CommentOwnNote.createFromJSON);
   }
 
-  getVerseComments(): Array<CommentOwnVerseDTO> {
+  getVerseComments(): Array<CommentOwnVerse> {
     return this.verseComments;
   }
 
-  getNoteComments(): Array<CommentOwnNoteDTO> {
+  getNoteComments(): Array<CommentOwnNote> {
     return this.noteComments;
   }
 }
@@ -153,8 +153,8 @@ const fetchComments = async (): Promise<
 };
 
 const toggleLike = async (
-  comment: CommentBaseDTO,
-  entity: NoteOwnDTO | VerseBaseDTO
+  comment: CommentBase,
+  entity: NoteOwn | VerseBase
 ) => {
   let response: AxiosResponse<ResponseMessage> | null;
 

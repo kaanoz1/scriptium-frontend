@@ -1,5 +1,5 @@
-import { UserFetchedDTO } from "@/types/classes/User";
-import { formatDateDMY } from "@/util/utils";
+import { UserFetched } from "@/types/classes/model/User/User";
+import { formatDateDMY } from "@/util/func";
 import { Divider } from "@heroui/divider";
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
 import { Dispatch, FC, SetStateAction } from "react";
@@ -14,7 +14,7 @@ import {
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  userToBeInformedWith: UserFetchedDTO;
+  userToBeInformedWith: UserFetched;
 }
 
 const UserPageUserDetailsModal: FC<Props> = ({

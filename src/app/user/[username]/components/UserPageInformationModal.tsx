@@ -1,4 +1,3 @@
-import { getFormattedNameAndSurname } from "@/util/utils";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
 import { Modal, ModalContent, ModalBody } from "@heroui/modal";
@@ -7,19 +6,19 @@ import { Dispatch, SetStateAction } from "react";
 import { FaBan } from "react-icons/fa";
 import { FaCircleInfo } from "react-icons/fa6";
 import UserPageFollowStatusButton from "./UserPageFollowStatusButton";
-import { UserFetchedDTO, UserOwnDTO } from "@/types/classes/User";
+import { UserFetched, UserOwn } from "@/types/classes/model/User/User";
 
 interface Props {
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  userToBeInformedWith: UserFetchedDTO;
+  userToBeInformedWith: UserFetched;
   stateControlFunctionOfUserToBeInformedWith: (
     updater:
-      | UserFetchedDTO
-      | ((prev: UserFetchedDTO | null) => void | UserFetchedDTO | null)
+      | UserFetched
+      | ((prev: UserFetched | null) => void | UserFetched | null)
   ) => void;
   isOwnProfile?: boolean;
-  user: UserOwnDTO;
+  user: UserOwn;
   stateControlFunctionOfUserDetailModal: Dispatch<SetStateAction<boolean>>;
   stateControlFunctionOfBlockUserConfirmationModal: Dispatch<
     SetStateAction<boolean>
@@ -49,7 +48,7 @@ const UserPageInformationModal: NextPage<Props> = ({
   stateControlFunctionOfUserToBeInformedWith,
   user,
 }) => {
-  const formattedName = getFormattedNameAndSurname(userToBeInformedWith);
+  const formattedName = userToBeInformedWith.getFormattedName();
 
   const blockProcessDecider = () => {
     stateControlFunctionOfUnblockUserConfirmationModal(false);
@@ -73,12 +72,20 @@ const UserPageInformationModal: NextPage<Props> = ({
       <ModalContent>
         <ModalBody>
           <div className="flex flex-col items-center mb-4">
-            <Avatar
-              className="h-24 w-24 mb-2"
-              size="lg"
-              name={formattedName}
-              src={imagePath}
-            />
+            {imagePath ? (
+              <Avatar
+                className="h-24 w-24 mb-2"
+                size="lg"
+                name={formattedName}
+                src={imagePath}
+              />
+            ) : (
+              <Avatar
+                className="h-24 w-24 mb-2"
+                size="lg"
+                name={formattedName}
+              />
+            )}
 
             <h2 className="text-xl font-semibold">{formattedName}</h2>
 

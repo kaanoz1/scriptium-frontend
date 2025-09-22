@@ -8,21 +8,20 @@ import {
   FaSun,
   FaBookOpen,
   FaChartBar,
+  FaDiscord,
 } from "react-icons/fa";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { motion } from "framer-motion";
 import SearchBar from "./SearchBar";
-import {
-  getFormattedNameAndSurname,
-  getLocalItemFromLocalStorage,
-  setLocalItemToLocalStore,
-  TOOL_TIP_CLASS_NAMES,
-} from "@/util/utils";
+
 import { Tooltip } from "@heroui/tooltip";
 import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
   Navbar as NavbarWrapper,
 } from "@heroui/navbar";
 import {
@@ -32,76 +31,27 @@ import {
   DropdownItem,
   DropdownSection,
 } from "@heroui/dropdown";
-import { Avatar } from "@heroui/avatar";
-import { useUser } from "@/hooks/useUser";
-import { LuUser } from "react-icons/lu";
-import { MdLogout } from "react-icons/md";
-import { IoBookmarkOutline } from "react-icons/io5";
-import { HiChevronDown, HiOutlineExclamation } from "react-icons/hi";
-import { HiOutlineCog } from "react-icons/hi";
+import { HiChevronDown } from "react-icons/hi";
 import { MdOutlineLanguage } from "react-icons/md";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import LogOutModal from "./LogOutModal";
-import {
-  METHOD_NOT_ALLOWED_HTTP_RESPONSE_CODE,
-  OK_HTTP_RESPONSE_CODE,
-  UNAUTHORIZED_HTTP_RESPONSE_CODE,
-  PROJECT_NAME,
-  SIGN_IN_URL,
-} from "@/util/constants";
+import { PROJECT_NAME, TOOL_TIP_CLASS_NAMES } from "@/util/constants";
 import { Button } from "@heroui/button";
-import { Spinner } from "@heroui/spinner";
+const ScriptiumText = dynamic(() => import("@/components/main/ScriptiumText"), {
+  ssr: false,
+});
+
+import dynamic from "next/dynamic";
+import { useTheme } from "next-themes";
 
 type Props = {
-  showSearchBar?: boolean;
+  isMainPage: boolean;
 };
 
-const Navbar: FC<Props> = ({ showSearchBar = true }) => {
-  const [darkMode, setDarkMode] = useState<boolean>(false);
-  const { user, isUserLoading, setUser } = useUser();
-  const [isModalOpen, setModalOpen] = useState<boolean>(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("English"); //TODO: Add language string enum.
+const Navbar: FC<Props> = ({ isMainPage = true }) => {
+  const isUserLoading: boolean = false;
+  const { theme, setTheme } = useTheme();
 
-  useEffect(() => {
-    const savedDarkMode = getLocalItemFromLocalStorage("dark") === "true";
-    setDarkMode(savedDarkMode);
-
-    if (savedDarkMode) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
-  }, []);
-
-  const toggleDarkMode = () => {
-    setDarkMode((prev: boolean) => {
-      const newDarkMode = !prev;
-
-      if (newDarkMode) document.documentElement.classList.add("dark");
-      else document.documentElement.classList.remove("dark");
-
-      setLocalItemToLocalStore("darkMode", JSON.stringify(newDarkMode));
-      return newDarkMode;
-    });
-  };
-
-  const handleLogout = async () => {
-    const response = await axiosCredentialInstance.post(`/session/logout`);
-
-    switch (response.status) {
-      case METHOD_NOT_ALLOWED_HTTP_RESPONSE_CODE:
-      case OK_HTTP_RESPONSE_CODE:
-        setUser(null);
-        setModalOpen(false);
-        return;
-      case UNAUTHORIZED_HTTP_RESPONSE_CODE:
-      default:
-        setUser(null);
-
-        return;
-    }
-  };
-
-  const themeTooltipText = darkMode
-    ? "Switch to Light Mode"
-    : "Switch to Dark Mode";
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <NavbarWrapper
@@ -109,31 +59,48 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
       isBlurred={true}
       maxWidth="xl"
       classNames={{ content: "flex-[2]" }}
+      onMenuOpenChange={setIsMenuOpen}
     >
-      <NavbarBrand>
-        <Link href="/" className="flex items-center">
-          <Logo className="text-2xl font-bold text-neutral-900 dark:text-neutral-500" />
-        </Link>
-      </NavbarBrand>
+      <NavbarContent>
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="sm:hidden"
+        />
 
-      {showSearchBar && (
-        <NavbarContent justify="center">
+        <NavbarBrand>
+          <Link href="/" className="flex items-center">
+            <Logo className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 text-black dark:text-white" />
+          </Link>
+          {isMainPage || (
+            <span>
+              <ScriptiumText />
+            </span>
+          )}
+        </NavbarBrand>
+      </NavbarContent>
+
+      {isMainPage && (
+        <NavbarContent className="hidden sm:flex" justify="center">
           <SearchBar />
         </NavbarContent>
       )}
 
-      <NavbarContent justify="end">
+      <NavbarContent className="hidden sm:flex" justify="end">
         <Tooltip
           classNames={TOOL_TIP_CLASS_NAMES}
           showArrow
           placement="bottom"
-          content={themeTooltipText}
+          content={
+            theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"
+          }
           delay={30}
           closeDelay={5}
         >
           <button
-            onClick={toggleDarkMode}
-            aria-label={themeTooltipText}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={
+              theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"
+            }
             className="focus:outline-none"
           >
             <motion.div
@@ -144,7 +111,7 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
               whileTap={{ scale: 0.9 }}
               className="p-2 rounded-xl text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-800"
             >
-              {darkMode ? (
+              {theme === "dark" ? (
                 <motion.div
                   key="sun"
                   initial={{ opacity: 0, rotate: -90 }}
@@ -156,7 +123,7 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
                     transition: { duration: 0.3, ease: "easeInOut" },
                   }}
                 >
-                  <FaSun size={20} />
+                  <FaSun className="w-5 h-5 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                 </motion.div>
               ) : (
                 <motion.div
@@ -167,7 +134,7 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
                     transition: { duration: 0.1, ease: "easeInOut" },
                   }}
                 >
-                  <FaMoon size={20} />
+                  <FaMoon className="w-5 h-5 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                 </motion.div>
               )}
             </motion.div>
@@ -190,7 +157,7 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
                 className="text-black dark:text-white font-medium px-2"
                 aria-label={`About ${PROJECT_NAME}`}
               >
-                <FaBook size={20} className="text-black dark:text-white mr-1" />
+                <FaBook className="w-5 h-5 md:w-6 md:h-6 mr-1 text-black dark:text-white" />
               </Button>
             </DropdownTrigger>
           </NavbarItem>
@@ -207,14 +174,11 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
                 href="/about"
                 className="flex items-center gap-3 px-2 py-2 hover:no-underline"
               >
-                <FaBookOpen
-                  size={22}
-                  className="text-neutral-800 dark:text-neutral-300"
-                />
+                <FaBookOpen className="w-5 h-5 md:w-6 md:h-6 text-neutral-800 dark:text-neutral-300" />
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold">About Project</span>
                   <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                    Learn more about our mission and {PROJECT_NAME}
+                    Learn more about our mission and {PROJECT_NAME}.
                   </span>
                 </div>
               </Link>
@@ -225,14 +189,28 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
                 href="/statistics"
                 className="flex items-center gap-3 px-2 py-2 hover:no-underline"
               >
-                <FaChartBar
-                  size={22}
-                  className="text-neutral-800 dark:text-neutral-300"
-                />
+                <FaChartBar className="w-5 h-5 md:w-6 md:h-6 text-neutral-800 dark:text-neutral-300" />
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold">Site Statistics</span>
                   <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                    View user and usage data
+                    View user and usage data.
+                  </span>
+                </div>
+              </Link>
+            </DropdownItem>
+
+            <DropdownItem key="discord" textValue="Discord">
+              <Link
+                href="/discord"
+                className="flex items-center gap-3 px-2 py-2 hover:no-underline"
+              >
+                <FaDiscord className="w-5 h-5 md:w-6 md:h-6 text-neutral-800 dark:text-neutral-300" />
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold">
+                    {PROJECT_NAME}'s Discord bot
+                  </span>
+                  <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Inform about Discord bot of {PROJECT_NAME}.
                   </span>
                 </div>
               </Link>
@@ -260,7 +238,7 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
                   className="p-2 rounded-xl text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600"
                 >
                   <div className="cursor-pointer">
-                    <MdOutlineLanguage size={25} />
+                    <MdOutlineLanguage className="w-6 h-6 md:w-7 md:h-7" />
                   </div>
                 </motion.div>
               </DropdownTrigger>
@@ -282,146 +260,142 @@ const Navbar: FC<Props> = ({ showSearchBar = true }) => {
             </Dropdown>
           </aside>
         </Tooltip>
+
         <Tooltip
           classNames={TOOL_TIP_CLASS_NAMES}
           showArrow
           delay={30}
           closeDelay={5}
           placement="bottom"
-          content={
-            isUserLoading
-              ? "Loading..."
-              : user
-              ? `Signed in as ${user.getUsername()}`
-              : "Log in"
-          }
+          content={isUserLoading ? "Loading..." : "Not supported yet. Log in"}
         >
-          <div>
-            {isUserLoading ? (
-              <Spinner size="sm" />
-            ) : user ? (
-              <Dropdown placement="bottom-end">
-                <DropdownTrigger>
-                  <Avatar
-                    isBordered
-                    as="button"
-                    className="transition-transform"
-                    color="default"
-                    name={getFormattedNameAndSurname(user)}
-                    size="sm"
-                    src={user.getImage() ?? ""}
-                  />
-                </DropdownTrigger>
-                <DropdownMenu aria-label="Profile Actions" variant="flat">
-                  <DropdownItem
-                    key="profile-info"
-                    isReadOnly
-                    className="group !focus:ring-0 p-0"
-                  >
-                    <div className="flex items-center w-full h-full px-3 py-2 gap-2">
-                      <p className="font-semibold">
-                        Signed in as @{user.getUsername()}
-                      </p>
-                    </div>
-                  </DropdownItem>
-
-                  <DropdownItem
-                    key="profile"
-                    className="group !focus:ring-0 p-0"
-                  >
-                    <Link
-                      href={`/user/${user.getUsername()}`}
-                      className="flex items-center w-full h-full px-3 py-2 gap-2 group-hover:no-underline cursor-pointer"
-                    >
-                      <LuUser className="text-xl text-default-500 flex-shrink-0 group-hover:text-primary" />
-                      <span className="text-default-500 group-hover:text-primary">
-                        Profile
-                      </span>
-                    </Link>
-                  </DropdownItem>
-
-                  <DropdownItem
-                    key="savings"
-                    className="group !focus:ring-0 p-0"
-                  >
-                    <Link
-                      href="/savings"
-                      className="flex items-center w-full h-full px-3 py-2 gap-2 group-hover:no-underline cursor-pointer"
-                    >
-                      <IoBookmarkOutline className="text-xl text-default-500 flex-shrink-0 group-hover:text-primary" />
-                      <span className="text-default-500 group-hover:text-primary">
-                        Savings
-                      </span>
-                    </Link>
-                  </DropdownItem>
-
-                  <DropdownItem
-                    key="user-settings"
-                    className="group !focus:ring-0 p-0"
-                  >
-                    <Link
-                      href="/settings"
-                      className="flex items-center w-full h-full px-3 py-2 gap-2 group-hover:no-underline cursor-pointer"
-                    >
-                      <HiOutlineCog className="text-xl text-default-500 flex-shrink-0 group-hover:text-primary-500" />
-                      <span className="text-default-500 group-hover:text-primary-500">
-                        User Settings
-                      </span>
-                    </Link>
-                  </DropdownItem>
-
-                  <DropdownItem
-                    key="report-issue"
-                    className="group !focus:ring-0 p-0"
-                  >
-                    <Link
-                      href="/report-issue"
-                      className="flex items-center w-full h-full px-3 py-2 gap-2 group-hover:no-underline cursor-pointer"
-                    >
-                      <HiOutlineExclamation className="text-xl text-default-500 flex-shrink-0 group-hover:text-warning-500" />
-                      <span className="text-default-500 group-hover:text-warning-500">
-                        Report an Issue
-                      </span>
-                    </Link>
-                  </DropdownItem>
-
-                  <DropdownItem
-                    key="logout"
-                    className="group !focus:ring-0 p-0"
-                    onPress={() => setModalOpen(true)}
-                  >
-                    <div className="flex items-center w-full h-full px-3 py-2 gap-2 cursor-pointer group-hover:no-underline">
-                      <MdLogout className="text-xl text-default-500 flex-shrink-0 group-hover:text-red-500" />
-                      <span className="text-default-500 group-hover:text-red-500">
-                        Logout
-                      </span>
-                    </div>
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            ) : (
-              <Link href={SIGN_IN_URL} aria-label="User Profile">
-                <motion.div
-                  whileHover={{
-                    scale: 1.3,
-                    transition: { duration: 0.1, ease: "backIn" },
-                  }}
-                  whileTap={{ scale: 0.9 }}
-                  className="p-2 rounded-xl text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600"
-                >
-                  <FaUser size={20} />
-                </motion.div>
-              </Link>
-            )}
-          </div>
+          <motion.div
+            whileHover={{
+              scale: 1.3,
+              transition: { duration: 0.1, ease: "backIn" },
+            }}
+            whileTap={{ scale: 0.9 }}
+            className="p-2 rounded-xl text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600"
+          >
+            <FaUser className="w-5 h-5 md:w-6 md:h-6" />
+          </motion.div>
         </Tooltip>
       </NavbarContent>
 
-      <LogOutModal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setModalOpen}
-        handleLogout={handleLogout}
-      />
+      <NavbarMenu>
+        <NavbarMenuItem>
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={
+              theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"
+            }
+            className="w-full flex items-center gap-3 px-2 py-2 hover:no-underline focus:outline-none"
+          >
+            {theme === "dark" ? (
+              <FaSun className="w-5 h-5 text-neutral-800 dark:text-neutral-300" />
+            ) : (
+              <FaMoon className="w-5 h-5 text-neutral-800 dark:text-neutral-300" />
+            )}
+            <div className="flex flex-col items-start">
+              <span className="text-sm font-semibold">Theme</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                {theme === "dark"
+                  ? "Currently Dark Mode"
+                  : "Currently Light Mode"}
+              </span>
+            </div>
+          </button>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
+          <Link
+            href="/about"
+            className="flex items-center gap-3 px-2 py-2 hover:no-underline"
+          >
+            <FaBookOpen className="w-5 h-5 text-neutral-800 dark:text-neutral-300" />
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold">About Project</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                Learn more about our mission and {PROJECT_NAME}.
+              </span>
+            </div>
+          </Link>
+        </NavbarMenuItem>
+
+        <NavbarMenuItem>
+          <Link
+            href="/statistics"
+            className="flex items-center gap-3 px-2 py-2 hover:no-underline"
+          >
+            <FaChartBar className="w-5 h-5 text-neutral-800 dark:text-neutral-300" />
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold">Site Statistics</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                View user and usage data.
+              </span>
+            </div>
+          </Link>
+        </NavbarMenuItem>
+
+        <NavbarMenuItem>
+          <Link
+            href="/discord"
+            className="flex items-center gap-3 px-2 py-2 hover:no-underline"
+          >
+            <FaDiscord className="w-5 h-5 text-neutral-800 dark:text-neutral-300" />
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold">
+                {PROJECT_NAME}'s Discord bot
+              </span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                Inform about Discord bot of {PROJECT_NAME}.
+              </span>
+            </div>
+          </Link>
+        </NavbarMenuItem>
+
+        <NavbarMenuItem>
+          <Button
+            radius="sm"
+            variant="light"
+            className="text-black dark:text-white font-medium px-2"
+            aria-label={`Log In for ${PROJECT_NAME}`}
+          >
+            <FaUser className="w-5 h-5 mr-1 text-black dark:text-white" />
+            Log In (Not supported yet.)
+          </Button>
+        </NavbarMenuItem>
+
+        <NavbarMenuItem>
+          <Dropdown>
+            <DropdownTrigger>
+              <div className="flex items-center gap-3 px-2 py-2 cursor-pointer hover:no-underline">
+                <MdOutlineLanguage className="w-6 h-6 text-neutral-800 dark:text-neutral-300" />
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-semibold">Language</span>
+                  <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Select website language
+                  </span>
+                </div>
+              </div>
+            </DropdownTrigger>
+            <DropdownMenu
+              aria-label="Select Language"
+              onAction={(key) => setSelectedLanguage(key as string)}
+            >
+              <DropdownSection title="Select Website Language">
+                <DropdownItem
+                  key="English"
+                  className={
+                    selectedLanguage === "English" ? "text-primary-500" : ""
+                  }
+                >
+                  English
+                </DropdownItem>
+              </DropdownSection>
+            </DropdownMenu>
+          </Dropdown>
+        </NavbarMenuItem>
+      </NavbarMenu>
     </NavbarWrapper>
   );
 };

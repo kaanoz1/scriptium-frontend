@@ -1,3 +1,5 @@
+"use client";
+
 import {
   createContext,
   useState,
@@ -6,9 +8,9 @@ import {
   SetStateAction,
 } from "react";
 import { T_ScriptureCode } from "@/types/types";
-import { ScripturePreference } from "@/types/classes/Scripture";
-import { VerseOptions } from "@/types/classes/Verse";
-import { getScriptureIfCodeIsValid } from "@/util/func";
+import { ScripturePreference } from "@/types/classes/client/Scripture/ScripturePreference/ScripturePreference";
+import { VerseOptions } from "@/types/classes/client/Verse/VerseOptions/VerseOptions";
+import { ScriptureHelperCollection } from "@/types/classes/client/ScriptureHelper/ScriptureHelperCollection";
 
 type ScripturePreferencesMap = Record<T_ScriptureCode, ScripturePreference>;
 
@@ -21,7 +23,7 @@ const ScriptureProviderContext =
   createContext<ScriptureProviderContextType | null>(null);
 
 const createDefaultPreferencesObjects = (): ScripturePreferencesMap => {
-  const t = getScriptureIfCodeIsValid("t");
+  const t = new ScriptureHelperCollection().getScriptureHelper("t");
   if (!t) throw new Error("Scripture object not found.");
 
   return {

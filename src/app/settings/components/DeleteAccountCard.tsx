@@ -10,7 +10,7 @@ import {
   ModalHeader,
 } from "@heroui/modal";
 import { useForm } from "react-hook-form";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 
 const passwordValidation = {
   required: { value: true, message: "Password is required." },
@@ -50,22 +50,52 @@ const DeleteAccountCard: FC = () => {
     <Card className="max-w-md w-full">
       <CardBody className="flex flex-col gap-4">
         <h3 className="font-semibold text-xl text-red-600">Delete Account</h3>
-        <p className="text-sm text-default-500">Deleting your account is permanent after 15 days.</p>
-        <Button onPress={() => setOpen(true)} color="danger">Delete Account</Button>
+        <p className="text-sm text-default-500">
+          Deleting your account is permanent after 15 days.
+        </p>
+        <Button onPress={() => setOpen(true)} color="danger">
+          Delete Account
+        </Button>
       </CardBody>
 
-      <Modal isOpen={open} onOpenChange={(open) => { setOpen(open); if (!open) reset(); }}>
+      <Modal
+        isOpen={open}
+        onOpenChange={(open) => {
+          setOpen(open);
+          if (!open) reset();
+        }}
+      >
         <ModalContent>
           <ModalHeader>Confirm Deletion</ModalHeader>
           <form onSubmit={onSubmit}>
             <ModalBody>
-              <Input type="password" label="Password" {...register("password", passwordValidation)} fullWidth isInvalid={!!errors.password} errorMessage={errors.password?.message} />
-              <Input type="password" label="Confirm Password" {...register("confirmPassword", passwordValidation)} fullWidth isInvalid={!!errors.confirmPassword} errorMessage={errors.confirmPassword?.message} />
-              {error && <p className="text-red-500 text-sm font-medium mt-2">{error}</p>}
+              <Input
+                type="password"
+                label="Password"
+                {...register("password", passwordValidation)}
+                fullWidth
+                isInvalid={!!errors.password}
+                errorMessage={errors.password?.message}
+              />
+              <Input
+                type="password"
+                label="Confirm Password"
+                {...register("confirmPassword", passwordValidation)}
+                fullWidth
+                isInvalid={!!errors.confirmPassword}
+                errorMessage={errors.confirmPassword?.message}
+              />
+              {error && (
+                <p className="text-red-500 text-sm font-medium mt-2">{error}</p>
+              )}
             </ModalBody>
             <ModalFooter>
-              <Button variant="ghost" onPress={() => setOpen(false)}>Cancel</Button>
-              <Button type="submit" color="danger" isLoading={isSubmitting}>Delete</Button>
+              <Button variant="ghost" onPress={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" color="danger" isLoading={isSubmitting}>
+                Delete
+              </Button>
             </ModalFooter>
           </form>
         </ModalContent>

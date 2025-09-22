@@ -1,7 +1,6 @@
 import { Toast } from "@/types/types";
 import { NextPage } from "next";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
-import { SOMETHING_WENT_WRONG_TOAST } from "@/util/utils";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import { Spinner } from "@heroui/spinner";
 import {
   Table,
@@ -20,55 +19,61 @@ import {
 } from "@/types/response";
 import LoadingSpinner from "../../../../components/UI/LoadingSpinner";
 import { addToast } from "@heroui/toast";
-import { UserFetchedDTO, UserOwnDTO } from "@/types/classes/User";
-import {
-  NoteOwnDTO,
-  NoteOwnerDTO,
-  NoteOwnerVerseDTO,
-  T_NoteOwnerVerseDTOConstructorParametersJSON,
-} from "@/types/classes/Note";
+
 import {
   OK_HTTP_RESPONSE_CODE,
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
   NOT_FOUND_HTTP_RESPONSE_CODE,
   TOO_MANY_REQUEST_HTTP_RESPONSE_CODE,
-  isAuthenticationRequestErrorCode,
+  SOMETHING_WENT_WRONG_TOAST,
 } from "@/util/constants";
 import axios from "axios";
 import { getErrorComponent } from "@/util/reactUtil";
-import EditNoteComponent from "@/components/UI/EditNoteComponent";
-import NoteOwnerVerse from "@/components/UI/NoteOwnerVerse";
+import EditNoteComponent from "@/components/note/EditNoteComponent";
+import {
+  NoteOwnerVerse,
+  T_NoteOwnerVerseConstructorParametersJSON,
+} from "@/types/classes/model/Note/NoteOwner/NoteOwnerVerse/NoteOwnerVerse";
+import { UserFetched, UserOwn } from "@/types/classes/model/User/User";
+import { isAuthenticationRequestErrorCode } from "@/util/func";
+import NoteOwnerVerseComponent from "@/components/note/NoteOwnerVerse";
+import { NoteOwn } from "@/types/classes/model/Note/NoteOwn/NoteOwn";
+import { NoteOwner } from "@/types/classes/model/Note/NoteOwner/NoteOwner";
 
 interface Props {
-  notesOfUser: UserFetchedDTO;
-  user: UserOwnDTO;
-  hasUserInspectingPermissionToContentOfUserInspected: boolean
+  notesOfUser: UserFetched;
+  user: UserOwn;
+  hasUserInspectingPermissionToContentOfUserInspected: boolean;
 }
 
-const UserPageNotesTab: NextPage<Props> = ({ notesOfUser, user, hasUserInspectingPermissionToContentOfUserInspected }) => {
+const UserPageNotesTab: NextPage<Props> = ({
+  notesOfUser,
+  user,
+  hasUserInspectingPermissionToContentOfUserInspected,
+}) => {
   const queryKey: readonly unknown[] = ["notes-of", notesOfUser.getId()];
   const queryClient = useQueryClient();
   const {
     data: notes = null,
     refetch,
     isLoading,
-  } = useQuery<
-    Array<NoteOwnerVerseDTO> | T_AuthenticationRequestErrorCode | null
-  >({
-    queryKey,
-    queryFn: async () => await fetchUserNotes(notesOfUser),
-    refetchInterval: 1000 * 60 * 60,
-    enabled: hasUserInspectingPermissionToContentOfUserInspected
-  });
+  } = useQuery<Array<NoteOwnerVerse> | T_AuthenticationRequestErrorCode | null>(
+    {
+      queryKey,
+      queryFn: async () => await fetchUserNotes(notesOfUser),
+      refetchInterval: 1000 * 60 * 60,
+      enabled: hasUserInspectingPermissionToContentOfUserInspected,
+    }
+  );
 
-  const [editNote, setEditNote] = useState<NoteOwnDTO | null>(null);
+  const [editNote, setEditNote] = useState<NoteOwn | null>(null);
 
   const renderCell = useCallback(
-    (item: NoteOwnerVerseDTO, columnKey: Key) => {
+    (item: NoteOwnerVerse, columnKey: Key) => {
       switch (columnKey) {
         case "note":
           return (
-            <NoteOwnerVerse
+            <NoteOwnerVerseComponent
               note={item}
               user={user}
               stateControlFunctionForSetEditNote={setEditNote}
@@ -138,15 +143,15 @@ const UserPageNotesTab: NextPage<Props> = ({ notesOfUser, user, hasUserInspectin
 export default UserPageNotesTab;
 
 const fetchUserNotes = async (
-  noteOfUser: UserFetchedDTO
-): Promise<Array<NoteOwnerVerseDTO> | T_AuthenticationRequestErrorCode> => {
+  noteOfUser: UserFetched
+): Promise<Array<NoteOwnerVerse> | T_AuthenticationRequestErrorCode> => {
   try {
     const response = await axiosCredentialInstance.get<
-      Response<Array<T_NoteOwnerVerseDTOConstructorParametersJSON>>
+      Response<Array<T_NoteOwnerVerseConstructorParametersJSON>>
     >(`/user/notes/${noteOfUser.getId()}`);
 
     if (response.status === OK_HTTP_RESPONSE_CODE)
-      return response.data.data.map(NoteOwnerVerseDTO.createFromJSON);
+      return response.data.data.map(NoteOwnerVerse.createFromJSON);
 
     throw new Error("Unexpected result. Status: " + response.status);
   } catch (error) {
@@ -201,7 +206,7 @@ const fetchUserNotes = async (
 };
 
 const deleteNoteAndUpdateQuery = async (
-  note: NoteOwnDTO,
+  note: NoteOwn,
   queryClient: QueryClient,
   queryKey: readonly unknown[]
 ): Promise<void> => {
@@ -213,7 +218,7 @@ const deleteNoteAndUpdateQuery = async (
     if (response.status === OK_HTTP_RESPONSE_CODE) {
       addToast({ title: "Deleted!", color: "success" });
 
-      queryClient.setQueryData<NoteOwnerDTO[]>(
+      queryClient.setQueryData<NoteOwner[]>(
         queryKey,
         (prev) => prev?.filter((n) => n.getId() !== note.getId()) ?? []
       );
@@ -275,14 +280,14 @@ const deleteNoteAndUpdateQuery = async (
   }
 };
 const toggleNoteLikeAndUpdateQuery = async (
-  note: NoteOwnerDTO,
+  note: NoteOwner,
   queryKey: readonly unknown[],
   queryClient: QueryClient
 ): Promise<void> => {
   const isLiked = note.isNoteLiked();
   const noteId = note.getId();
 
-  const updatedNote: NoteOwnerDTO = Object.assign(
+  const updatedNote: NoteOwner = Object.assign(
     Object.create(Object.getPrototypeOf(note)),
     note
   );
@@ -323,7 +328,7 @@ const toggleNoteLikeAndUpdateQuery = async (
       });
     }
 
-    queryClient.setQueryData<NoteOwnerDTO[]>(
+    queryClient.setQueryData<NoteOwner[]>(
       queryKey,
       (prev) => prev?.map((n) => (n.getId() === noteId ? updatedNote : n)) ?? []
     );
@@ -377,7 +382,6 @@ const toggleNoteLikeAndUpdateQuery = async (
 
       case 404:
         if (isLiked && message.includes("no")) {
-          // Zaten unlike edilmiş
           updatedNote.setIsNoteLiked(false);
           updatedNote.setLikeCount(Math.max(0, note.getLikeCount() - 1));
           addToast({
@@ -396,7 +400,6 @@ const toggleNoteLikeAndUpdateQuery = async (
 
       case 409:
         if (!isLiked && message.includes("already liked")) {
-          // Zaten beğenilmiş
           updatedNote.setIsNoteLiked(true);
           updatedNote.setLikeCount(note.getLikeCount() + 1);
           addToast({
@@ -430,8 +433,7 @@ const toggleNoteLikeAndUpdateQuery = async (
         break;
     }
 
-    // 🔄 Her durumda queryClient güncellenir
-    queryClient.setQueryData<NoteOwnerDTO[]>(
+    queryClient.setQueryData<NoteOwner[]>(
       queryKey,
       (prev) => prev?.map((n) => (n.getId() === noteId ? updatedNote : n)) ?? []
     );

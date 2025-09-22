@@ -1,4 +1,4 @@
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import {
   T_AuthenticationRequestErrorCode,
   Response,
@@ -6,37 +6,37 @@ import {
 } from "@/types/response";
 import {
   likeCommentAttachedToEntityAndReturnResponse,
-  SOMETHING_WENT_WRONG_TOAST,
   unlikeCommentAttachedToEntityAndReturnResponse,
 } from "@/util/utils";
 import { useQuery } from "@tanstack/react-query";
 import { NextPage } from "next";
 import { addToast } from "@heroui/toast";
-import { UserFetchedDTO, UserOwnDTO } from "@/types/classes/User";
 import {
-  CommentBaseDTO,
-  CommentOwnerNoteDTO,
-  CommentOwnerVerseDTO,
-  T_CommentOwnerNoteDTOConstructorParametersJSON,
-  T_CommentOwnerVerseDTOConstructorParametersJSON,
-} from "@/types/classes/Comment";
+  CommentBase,
+  CommentOwnerNote,
+  CommentOwnerVerse,
+  T_CommentOwnerNoteConstructorParametersJSON,
+  T_CommentOwnerVerseConstructorParametersJSON,
+} from "@/types/classes/model/Comment/Comment";
 import axios, { AxiosResponse } from "axios";
 import { getErrorComponent } from "@/util/reactUtil";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import { Tab, Tabs } from "@heroui/tabs";
-import { NoteOwnDTO } from "@/types/classes/Note";
-import { VerseBaseDTO } from "@/types/classes/Verse";
 import UserPageReflectionsTabVerseComments from "./UserPageReflectionsTabVerseComments";
 import UserPageReflectionsTabNoteComments from "./UserPageReflectionsTabNoteComments";
 import {
-  isAuthenticationRequestErrorCode,
   OK_HTTP_RESPONSE_CODE,
   INTERNAL_SERVER_ERROR_HTTP_RESPONSE_CODE,
+  SOMETHING_WENT_WRONG_TOAST,
 } from "@/util/constants";
+import { UserFetched, UserOwn } from "@/types/classes/model/User/User";
+import { VerseBase } from "@/types/classes/model/Verse/VerseBase/VerseBase";
+import { isAuthenticationRequestErrorCode } from "@/util/func";
+import { NoteOwn } from "@/types/classes/model/Note/NoteOwn/NoteOwn";
 
 interface Props {
-  userInspected: UserFetchedDTO;
-  user: UserOwnDTO;
+  userInspected: UserFetched;
+  user: UserOwn;
 }
 
 const UserPageReflectionsTab: NextPage<Props> = ({ userInspected }) => {
@@ -88,27 +88,27 @@ const UserPageReflectionsTab: NextPage<Props> = ({ userInspected }) => {
 export default UserPageReflectionsTab;
 
 class CommentHelper {
-  private verseComments: Array<CommentOwnerVerseDTO>;
-  private noteComments: Array<CommentOwnerNoteDTO>;
+  private verseComments: Array<CommentOwnerVerse>;
+  private noteComments: Array<CommentOwnerNote>;
   constructor(
-    verseComments: Array<T_CommentOwnerVerseDTOConstructorParametersJSON>,
-    noteComments: Array<T_CommentOwnerNoteDTOConstructorParametersJSON>
+    verseComments: Array<T_CommentOwnerVerseConstructorParametersJSON>,
+    noteComments: Array<T_CommentOwnerNoteConstructorParametersJSON>
   ) {
-    this.verseComments = verseComments.map(CommentOwnerVerseDTO.createFromJSON);
-    this.noteComments = noteComments.map(CommentOwnerNoteDTO.createFromJSON);
+    this.verseComments = verseComments.map(CommentOwnerVerse.createFromJSON);
+    this.noteComments = noteComments.map(CommentOwnerNote.createFromJSON);
   }
 
-  getVerseComments(): Array<CommentOwnerVerseDTO> {
+  getVerseComments(): Array<CommentOwnerVerse> {
     return this.verseComments;
   }
 
-  getNoteComments(): Array<CommentOwnerNoteDTO> {
+  getNoteComments(): Array<CommentOwnerNote> {
     return this.noteComments;
   }
 }
 
 const fetchUserComments = async (
-  commentsOfUser: UserFetchedDTO
+  commentsOfUser: UserFetched
 ): Promise<CommentHelper | T_AuthenticationRequestErrorCode> => {
   try {
     const userId = commentsOfUser.getId();
@@ -140,13 +140,13 @@ const fetchUserComments = async (
 };
 
 type T_CommentsPageResponseType = {
-  verseComments: Array<T_CommentOwnerVerseDTOConstructorParametersJSON>;
-  noteComments: Array<T_CommentOwnerNoteDTOConstructorParametersJSON>;
+  verseComments: Array<T_CommentOwnerVerseConstructorParametersJSON>;
+  noteComments: Array<T_CommentOwnerNoteConstructorParametersJSON>;
 };
 
 const toggleLike = async (
-  comment: CommentBaseDTO,
-  entity: NoteOwnDTO | VerseBaseDTO
+  comment: CommentBase,
+  entity: NoteOwn | VerseBase
 ) => {
   let response: AxiosResponse<ResponseMessage> | null;
 

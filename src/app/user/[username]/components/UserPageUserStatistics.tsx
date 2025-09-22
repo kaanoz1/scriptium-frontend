@@ -1,9 +1,9 @@
-import { UserFetchedDTO } from "@/types/classes/User";
+import { UserFetched } from "@/types/classes/model/User/User";
 import { NextPage } from "next";
 import { Fragment } from "react";
 
 interface Props {
-  statisticsOfUser: UserFetchedDTO;
+  statisticsOfUser: UserFetched;
 }
 
 const UserPageUserStatistics: NextPage<Props> = ({ statisticsOfUser }) => {

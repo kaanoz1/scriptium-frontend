@@ -10,13 +10,13 @@ import {
 } from "@heroui/table";
 import { NextPage } from "next";
 import { Key, useCallback } from "react";
-import { CommentOwnNoteDTO } from "@/types/classes/Comment";
-import { UserOwnDTO } from "@/types/classes/User";
+import { CommentOwnNote } from "@/types/classes/model/Comment/Comment";
+import { UserOwn } from "@/types/classes/model/User/User";
 
 interface Props {
-  comments: CommentOwnNoteDTO[];
+  comments: CommentOwnNote[];
   refetch: RefetchDataFunctionType<unknown>;
-  user: UserOwnDTO;
+  user: UserOwn;
 }
 
 const UserSettingsLikeTabCommentTab: NextPage<Props> = ({
@@ -25,7 +25,7 @@ const UserSettingsLikeTabCommentTab: NextPage<Props> = ({
   refetch,
 }) => {
   const renderCell = useCallback(
-    (item: CommentOwnNoteDTO, columnKey: Key) => {
+    (_item: CommentOwnNote, columnKey: Key) => {
       switch (columnKey) {
         case "like":
           return <span>Will be inserted</span>;
@@ -52,7 +52,7 @@ const UserSettingsLikeTabCommentTab: NextPage<Props> = ({
         items={comments}
         emptyContent="You did not liked any reflections"
       >
-        {(item: CommentOwnNoteDTO) => (
+        {(item: CommentOwnNote) => (
           <TableRow key={item.getId()}>
             {(columnKey) => (
               <TableCell>{renderCell(item, columnKey)}</TableCell>

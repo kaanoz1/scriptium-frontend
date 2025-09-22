@@ -1,9 +1,11 @@
+"use client";
+
 import { FC } from "react";
-import TranslatedTextWithFootnotes from "../../../../../../components/UI/TranslatedTextWithFootnotes";
-import { TranslationTextDTO } from "@/types/classes/TranslationText";
+import TranslatedTextWithFootnotes from "../../../../../../components/TranslatedTextWithFootnotes";
+import { TranslationText } from "@/types/classes/model/TranslationText/TranslationText/TranslationText";
 
 interface Props {
-  translationText: TranslationTextDTO;
+  translationText: TranslationText;
   showFootnotes?: boolean;
 }
 
@@ -11,7 +13,6 @@ const VersePageTranslationBoxComponent: FC<Props> = ({
   translationText,
   showFootnotes = true,
 }) => {
-
   const translatorNamesGathered: string = translationText
     .getTranslation()
     .getTranslators()

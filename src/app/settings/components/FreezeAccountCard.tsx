@@ -10,7 +10,7 @@ import {
   ModalHeader,
 } from "@heroui/modal";
 import { useForm } from "react-hook-form";
-import axiosCredentialInstance from "@/client/axiosCredentialInstance";
+import axiosCredentialInstance from "@/lib/client/axiosCredentialInstance";
 import { useRouter } from "next/navigation";
 
 const passwordValidation = {
@@ -37,7 +37,9 @@ const FreezeAccountCard: FC<FreezeAccountCardProps> = ({ setUser }) => {
   const onSubmit = handleSubmit(async ({ password }) => {
     setError(null);
     try {
-      const res = await axiosCredentialInstance.post(`/session/freeze`, { password });
+      const res = await axiosCredentialInstance.post(`/session/freeze`, {
+        password,
+      });
       if (res.status === 200) {
         setUser(null);
         router.push("/");
@@ -51,21 +53,48 @@ const FreezeAccountCard: FC<FreezeAccountCardProps> = ({ setUser }) => {
     <Card className="max-w-md w-full">
       <CardBody className="flex flex-col gap-4">
         <h3 className="font-semibold text-xl">Freeze Account</h3>
-        <p className="text-sm text-default-500">Freezing your account disables access until re-login.</p>
-        <Button onPress={() => setOpen(true)} variant="bordered" color="primary">Freeze Account</Button>
+        <p className="text-sm text-default-500">
+          Freezing your account disables access until re-login.
+        </p>
+        <Button
+          onPress={() => setOpen(true)}
+          variant="bordered"
+          color="primary"
+        >
+          Freeze Account
+        </Button>
       </CardBody>
 
-      <Modal isOpen={open} onOpenChange={(open) => { setOpen(open); if (!open) reset(); }}>
+      <Modal
+        isOpen={open}
+        onOpenChange={(open) => {
+          setOpen(open);
+          if (!open) reset();
+        }}
+      >
         <ModalContent>
           <ModalHeader>Freeze Account</ModalHeader>
           <form onSubmit={onSubmit}>
             <ModalBody>
-              <Input type="password" label="Password" fullWidth {...register("password", passwordValidation)} isInvalid={!!errors.password} errorMessage={errors.password?.message} />
-              {error && <p className="text-red-500 text-sm font-medium mt-2">{error}</p>}
+              <Input
+                type="password"
+                label="Password"
+                fullWidth
+                {...register("password", passwordValidation)}
+                isInvalid={!!errors.password}
+                errorMessage={errors.password?.message}
+              />
+              {error && (
+                <p className="text-red-500 text-sm font-medium mt-2">{error}</p>
+              )}
             </ModalBody>
             <ModalFooter>
-              <Button variant="ghost" onPress={() => setOpen(false)}>Cancel</Button>
-              <Button type="submit" isLoading={isSubmitting} color="primary">Freeze</Button>
+              <Button variant="ghost" onPress={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" isLoading={isSubmitting} color="primary">
+                Freeze
+              </Button>
             </ModalFooter>
           </form>
         </ModalContent>
