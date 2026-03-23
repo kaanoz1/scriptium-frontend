@@ -4,6 +4,10 @@ import React from "react";
 import {Utils} from "@/util";
 import Providers from "./providers";
 import {EnvGuard} from "@/util/EnvGuard";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
     title: "Scriptium",
@@ -30,7 +34,7 @@ export default function RootLayout({
     return (
         <html
             lang="en"
-            className="h-full antialiased"
+            className={cn("h-full antialiased", "font-sans", geist.variable)}
             suppressHydrationWarning={EnvGuard.isDevelopment}
         >
         <body className="h-full">
