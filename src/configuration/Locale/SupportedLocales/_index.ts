@@ -25,6 +25,5 @@ export const SUPPORTED_LOCALES: Record<string, TLocaleInformation> = {
 
 } as const;
 
-export type LocaleKey = keyof typeof SUPPORTED_LOCALES;
 
-export const SUPPORTED_LOCAL_KEYS = Object.keys(SUPPORTED_LOCALES) as LocaleKey[];
+export const SUPPORTED_LOCAL_KEYS = ["en", "tr"] as const;

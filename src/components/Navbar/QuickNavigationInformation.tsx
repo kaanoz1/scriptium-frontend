@@ -8,9 +8,13 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
+import {useTranslations} from "next-intl";
 
 
 const QuickNavigationInformation = () => {
+
+    const t = useTranslations('Navbar.QuickNavigation')
+
     return (
         <TooltipProvider>
             <Tooltip delayDuration={200}>
@@ -25,9 +29,9 @@ const QuickNavigationInformation = () => {
                 >
                     <div className="space-y-3">
                         <div className="space-y-1">
-                            <h4 className="text-[13px] font-bold leading-none tracking-tight">Quick Navigation</h4>
+                            <h4 className="text-[13px] font-bold leading-none tracking-tight">{t("Header")}</h4>
                             <p className="text-xs text-muted-foreground leading-relaxed">
-                                Bypass server latency by navigating directly to a specific Surah or Verse.
+                                {t("Description")}
                             </p>
                         </div>
 
@@ -35,7 +39,7 @@ const QuickNavigationInformation = () => {
 
                         <div className="space-y-1.5">
                             <span className="text-[11px] font-bold uppercase text-muted-foreground tracking-widest">
-                                Valid Separators
+                                {t("ValidSeparators")}
                             </span>
                             <div className="flex gap-1.5 flex-wrap">
                                 <Kbd>Space</Kbd> <Kbd>/</Kbd> <Kbd>.</Kbd> <Kbd>,</Kbd>
@@ -44,25 +48,25 @@ const QuickNavigationInformation = () => {
 
                         <div className="space-y-2 pt-1">
                             <span className="text-[11px] font-bold uppercase text-muted-foreground tracking-widest">
-                                Examples
+                                {t("ExampleDescriptions.Header")}:
                             </span>
 
                             <div className="grid grid-cols-[1fr_auto] items-center gap-2 text-xs">
                                 <div className="flex gap-1"><Kbd>1</Kbd><Kbd>5</Kbd></div>
-                                <span className="text-muted-foreground">Surah 1, Verse 5</span>
+                                <span className="text-muted-foreground">{t("ExampleDescriptions.Surah")} 1, {t("ExampleDescriptions.Verse")} 5</span>
 
                                 <div className="flex gap-1"><Kbd>2.282</Kbd></div>
-                                <span className="text-muted-foreground">Surah 2, Verse 282</span>
+                                <span className="text-muted-foreground">{t("ExampleDescriptions.Surah")} 2, {t("ExampleDescriptions.Verse")} 282</span>
 
                                 <div className="flex gap-1"><Kbd>19</Kbd></div>
-                                <span className="text-muted-foreground">Go to Surah 19</span>
+                                <span className="text-muted-foreground">{t("ExampleDescriptions.GoesToSurah")} 19</span>
                             </div>
                         </div>
 
                         <div className="mt-2 flex items-start gap-2 rounded-md bg-amber-500/10 p-2 text-amber-600 dark:text-amber-400">
                             <LuTriangleAlert size={14} className="mt-0.5 shrink-0" />
                             <p className="text-[10px] leading-tight font-medium">
-                                Destination existence is not verified before navigation. Ensure the Surah/Verse exists in the Quran.
+                                {t("ExampleDescriptions.WarningDescription")}
                             </p>
                         </div>
                     </div>

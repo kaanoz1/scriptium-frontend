@@ -8,6 +8,7 @@ import SearchBarSettings from "@/components/Navbar/SearchBarSettings";
 import {SearchAlgorithm} from "@/components/Navbar/classes/SearchAlgorithm";
 import {SearchConfiguration} from "@/components/Navbar/classes/SearchConfiguration";
 import QuickNavigationInformation from "@/components/Navbar/QuickNavigationInformation";
+import {useTranslations} from "next-intl";
 
 type Props = {
     isCentered?: boolean;
@@ -18,11 +19,12 @@ const SearchBar: React.FC<Props> = ({isCentered = true}) => {
     const [isFocused, setIsFocused] = React.useState<boolean>(false);
 
     const shouldShowSettings = isHovered || isFocused;
-
     const searchConfiguration = useMemo(() => SearchConfiguration.getInstance(), []);
 
-
     const [selectedSearchAlgorithm, setSelectedSearchAlgorithm] = useState<SearchAlgorithm>(searchConfiguration.algorithm);
+
+
+    const t = useTranslations('Navbar');
 
 
     return (
@@ -46,7 +48,7 @@ const SearchBar: React.FC<Props> = ({isCentered = true}) => {
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 type="text"
-                placeholder="Search..."
+                placeholder={t('Placeholder')}
                 className="w-lg min-w-[320px] bg-transparent px-3 py-2 text-base md:text-sm outline-none placeholder:text-muted-foreground"
             />
 

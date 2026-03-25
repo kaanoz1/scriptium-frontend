@@ -14,6 +14,7 @@ import {TranslationSearchAlgorithm} from "@/components/Navbar/classes/Translatio
 import {RootSearchAlgorithm} from "@/components/Navbar/classes/RootSearchAlgorithm";
 import {Switch} from "@/components/ui/switch";
 import {observer} from "mobx-react-lite";
+import {useTranslations} from "next-intl";
 
 type Props = {
     selectedSearchAlgorithm: SearchAlgorithm;
@@ -21,6 +22,8 @@ type Props = {
 }
 
 const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, setSelectedSearchAlgorithm}) => {
+
+    const t = useTranslations("Navbar.Configuration");
 
     const popOverRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -35,7 +38,7 @@ const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, s
         >
             <div className="flex flex-row items-stretch">
                 <div className="flex-1 min-w-70">
-                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4">Algorithm</h4>
+                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4">{t("Header")}</h4>
                     <RadioGroup
                         defaultValue={selectedSearchAlgorithm.key}
                         className="space-y-3"
@@ -59,9 +62,10 @@ const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, s
                                     className="cursor-pointer block">
                             <Field orientation="horizontal" className="flex gap-2 items-center!">
                                 <FieldContent>
-                                    <FieldTitle className="text-[13px] font-semibold">Translation Search</FieldTitle>
+                                    <FieldTitle
+                                        className="text-[13px] font-semibold">{t("SearchAlgorithms.TranslationSearch.Header")}</FieldTitle>
                                     <FieldDescription className="text-xs leading-tight text-muted-foreground">
-                                        Find the best translation match for your query.
+                                        {t("SearchAlgorithms.TranslationSearch.Description")}
                                     </FieldDescription>
                                 </FieldContent>
                                 <RadioGroupItem value={TranslationSearchAlgorithm.getInstance().key}
@@ -72,9 +76,10 @@ const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, s
                         <FieldLabel htmlFor={RootSearchAlgorithm.getInstance().key} className="cursor-pointer block">
                             <Field orientation="horizontal" className="flex gap-2 items-center!">
                                 <FieldContent>
-                                    <FieldTitle className="text-[13px] font-semibold">Root Search</FieldTitle>
+                                    <FieldTitle
+                                        className="text-[13px] font-semibold">{t("SearchAlgorithms.RootSearch.Header")}</FieldTitle>
                                     <FieldDescription className="text-xs leading-tight text-muted-foreground">
-                                        Strives to find linguistic roots.
+                                        {t("SearchAlgorithms.RootSearch.Description")}
                                     </FieldDescription>
                                 </FieldContent>
                                 <RadioGroupItem value={RootSearchAlgorithm.getInstance().key}
@@ -89,14 +94,15 @@ const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, s
                         <Separator orientation="vertical" className="mx-5 bg-border h-auto"/>
 
                         <div className="flex-1 min-w-60 space-y-4">
-                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Methodology</h4>
+                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("SearchAlgorithms.TranslationSearch.Configuration.Methodology.Header")}</h4>
                             <RadioGroup defaultValue="match" className="space-y-3">
                                 <FieldLabel className="cursor-pointer block">
                                     <Field orientation="horizontal" className="flex gap-2 items-center!">
                                         <FieldContent>
-                                            <FieldTitle className="text-[13px] font-semibold">Match Search</FieldTitle>
-                                            <FieldDescription className="text-xs leading-tight text-muted-foreground">Exact
-                                                keyword matching.</FieldDescription>
+                                            <FieldTitle
+                                                className="text-[13px] font-semibold">{t("SearchAlgorithms.TranslationSearch.Configuration.Methodology.SearchPreference.MatchSearch.Header")}</FieldTitle>
+                                            <FieldDescription
+                                                className="text-xs leading-tight text-muted-foreground">{t("SearchAlgorithms.TranslationSearch.Configuration.Methodology.SearchPreference.MatchSearch.Description")}</FieldDescription>
                                         </FieldContent>
                                         <RadioGroupItem value="match"/>
                                     </Field>
@@ -104,10 +110,10 @@ const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, s
                                 <FieldLabel className="cursor-pointer block">
                                     <Field orientation="horizontal" className="flex gap-2 items-center!">
                                         <FieldContent>
-                                            <FieldTitle className="text-[13px] font-semibold">Semantic
-                                                Search</FieldTitle>
-                                            <FieldDescription className="text-xs leading-tight text-muted-foreground">Context-aware
-                                                search.</FieldDescription>
+                                            <FieldTitle
+                                                className="text-[13px] font-semibold">{t("SearchAlgorithms.TranslationSearch.Configuration.Methodology.SearchPreference.SemanticSearch.Header")}</FieldTitle>
+                                            <FieldDescription
+                                                className="text-xs leading-tight text-muted-foreground">{t("SearchAlgorithms.TranslationSearch.Configuration.Methodology.SearchPreference.SemanticSearch.Description")}</FieldDescription>
                                         </FieldContent>
                                         <RadioGroupItem value="semantic"/>
                                     </Field>
@@ -118,8 +124,7 @@ const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, s
                         <Separator orientation="vertical" className="mx-5 bg-border h-auto"/>
 
                         <div className="flex-1 w-full space-y-4">
-                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Result
-                                Configs</h4>
+                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("SearchAlgorithms.TranslationSearch.Configuration.Methodology.ResultConfigs.Header")}</h4>
                             <div className="space-y-3 pt-1 h-full">
 
                                 <div
@@ -127,10 +132,9 @@ const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, s
                                     onClick={() => selectedSearchAlgorithm.setEmphasize(!selectedSearchAlgorithm.emphasize)}
                                 >
                                     <div className="space-y-0.5">
-                                        <label className="text-[13px] font-semibold block cursor-pointer">Emphasize
-                                            matches</label>
-                                        <p className="text-xs text-muted-foreground leading-tight">Bold matching
-                                            parts.</p>
+                                        <label
+                                            className="text-[13px] font-semibold block cursor-pointer">{t("SearchAlgorithms.TranslationSearch.Configuration.Methodology.ResultConfigs.EmphasizeMatches.Header")}</label>
+                                        <p className="text-xs text-muted-foreground leading-tight">{t("SearchAlgorithms.TranslationSearch.Configuration.Methodology.ResultConfigs.EmphasizeMatches.Description")}</p>
                                     </div>
                                     <Switch checked={selectedSearchAlgorithm.emphasize}
                                             className="scale-75 origin-right pointer-events-none"/>
@@ -141,10 +145,9 @@ const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, s
                                     onClick={() => selectedSearchAlgorithm.setFilterSameVerse(!selectedSearchAlgorithm.filterSameVerse)}
                                 >
                                     <div className="space-y-0.5">
-                                        <label className="text-[13px] font-semibold block cursor-pointer">Filter
-                                            duplicates</label>
-                                        <p className="text-xs text-muted-foreground leading-tight">Hide redundant
-                                            verses.</p>
+                                        <label
+                                            className="text-[13px] font-semibold block cursor-pointer">{t("SearchAlgorithms.TranslationSearch.Configuration.Methodology.ResultConfigs.FilterDuplicates.Header")}</label>
+                                        <p className="text-xs text-muted-foreground leading-tight">{t("SearchAlgorithms.TranslationSearch.Configuration.Methodology.ResultConfigs.FilterDuplicates.Description")}</p>
                                     </div>
                                     <Switch checked={selectedSearchAlgorithm.filterSameVerse}
                                             className="scale-75 origin-right pointer-events-none"/>

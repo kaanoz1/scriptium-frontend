@@ -1,6 +1,6 @@
 import {Metadata} from "next";
 import {notFound} from "next/navigation";
-import Main from "@/app/test/main";
+import Main from "@/app/[locale]/test/main";
 import {BackendApi} from "@/tool/Fetchers/BackendApi";
 import {EnvGuard} from "@/util/EnvGuard";
 

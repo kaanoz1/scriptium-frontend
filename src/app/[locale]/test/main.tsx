@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { SerializedResponse, TSerializedResponse } from "@/util/types/SerializedResponse";
-import Client from "@/app/test/client";
+import Client from "@/app/[locale]/test/client";
 import { ChapterWithVerseCount } from "@/classes/Islam/Quran/Chapter/WithVerseCount";
 import { TChapterWithVerseCount } from "@/dto/Islam/Quran/Chapter/WithVerseCount";
 

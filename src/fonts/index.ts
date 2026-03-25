@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { Inter, Instrument_Serif, Outfit, Space_Grotesk, Syne } from 'next/font/google';
 export const inter = Inter({
     subsets: ['latin'],

@@ -25,14 +25,15 @@ export default function Providers({children}: { children: ReactNode }) {
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
+            enableColorScheme={false}
         >
             <TooltipProvider>
-            <QueryClientProvider client={queryClient}>
-                {children}
-                {EnvGuard.isDevelopment && (
-                    <ReactQueryDevtools initialIsOpen={false}/>
-                )}
-            </QueryClientProvider>
+                <QueryClientProvider client={queryClient}>
+                    {children}
+                    {EnvGuard.isDevelopment && (
+                        <ReactQueryDevtools initialIsOpen={false}/>
+                    )}
+                </QueryClientProvider>
             </TooltipProvider>
         </ThemeProvider>
     );

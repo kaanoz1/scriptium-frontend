@@ -7,6 +7,10 @@ import {EnvGuard} from "@/util/EnvGuard";
 import {Geist} from "next/font/google";
 import {cn} from "@/lib/utils";
 import Navbar from "@/components/Navbar/Navbar";
+import {NextIntlClientProvider} from 'next-intl';
+import {getMessages} from 'next-intl/server';
+import {notFound} from 'next/navigation';
+import {SUPPORTED_LOCALES} from "@/configuration/Locale/SupportedLocales/_index";
 
 const geist = Geist({subsets: ['latin'], variable: '--font-sans'});
 
@@ -27,22 +31,35 @@ export const metadata: Metadata = {
     ],
 };
 
-export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
+export default async function RootLayout({
+                                             children,
+                                             params,
+                                         }: Readonly<{
     children: React.ReactNode;
+    params: Promise<{ locale: string }>;
 }>) {
+    const {locale} = await params;
+
+    if (!locale || !(locale in SUPPORTED_LOCALES)) {
+        notFound();
+    }
+    const messages = await getMessages();
+
     return (
         <html
-            lang="en"
+            lang={locale}
             className={cn("h-full antialiased", "font-sans", geist.variable)}
             suppressHydrationWarning={EnvGuard.isDevelopment}
         >
-        <body className="h-full">
-        <Providers>
-            <Navbar/>
-            {children}
-        </Providers>
+        <body className="h-full" suppressHydrationWarning={EnvGuard.isDevelopment}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+            <Providers>
+                <Navbar/>
+                <main>
+                    {children}
+                </main>
+            </Providers>
+        </NextIntlClientProvider>
         </body>
         </html>
     );
