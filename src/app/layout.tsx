@@ -4,10 +4,11 @@ import React from "react";
 import {Utils} from "@/util";
 import Providers from "./providers";
 import {EnvGuard} from "@/util/EnvGuard";
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
+import {Geist} from "next/font/google";
+import {cn} from "@/lib/utils";
+import Navbar from "@/components/Navbar/Navbar";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({subsets: ['latin'], variable: '--font-sans'});
 
 export const metadata: Metadata = {
     title: "Scriptium",
@@ -39,6 +40,7 @@ export default function RootLayout({
         >
         <body className="h-full">
         <Providers>
+            <Navbar/>
             {children}
         </Providers>
         </body>

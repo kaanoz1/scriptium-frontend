@@ -1,0 +1,162 @@
+"use client"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import {LuSettings2} from "react-icons/lu";
+import React from "react";
+import {Separator} from "@/components/ui/separator";
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
+import {Field, FieldContent, FieldDescription, FieldLabel, FieldTitle} from "@/components/ui/field";
+import {SearchAlgorithm} from "@/components/Navbar/classes/SearchAlgorithm";
+import {TranslationSearchAlgorithm} from "@/components/Navbar/classes/TranslationSearchAlgorithm";
+import {RootSearchAlgorithm} from "@/components/Navbar/classes/RootSearchAlgorithm";
+import {Switch} from "@/components/ui/switch";
+import {observer} from "mobx-react-lite";
+
+type Props = {
+    selectedSearchAlgorithm: SearchAlgorithm;
+    setSelectedSearchAlgorithm: (searchAlgorithm: SearchAlgorithm) => void;
+}
+
+const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, setSelectedSearchAlgorithm}) => {
+
+    const popOverRef = React.useRef<HTMLDivElement | null>(null);
+
+    return <Popover>
+        <PopoverTrigger>
+            <LuSettings2 size={18}/>
+        </PopoverTrigger>
+        <PopoverContent
+            className="transition-all duration-300 ease-in-out p-4"
+            ref={popOverRef}
+            style={{width: selectedSearchAlgorithm instanceof TranslationSearchAlgorithm ? "1024px" : "350px"}}
+        >
+            <div className="flex flex-row items-stretch">
+                <div className="flex-1 min-w-70">
+                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4">Algorithm</h4>
+                    <RadioGroup
+                        defaultValue={selectedSearchAlgorithm.key}
+                        className="space-y-3"
+                        onValueChange={e => {
+                            const popOverElement = popOverRef.current;
+                            if (!popOverElement) return;
+
+                            switch (e) {
+                                case TranslationSearchAlgorithm.getInstance().key:
+                                    setSelectedSearchAlgorithm(TranslationSearchAlgorithm.getInstance());
+                                    popOverElement.style.width = "1024px";
+                                    break;
+                                case RootSearchAlgorithm.getInstance().key:
+                                    setSelectedSearchAlgorithm(RootSearchAlgorithm.getInstance());
+                                    popOverElement.style.width = "350px";
+                                    break;
+                            }
+                        }}
+                    >
+                        <FieldLabel htmlFor={TranslationSearchAlgorithm.getInstance().key}
+                                    className="cursor-pointer block">
+                            <Field orientation="horizontal" className="flex gap-2 items-center!">
+                                <FieldContent>
+                                    <FieldTitle className="text-[13px] font-semibold">Translation Search</FieldTitle>
+                                    <FieldDescription className="text-xs leading-tight text-muted-foreground">
+                                        Find the best translation match for your query.
+                                    </FieldDescription>
+                                </FieldContent>
+                                <RadioGroupItem value={TranslationSearchAlgorithm.getInstance().key}
+                                                id={TranslationSearchAlgorithm.getInstance().key}/>
+                            </Field>
+                        </FieldLabel>
+
+                        <FieldLabel htmlFor={RootSearchAlgorithm.getInstance().key} className="cursor-pointer block">
+                            <Field orientation="horizontal" className="flex gap-2 items-center!">
+                                <FieldContent>
+                                    <FieldTitle className="text-[13px] font-semibold">Root Search</FieldTitle>
+                                    <FieldDescription className="text-xs leading-tight text-muted-foreground">
+                                        Strives to find linguistic roots.
+                                    </FieldDescription>
+                                </FieldContent>
+                                <RadioGroupItem value={RootSearchAlgorithm.getInstance().key}
+                                                id={RootSearchAlgorithm.getInstance().key}/>
+                            </Field>
+                        </FieldLabel>
+                    </RadioGroup>
+                </div>
+
+                {selectedSearchAlgorithm instanceof TranslationSearchAlgorithm && (
+                    <>
+                        <Separator orientation="vertical" className="mx-5 bg-border h-auto"/>
+
+                        <div className="flex-1 min-w-60 space-y-4">
+                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Methodology</h4>
+                            <RadioGroup defaultValue="match" className="space-y-3">
+                                <FieldLabel className="cursor-pointer block">
+                                    <Field orientation="horizontal" className="flex gap-2 items-center!">
+                                        <FieldContent>
+                                            <FieldTitle className="text-[13px] font-semibold">Match Search</FieldTitle>
+                                            <FieldDescription className="text-xs leading-tight text-muted-foreground">Exact
+                                                keyword matching.</FieldDescription>
+                                        </FieldContent>
+                                        <RadioGroupItem value="match"/>
+                                    </Field>
+                                </FieldLabel>
+                                <FieldLabel className="cursor-pointer block">
+                                    <Field orientation="horizontal" className="flex gap-2 items-center!">
+                                        <FieldContent>
+                                            <FieldTitle className="text-[13px] font-semibold">Semantic
+                                                Search</FieldTitle>
+                                            <FieldDescription className="text-xs leading-tight text-muted-foreground">Context-aware
+                                                search.</FieldDescription>
+                                        </FieldContent>
+                                        <RadioGroupItem value="semantic"/>
+                                    </Field>
+                                </FieldLabel>
+                            </RadioGroup>
+                        </div>
+
+                        <Separator orientation="vertical" className="mx-5 bg-border h-auto"/>
+
+                        <div className="flex-1 w-full space-y-4">
+                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Result
+                                Configs</h4>
+                            <div className="space-y-3 pt-1 h-full">
+
+                                <div
+                                    className="flex items-center justify-between gap-3 cursor-pointer select-none rounded-sm transition-colors hover:bg-accent/50 p-3 group"
+                                    onClick={() => selectedSearchAlgorithm.setEmphasize(!selectedSearchAlgorithm.emphasize)}
+                                >
+                                    <div className="space-y-0.5">
+                                        <label className="text-[13px] font-semibold block cursor-pointer">Emphasize
+                                            matches</label>
+                                        <p className="text-xs text-muted-foreground leading-tight">Bold matching
+                                            parts.</p>
+                                    </div>
+                                    <Switch checked={selectedSearchAlgorithm.emphasize}
+                                            className="scale-75 origin-right pointer-events-none"/>
+                                </div>
+
+                                <div
+                                    className="flex items-center justify-between gap-3 cursor-pointer select-none rounded-sm transition-colors hover:bg-accent/50 p-3 group"
+                                    onClick={() => selectedSearchAlgorithm.setFilterSameVerse(!selectedSearchAlgorithm.filterSameVerse)}
+                                >
+                                    <div className="space-y-0.5">
+                                        <label className="text-[13px] font-semibold block cursor-pointer">Filter
+                                            duplicates</label>
+                                        <p className="text-xs text-muted-foreground leading-tight">Hide redundant
+                                            verses.</p>
+                                    </div>
+                                    <Switch checked={selectedSearchAlgorithm.filterSameVerse}
+                                            className="scale-75 origin-right pointer-events-none"/>
+                                </div>
+
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
+        </PopoverContent>
+    </Popover>
+})
+
+export default SearchBarSettings;
