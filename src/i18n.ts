@@ -1,6 +1,6 @@
 import { getRequestConfig } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { SUPPORTED_LOCALES } from "@/configuration/Locale/SupportedLocales/_index";
+import { SUPPORTED_LOCALES } from "@/locale/SupportedLocales/_index";
 
 export default getRequestConfig(async ({ requestLocale }) => {
     const locale = await requestLocale;

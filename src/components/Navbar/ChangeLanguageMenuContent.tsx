@@ -1,4 +1,4 @@
-import {SUPPORTED_LOCAL_KEYS, SUPPORTED_LOCALES} from "@/configuration/Locale/SupportedLocales/_index";
+import {SUPPORTED_LOCAL_KEYS, SUPPORTED_LOCALES} from "@/locale/SupportedLocales/_index";
 import {FiCheck} from "react-icons/fi";
 import {useTranslations} from "next-intl";
 import {useLocale} from "use-intl";

@@ -1,5 +1,4 @@
 import { TChapterComplete } from "@/dto/Islam/Quran/Chapter/Complete";
-import { TMeaningPlain } from "@/dto/Shared/Meaning/Plain";
 import { ChapterPlain } from "./Plain";
 import {MeaningPlain} from "@/classes/Shared/Meaning/Plain";
 
@@ -15,7 +14,7 @@ export class ChapterComplete extends ChapterPlain {
         return new ChapterComplete(data);
     }
 
-    get meanings(): ReadonlyArray<TMeaningPlain> {
+    get meanings() {
         return this._meanings;
     }
 }

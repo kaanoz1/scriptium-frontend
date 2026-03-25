@@ -20,11 +20,11 @@ export class LanguagePlain {
     }
 
     public get nameEnglish() {
-        return this._name;
+        return this._nameEnglish;
     }
 
     public get code() {
-        return this._name;
+        return this._code;
     }
 
 }

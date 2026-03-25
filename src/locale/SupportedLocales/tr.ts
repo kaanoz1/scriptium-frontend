@@ -1,4 +1,4 @@
-import { SystemLanguage } from "@/configuration/Locale/SystemLanguage";
+import {SystemLanguage} from "@/locale/SystemLanguage";
 
 export const tr: SystemLanguage = {
     Navbar: {
@@ -75,7 +75,61 @@ export const tr: SystemLanguage = {
             }
         }
     },
-    Tooltip: {Platform: {NotActive: "Henüz aktif değil"}}
+    Footer: {
+        AllRightsReserved: "Tüm hakları saklıdır."
+    },
+    Tooltip: {
+        Platform: {NotActive: "Henüz aktif değil."},
+
+    },
+    Pages: {
+        Islam: {
+            Quran: {
+                Components: {
+                    Header: {
+                        Header: "Sureler",
+                        Description: "Bir sure seçin."
+                    },
+                    ChapterCard: {
+                        Verses: "ayet",
+                    }
+                }
+            }
+        }
+    },
+    Terms: {
+        General: {
+            HomePage: "Ana Sayfa"
+        },
+        Islam: {
+            this: "İslam",
+            Quran: {
+                this: "Kur'an",
+            }
+        }
+    },
+    Util: {
+        Components: {
+            Error: {
+                NotFound: {
+                    Title: "Bulunamadı",
+                    DefaultDescription: "Aradığınız yazıt veya kayıt kütüphanemizde mevcut değil."
+                },
+                RateLimit: {
+                    Title: "Hop, biraz yavaşla!",
+                    DefaultDescription: "Çok hızlı istek gönderiyorsunuz. Lütfen tekrar denemeden önce bir süre bekleyin."
+                },
+                ServerError: {
+                    Title: "Sunucu Hatası",
+                    DefaultDescription: "Bizim tarafımızda bir sorun oluştu. Katiplerimiz bilgilendirildi ve bir çözüm üzerinde çalışıyorlar.",
+                },
+                UnknownError: {
+                    Title: "Bilinmeyen Bir Hata Oluştu",
+                    DefaultDescription: "Beklenmedik bir anomali isteğinizi kesintiye uğrattı. Lütfen sayfayı yenilemeyi veya geri dönmeyi deneyin."
+                }
+            }
+        }
+    }
 } as const;
 
 export default tr;

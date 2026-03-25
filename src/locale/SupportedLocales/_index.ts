@@ -1,6 +1,6 @@
-import trTranslations from "@/configuration/Locale/SupportedLocales/tr";
-import enTranslation from "@/configuration/Locale/SupportedLocales/en";
-import {SystemLanguage} from "@/configuration/Locale/SystemLanguage";
+import trTranslations from "@/locale/SupportedLocales/tr";
+import enTranslation from "@/locale/SupportedLocales/en";
+import {SystemLanguage} from "@/locale/SystemLanguage";
 
 export type TLocaleInformation = {
     nameEnglish: string;

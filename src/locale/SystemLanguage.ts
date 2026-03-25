@@ -84,10 +84,65 @@ export type SystemLanguage = {
             }
         }
     },
+    Footer: {
+        AllRightsReserved: string;
+    }
     Tooltip: {
         Platform: {
             NotActive: string;
         }
+    },
+    Pages:
+        {
+            Islam: {
+
+                Quran: {
+                    Components: {
+                        Header: {
+                            Header: string;
+                            Description: string;
+                        }
+                        ChapterCard: {
+                            Verses: string;
+                        }
+                    }
+                }
+            }
+        },
+    Terms: {
+        General: {
+            HomePage: string;
+        }
+        Islam: {
+            this: string;
+            Quran: {
+                this: string;
+            }
+        }
+    },
+    Util:{
+        Components: {
+            Error: {
+                NotFound: {
+                    Title: string;
+                    DefaultDescription: string;
+                }
+                RateLimit: {
+                    Title: string;
+                    DefaultDescription: string;
+                },
+                ServerError: {
+                    Title: string;
+                    DefaultDescription: string;
+                },
+                UnknownError: {
+                    Title: string;
+                    DefaultDescription: string;
+                }
+
+            }
+        }
     }
+
 
 };

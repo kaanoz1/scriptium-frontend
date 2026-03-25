@@ -1,4 +1,5 @@
 import {syne} from "@/fonts";
+import React from "react";
 type Props ={
     className?: string;
 }

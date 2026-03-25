@@ -6,7 +6,6 @@ import Image from "next/image";
 import {usePathname} from "@/navigation";
 import {useTranslations} from "next-intl";
 import {Utils} from "@/util";
-import ScriptiumText from "@/components/Navbar/ScriptiumText";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
 import {FaXTwitter} from "react-icons/fa6";
@@ -20,11 +19,13 @@ import {
 import {LuGithub} from "react-icons/lu";
 
 const Footer = () => {
-    const t = useTranslations("Tooltip.Platform");
+    const tt = useTranslations("Tooltip.Platform");
     const currentYear = new Date().getFullYear();
     const pathname = usePathname();
 
     const isHomePage = pathname === "/" || pathname === "/en" || pathname === "/tr";
+
+    const t = useTranslations("Footer")
 
     return (
         <footer className="w-full border-t border-border/40 bg-background/95 mt-auto flex justify-center items-center">
@@ -32,32 +33,27 @@ const Footer = () => {
                 className="container mx-auto px-4 md:px-8 lg:px-16 py-6 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="flex flex-col md:flex-row items-center gap-4">
                     {!isHomePage && (
-                        <Link href="/" className="flex items-center gap-2 group">
-
-                            <div className="relative w-6 h-6 shrink-0">
+                        <Link href="/en" className="flex items-center gap-2 group">
                                 <Image
                                     src={Utils.AssetManager.ScriptiumIconLight}
                                     alt="Scriptium Logo"
                                     width={24}
                                     height={24}
-                                    className="dark:hidden w-auto h-auto object-contain"
+                                    className="dark:hidden object-contain"
                                 />
                                 <Image
                                     src={Utils.AssetManager.ScriptiumIconDark}
                                     alt="Scriptium Logo"
                                     width={24}
                                     height={24}
-                                    className="hidden dark:block w-auto h-auto object-contain"
+                                    className="hidden dark:block  object-contain"
                                 />
-                            </div>
-
-                            <ScriptiumText className="transition-opacity group-hover:opacity-80 h-4 w-auto"/>
 
                         </Link>
                     )}
 
                     <p className="text-sm text-muted-foreground font-medium">
-                        © {currentYear} Scriptium. All rights reserved.
+                        © {currentYear} Scriptium. {t("AllRightsReserved")}
                     </p>
                 </div>
 
@@ -106,7 +102,7 @@ const Footer = () => {
                             </span>
                         </TooltipTrigger>
                         <TooltipContent side="top">
-                            <p className="text-xs font-semibold">{t('NotActive')}</p>
+                            <p className="text-xs font-semibold">{tt('NotActive')}</p>
                         </TooltipContent>
                     </Tooltip>
                 </div>

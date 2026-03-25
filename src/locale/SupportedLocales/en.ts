@@ -1,4 +1,4 @@
-import {SystemLanguage} from "@/configuration/Locale/SystemLanguage";
+import {SystemLanguage} from "@/locale/SystemLanguage";
 
 export const en: SystemLanguage = {
     Navbar: {
@@ -75,7 +75,62 @@ export const en: SystemLanguage = {
             }
         }
     },
-    Tooltip: {Platform: {NotActive: "Not active yet"}}
+    Footer: {
+        AllRightsReserved: "All rights reserved.",
+    },
+    Tooltip: {
+        Platform: {
+            NotActive: "Not active yet."
+        }
+    },
+    Pages: {
+        Islam: {
+            Quran: {
+                Components: {
+                    Header: {
+                        Header: "Al-Qur'an Chapters",
+                        Description: "Select a Surah below to read."
+                    },
+                    ChapterCard: {
+                        Verses: "Verses"
+                    }
+                }
+            }
+        }
+    },
+    Terms: {
+        General: {
+            HomePage: "Home",
+        },
+        Islam: {
+            this: "Islam",
+            Quran: {
+                this: "Qur'an"
+            }
+        }
+    },
+    Util: {
+        Components: {
+            Error: {
+                NotFound: {
+                    Title: "Not Found",
+                    DefaultDescription: "The manuscript or record you are looking for does not exist in our library."
+                },
+                RateLimit: {
+                    Title: "Whoa, slow down!",
+                    DefaultDescription: "You are making requests too quickly. Please wait a moment before trying again."
+                },
+                ServerError: {
+                    Title: "Internal Server Error",
+                    DefaultDescription: "Something went wrong on our end. Our scribes have been notified and are working on a fix.",
+                },
+                UnknownError: {
+                    Title: "An Unknown Error Occurred",
+                    DefaultDescription: "An unexpected anomaly disrupted your request. Please try refreshing the page or navigating back."
+                }
+            }
+        }
+    }
 } as const;
 
 export default en;
