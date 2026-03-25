@@ -11,6 +11,7 @@ import {NextIntlClientProvider} from 'next-intl';
 import {getMessages} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import {SUPPORTED_LOCALES} from "@/configuration/Locale/SupportedLocales/_index";
+import Footer from "@/components/Footer/Footer";
 
 const geist = Geist({subsets: ['latin'], variable: '--font-sans'});
 
@@ -48,16 +49,17 @@ export default async function RootLayout({
     return (
         <html
             lang={locale}
-            className={cn("h-full antialiased", "font-sans", geist.variable)}
+            className={cn("h-full antialiased", "font-sans", geist.variable, "m-0 p-0")}
             suppressHydrationWarning={EnvGuard.isDevelopment}
         >
-        <body className="h-full" suppressHydrationWarning={EnvGuard.isDevelopment}>
+        <body className="h-full m-0 p-0" suppressHydrationWarning={EnvGuard.isDevelopment}>
         <NextIntlClientProvider locale={locale} messages={messages}>
             <Providers>
                 <Navbar/>
                 <main>
                     {children}
                 </main>
+                <Footer/>
             </Providers>
         </NextIntlClientProvider>
         </body>

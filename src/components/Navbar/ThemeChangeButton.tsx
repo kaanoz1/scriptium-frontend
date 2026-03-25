@@ -4,10 +4,9 @@ import * as React from "react"
 import {Moon, Sun} from "lucide-react"
 import {AnimatePresence, motion} from "framer-motion"
 import {Theme, useTheme} from "@/hooks/useTheme";
-import { cn } from "@/lib/utils"; // 1. Import your cn utility
+import { cn } from "@/lib/utils";
 
 const ThemeChangeButton = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
-    // 2. Extract className and onClick from props
     ({ className, onClick, ...props }, ref) => {
         const [theme, setTheme] = useTheme();
 
@@ -15,14 +14,12 @@ const ThemeChangeButton = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAt
             <button
                 ref={ref}
                 {...props}
-                // 3. Merge the incoming classes from the Navbar with the base button classes
                 className={cn(
                     "relative flex items-center justify-center outline-none cursor-pointer transition-colors",
                     className
                 )}
                 onClick={(e) => {
                     setTheme(theme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT);
-                    // Ensure any parent onClick handlers still fire
                     if (onClick) onClick(e);
                 }}
             >

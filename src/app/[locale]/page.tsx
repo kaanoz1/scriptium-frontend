@@ -1,12 +1,11 @@
 import {NextPage} from "next";
 
 const Page: NextPage = () => {
-
-
-    return <div className="h-screen m-0 p-0 overflow-hidden">
-        <p>
-            Hello
-        </p>
-    </div>
+    return (
+        <div className="min-h-[calc(100vh-147px)] px-8">
+            <p>Hello</p>
+        </div>
+    )
 }
+
 export default Page;

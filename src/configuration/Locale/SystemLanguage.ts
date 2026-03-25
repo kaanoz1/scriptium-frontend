@@ -83,6 +83,11 @@ export type SystemLanguage = {
                 }
             }
         }
+    },
+    Tooltip: {
+        Platform: {
+            NotActive: string;
+        }
     }
 
 };

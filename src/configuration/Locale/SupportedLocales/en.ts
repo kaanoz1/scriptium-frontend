@@ -74,7 +74,8 @@ export const en: SystemLanguage = {
                 }
             }
         }
-    }
+    },
+    Tooltip: {Platform: {NotActive: "Not active yet"}}
 } as const;
 
 export default en;

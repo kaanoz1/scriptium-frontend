@@ -74,7 +74,8 @@ export const tr: SystemLanguage = {
                 }
             }
         }
-    }
+    },
+    Tooltip: {Platform: {NotActive: "Henüz aktif değil"}}
 } as const;
 
 export default tr;
