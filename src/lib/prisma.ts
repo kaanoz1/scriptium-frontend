@@ -2,18 +2,17 @@ import 'server-only';
 import {PrismaClient} from '@prisma/client'
 import {PrismaBetterSqlite3} from '@prisma/adapter-better-sqlite3'
 import {EnvGuard} from "@/util/EnvGuard";
-import path from "node:path";
 
 const prismaClientSingleton = () => {
 
-    const dbPath = path.resolve(process.cwd(), EnvGuard.DatabasePath)
+    const dbPath = EnvGuard.DatabaseUrl.replace('file:', '');
 
 
     const adapter = new PrismaBetterSqlite3({
         url: dbPath
     })
 
-    return new PrismaClient({ adapter })
+    return new PrismaClient({adapter})
 }
 
 declare const globalThis: {
