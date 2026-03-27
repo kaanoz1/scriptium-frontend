@@ -1,5 +1,5 @@
-import { TChapterComplete } from "@/dto/Islam/Quran/Chapter/Complete";
-import { ChapterPlain } from "./Plain";
+import {TChapterComplete} from "@/dto/Islam/Quran/Chapter/Complete";
+import {ChapterPlain} from "./Plain";
 import {MeaningPlain} from "@/classes/Shared/Meaning/Plain";
 
 export class ChapterComplete extends ChapterPlain {
