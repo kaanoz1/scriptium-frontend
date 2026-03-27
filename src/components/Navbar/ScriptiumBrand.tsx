@@ -2,10 +2,10 @@
 
 import React from "react";
 import Image from "next/image";
-import {Utils} from "@/util";
 import {usePathname} from "next/navigation";
 import ScriptiumText from "@/components/Navbar/ScriptiumText";
 import Link from "next/link";
+import {ClientUtils} from "@/util/ClientUtils";
 
 type Props = {
     showText?: boolean;
@@ -21,7 +21,7 @@ const ScriptiumBrand: React.FC<Props> = ({showText = true}) => {
             <div className="relative w-12 h-12 shrink-0">
 
                 <Image
-                    src={Utils.AssetManager.ScriptiumIconLight}
+                    src={ClientUtils.AssetManager.ScriptiumIconLight}
                     alt="Scriptium Logo"
                     width={48}
                     height={48}
@@ -29,7 +29,7 @@ const ScriptiumBrand: React.FC<Props> = ({showText = true}) => {
                 />
 
                 <Image
-                    src={Utils.AssetManager.ScriptiumIconDark}
+                    src={ClientUtils.AssetManager.ScriptiumIconDark}
                     alt="Scriptium Logo"
                     width={48}
                     height={48}

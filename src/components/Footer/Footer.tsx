@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {usePathname} from "@/navigation";
 import {useTranslations} from "next-intl";
-import {Utils} from "@/util";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
 import {FaXTwitter} from "react-icons/fa6";
@@ -17,6 +16,7 @@ import {
     FaPaypal
 } from "react-icons/fa";
 import {LuGithub} from "react-icons/lu";
+import {ClientUtils} from "@/util/ClientUtils";
 
 const Footer = () => {
     const tt = useTranslations("Tooltip.Platform");
@@ -35,14 +35,14 @@ const Footer = () => {
                     {!isHomePage && (
                         <Link href="/en" className="flex items-center gap-2 group">
                                 <Image
-                                    src={Utils.AssetManager.ScriptiumIconLight}
+                                    src={ClientUtils.AssetManager.ScriptiumIconLight}
                                     alt="Scriptium Logo"
                                     width={24}
                                     height={24}
                                     className="dark:hidden object-contain"
                                 />
                                 <Image
-                                    src={Utils.AssetManager.ScriptiumIconDark}
+                                    src={ClientUtils.AssetManager.ScriptiumIconDark}
                                     alt="Scriptium Logo"
                                     width={24}
                                     height={24}

@@ -94,6 +94,88 @@ export const en: SystemLanguage = {
                     ChapterCard: {
                         Verses: "Verses"
                     }
+                },
+                Chapter: {
+                    Components: {
+                        Header: {
+                            Header: "Surah Details",
+                            Description: "Explore the verses, translations, and transliterations of this chapter."
+                        },
+                        TranslationIndicator: {
+                            Translations: "Translations"
+                        },
+                        Settings: {
+                            Title: "Reading Settings",
+                            Description: "Customize your reading experience.",
+                            FontFamily: "Arabic Font Family",
+                            FontSize: "Arabic Font Size",
+                            Min: "Min",
+                            Max: "Max",
+                            Done: "Done"
+                        },
+                        Translations: {
+                            Title: "Translations",
+                            Description: "Select the translations you want to display alongside the Arabic text.",
+                            Done: "Done"
+                        },
+                        Share: {
+                            Title: "Share Surah",
+                            Description: "Share this chapter with others.",
+                            Copy: "Copy",
+                            Close: "Close"
+                        },
+                        VerseContainer: {
+                            VerseContainerHeader: {
+                                UtilToolButtons: {
+                                    AudioPlayButton: {
+                                        NotActiveYet: "Audio playback is not available yet."
+                                    },
+                                    NextChapterButton: {
+                                        NoNextChapter: "You are at the last chapter."
+                                    },
+                                    PreviousChapterButton: {
+                                        NoPreviousChapter: "You are at the first chapter."
+                                    },
+                                    ShareButton: {
+                                        Title: "Share",
+                                        Description: "Share the text below via social media or copy it to your clipboard.",
+                                        Copy: "Copy",
+                                        Close: "Close",
+                                        CopySuccessful: "Text copied to clipboard!",
+                                        CopyFailed: "Failed to copy text. Please try again."
+                                    },
+                                    QuranTranslationChangeButton: {
+                                        Title: "Translations",
+                                        Description: "Select the translations you would like to display alongside the Arabic text.",
+                                        Done: "Done"
+                                    },
+                                    QuranConfigurationButton: {
+                                        Title: "Reading Settings",
+                                        Description: "Customize the appearance and content of the Quran view.",
+                                        FontFamily: "Arabic Font Family",
+                                        FontSize: "Arabic Font Size",
+                                        Disclaimer: "Variation names and their text structures are strictly provided and categorized by our",
+                                        DataProvider: "Data Provider",
+                                        Done: "Done",
+                                        ViewSettings: "View Options",
+                                        ShowArabicText: "Show Arabic Text",
+                                        ShowArabicTextDescription: "Display the original Arabic verses.",
+                                        ShowTranslation: "Show Translation",
+                                        ShowTranslationDescription: "Display the selected translations.",
+                                        ShowTransliteration: "Show Transliteration",
+                                        ShowTransliterationDescription: "Display Latin pronunciation of the Arabic text."
+                                    }
+                                }
+                            },
+                            VerseBox: {
+                                NoTransliterationAvailable: "No transliteration available for this verse.",
+                                VerseBoxTranslation: {
+                                    NoProvidedTranslation: "No translation available for the selected source."
+                                }
+                            }
+                        },
+
+                    }
                 }
             }
         }
@@ -105,7 +187,10 @@ export const en: SystemLanguage = {
         Islam: {
             this: "Islam",
             Quran: {
-                this: "Qur'an"
+                this: "Qur'an",
+                Chapter: {
+                    this: "Chapter"
+                }
             }
         }
     },
@@ -122,7 +207,7 @@ export const en: SystemLanguage = {
                 },
                 ServerError: {
                     Title: "Internal Server Error",
-                    DefaultDescription: "Something went wrong on our end. Our scribes have been notified and are working on a fix.",
+                    DefaultDescription: "Something went wrong on our end. Our scribes have been notified and are working on a fix."
                 },
                 UnknownError: {
                     Title: "An Unknown Error Occurred",

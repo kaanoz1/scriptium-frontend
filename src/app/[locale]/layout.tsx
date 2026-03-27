@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
 import "./globals.css";
 import React from "react";
-import {Utils} from "@/util";
+
 import Providers from "./providers";
 import {EnvGuard} from "@/util/EnvGuard";
 import {Geist} from "next/font/google";
@@ -12,6 +12,7 @@ import {getMessages} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import {SUPPORTED_LOCALES} from "@/locale/SupportedLocales/_index";
 import Footer from "@/components/Footer/Footer";
+import {ClientUtils} from "@/util/ClientUtils";
 
 const geist = Geist({subsets: ['latin'], variable: '--font-sans'});
 
@@ -21,12 +22,12 @@ export const metadata: Metadata = {
     icons: [
         {
             rel: 'icon',
-            url: Utils.AssetManager.ScriptiumIconDark,
+            url: ClientUtils.AssetManager.ScriptiumIconDark,
             media: '(prefers-color-scheme: light)',
         },
         {
             rel: 'icon',
-            url: Utils.AssetManager.ScriptiumIconLight,
+            url: ClientUtils.AssetManager.ScriptiumIconLight,
             media: '(prefers-color-scheme: dark)',
         },
     ],
@@ -56,7 +57,7 @@ export default async function RootLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
             <Providers>
                 <Navbar/>
-                    {children}
+                {children}
                 <Footer/>
             </Providers>
         </NextIntlClientProvider>

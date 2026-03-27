@@ -1,0 +1,1 @@
+export type TAuthorPlain = { name: string, url: string | null, description: string | null }

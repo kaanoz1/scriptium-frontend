@@ -1,0 +1,15 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Sitemaps {
+  id        Int      @id @default(autoincrement())
+  url       String   @unique
+  lastMod   DateTime @default(now())
+
+  @@map("Sitemaps")
+}

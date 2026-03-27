@@ -95,7 +95,6 @@ export type SystemLanguage = {
     Pages:
         {
             Islam: {
-
                 Quran: {
                     Components: {
                         Header: {
@@ -104,6 +103,87 @@ export type SystemLanguage = {
                         }
                         ChapterCard: {
                             Verses: string;
+                        }
+                    },
+                    Chapter: {
+                        Components: {
+                            Header: {
+                                Header: string;
+                                Description: string;
+                            },
+                            TranslationIndicator: {
+                                Translations: string;
+                            },
+                            Settings: {
+                                Title: string;
+                                Description: string;
+                                FontFamily: string;
+                                FontSize: string;
+                                Min: string;
+                                Max: string;
+                                Done: string;
+                            },
+                            Translations: {
+                                Title: string;
+                                Description: string;
+                                Done: string;
+                            },
+                            Share: {
+                                Title: string;
+                                Description: string;
+                                Copy: string;
+                                Close: string;
+                            },
+                            VerseContainer: {
+                                VerseContainerHeader: {
+                                    UtilToolButtons: {
+                                        AudioPlayButton: {
+                                            NotActiveYet: string;
+                                        },
+                                        NextChapterButton: {
+                                            NoNextChapter: string;
+                                        },
+                                        PreviousChapterButton: {
+                                            NoPreviousChapter: string;
+                                        },
+                                        ShareButton: {
+                                            Title: string,
+                                            Description: string,
+                                            Copy: string,
+                                            Close: string,
+                                            CopySuccessful: string;
+                                            CopyFailed: string;
+                                        },
+                                        QuranTranslationChangeButton: {
+                                            Title: string,
+                                            Description: string,
+                                            Done: string,
+                                        },
+                                        QuranConfigurationButton: {
+                                            Title: string,
+                                            Description: string,
+                                            FontFamily: string,
+                                            FontSize: string,
+                                            Disclaimer: string,
+                                            DataProvider: string,
+                                            Done: string,
+                                            ViewSettings: string;
+                                            ShowArabicText: string;
+                                            ShowArabicTextDescription: string;
+                                            ShowTranslation: string;
+                                            ShowTranslationDescription: string;
+                                            ShowTransliteration: string;
+                                            ShowTransliterationDescription: string;
+                                        }
+                                    }
+                                },
+                                VerseBox: {
+                                    NoTransliterationAvailable: string;
+                                    VerseBoxTranslation: {
+                                        NoProvidedTranslation: string;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -117,10 +197,13 @@ export type SystemLanguage = {
             this: string;
             Quran: {
                 this: string;
+                Chapter: {
+                    this: string;
+                }
             }
         }
     },
-    Util:{
+    Util: {
         Components: {
             Error: {
                 NotFound: {
@@ -143,6 +226,4 @@ export type SystemLanguage = {
             }
         }
     }
-
-
 };

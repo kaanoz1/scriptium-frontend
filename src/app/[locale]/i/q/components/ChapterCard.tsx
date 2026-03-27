@@ -8,17 +8,21 @@ import {ChapterWithVerseCount} from "@/classes/Islam/Quran/Chapter/WithVerseCoun
 import {useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
 import Link from "next/link";
+import {QuranViewPreferences} from "@/configuration/UserPreferences/Islam/Quran/QuranViewPreferences";
+import {observer} from "mobx-react-lite";
 
 type Props = {
     chapter: ChapterWithVerseCount
 }
 
 
-const ChapterCard: React.FC<Props> = ({chapter}) => {
+const ChapterCard: React.FC<Props> = observer(({chapter}) => {
     const locale = useLocale();
 
     const t = useTranslations("Pages.Islam.Quran.Components.ChapterCard");
 
+
+    const selectedFont = QuranViewPreferences.getInstance().selectedArabicFont;
 
     const matchedMeaning = chapter.meanings.find(
         (meaning) => meaning.language.code === locale
@@ -43,7 +47,7 @@ const ChapterCard: React.FC<Props> = ({chapter}) => {
                         </div>
 
                         <div className="text-right">
-                            <h3 className="text-2xl font-bold leading-none tracking-tight">
+                            <h3 className={`text-2xl font-bold leading-none tracking-tight ${selectedFont.className}`}>
                                 {chapter.name}
                             </h3>
                         </div>
@@ -66,7 +70,7 @@ const ChapterCard: React.FC<Props> = ({chapter}) => {
             </Link>
         </motion.div>
     );
-}
+})
 
 export default ChapterCard;
 

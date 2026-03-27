@@ -4,7 +4,7 @@ export class EnvGuard {
     private static _isProduction: boolean | undefined;
     private static _isDevelopment: boolean | undefined;
 
-    private static requiredKeys: string[] = ["NEXT_PUBLIC_API_URL"];
+    private static requiredKeys: string[] = ["NEXT_PUBLIC_API_URL", "DATABASE_PATH"];
     private static _isChecked: boolean = false;
 
     public static checkEnv(): void {
@@ -48,6 +48,10 @@ export class EnvGuard {
 
     public static get ApiUrl(): string {
         return this.getValue("NEXT_PUBLIC_API_URL");
+    }
+
+    public static get DatabasePath(): string {
+        return this.getValue("DATABASE_PATH");
     }
 
     public static get isProduction(): boolean {

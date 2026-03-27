@@ -79,8 +79,9 @@ export const tr: SystemLanguage = {
         AllRightsReserved: "Tüm hakları saklıdır."
     },
     Tooltip: {
-        Platform: {NotActive: "Henüz aktif değil."},
-
+        Platform: {
+            NotActive: "Henüz aktif değil."
+        }
     },
     Pages: {
         Islam: {
@@ -91,7 +92,88 @@ export const tr: SystemLanguage = {
                         Description: "Bir sure seçin."
                     },
                     ChapterCard: {
-                        Verses: "ayet",
+                        Verses: "Ayet"
+                    }
+                },
+                Chapter: {
+                    Components: {
+                        Header: {
+                            Header: "Sure Detayları",
+                            Description: "Bu surenin ayetlerini, meallerini ve okunuşlarını inceleyin."
+                        },
+                        TranslationIndicator: {
+                            Translations: "Meal"
+                        },
+                        Settings: {
+                            Title: "Okuma Ayarları",
+                            Description: "Okuma deneyiminizi kişiselleştirin.",
+                            FontFamily: "Arapça Yazı Tipi",
+                            FontSize: "Arapça Yazı Boyutu",
+                            Min: "Min",
+                            Max: "Maks",
+                            Done: "Bitti"
+                        },
+                        Translations: {
+                            Title: "Mealler",
+                            Description: "Arapça metnin yanında görüntülemek istediğiniz mealleri seçin.",
+                            Done: "Bitti"
+                        },
+                        Share: {
+                            Title: "Sureyi Paylaş",
+                            Description: "Bu sureyi başkalarıyla paylaşın.",
+                            Copy: "Kopyala",
+                            Close: "Kapat"
+                        },
+                        VerseContainer: {
+                            VerseContainerHeader: {
+                                UtilToolButtons: {
+                                    AudioPlayButton: {
+                                        NotActiveYet: "Sesli dinleme henüz aktif değil."
+                                    },
+                                    NextChapterButton: {
+                                        NoNextChapter: "Son suredesiniz."
+                                    },
+                                    PreviousChapterButton: {
+                                        NoPreviousChapter: "İlk suredesiniz."
+                                    },
+                                    ShareButton: {
+                                        Title: "Paylaş",
+                                        Description: "Aşağıdaki metni sosyal medya aracılığıyla paylaşın veya panoya kopyalayın.",
+                                        Copy: "Kopyala",
+                                        Close: "Kapat",
+                                        CopySuccessful: "Metin panoya kopyalandı!",
+                                        CopyFailed: "Metin kopyalanamadı. Lütfen tekrar deneyin."
+                                    },
+                                    QuranTranslationChangeButton: {
+                                        Title: "Mealler",
+                                        Description: "Arapça metnin yanında görüntülemek istediğiniz mealleri seçin.",
+                                        Done: "Bitti"
+                                    },
+                                    QuranConfigurationButton: {
+                                        Title: "Okuma Ayarları",
+                                        Description: "Kur'an görünümünün tarzını ve içeriğini kişiselleştirin.",
+                                        FontFamily: "Arapça Yazı Tipi",
+                                        FontSize: "Arapça Yazı Boyutu",
+                                        Disclaimer: "Varyasyon isimleri ve metin yapılarının hangi kuruluşlar tarafından sağlandığını incelemek için tıklayın:",
+                                        DataProvider: "Veri Sağlayıcıları",
+                                        Done: "Bitti",
+                                        ViewSettings: "Görünüm Seçenekleri",
+                                        ShowArabicText: "Arapça Metni Göster",
+                                        ShowArabicTextDescription: "Orijinal Arapça ayetleri görüntüler.",
+                                        ShowTranslation: "Meali Göster",
+                                        ShowTranslationDescription: "Seçili mealleri görüntüler.",
+                                        ShowTransliteration: "Transliterasyonu Göster",
+                                        ShowTransliterationDescription: "Arapça metnin Latin harfleriyle okunuşunu görüntüler."
+                                    }
+                                }
+                            },
+                            VerseBox: {
+                                NoTransliterationAvailable: "Bu ayet için okunuş bilgisi mevcut değil.",
+                                VerseBoxTranslation: {
+                                    NoProvidedTranslation: "Seçili kaynak için meal bulunamadı."
+                                }
+                            }
+                        },
                     }
                 }
             }
@@ -105,6 +187,9 @@ export const tr: SystemLanguage = {
             this: "İslam",
             Quran: {
                 this: "Kur'an",
+                Chapter: {
+                    this: "Sure"
+                }
             }
         }
     },
@@ -121,7 +206,7 @@ export const tr: SystemLanguage = {
                 },
                 ServerError: {
                     Title: "Sunucu Hatası",
-                    DefaultDescription: "Bizim tarafımızda bir sorun oluştu. Katiplerimiz bilgilendirildi ve bir çözüm üzerinde çalışıyorlar.",
+                    DefaultDescription: "Bizim tarafımızda bir sorun oluştu. Katiplerimiz bilgilendirildi ve bir çözüm üzerinde çalışıyorlar."
                 },
                 UnknownError: {
                     Title: "Bilinmeyen Bir Hata Oluştu",
