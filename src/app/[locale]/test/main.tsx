@@ -20,7 +20,6 @@ const Main = ({ initialResponse }: MainProps) => {
         <div className="flex flex-col items-center justify-start min-h-screen p-8 transition-colors duration-200 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
             <div className="w-full max-w-5xl space-y-6">
 
-                {/* Header Section */}
                 <header className="flex justify-between items-end border-b border-gray-200 dark:border-gray-800 pb-4">
                     <div className="flex flex-col">
                         <h1 className="text-xl font-mono font-bold text-blue-600 dark:text-blue-400">API_INSPECTOR</h1>

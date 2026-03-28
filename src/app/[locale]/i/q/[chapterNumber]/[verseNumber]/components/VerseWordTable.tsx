@@ -27,7 +27,6 @@ const VerseWordTable: React.FC<Props> = observer(({ words }) => {
     const locale = useLocale();
     const count = words.length;
 
-    // State to track if the table should be sticky and scrollable
     const [isSticky, setIsSticky] = useState(true);
 
     const arabicFont = QuranViewPreferences.getInstance().selectedArabicFont;

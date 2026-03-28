@@ -1,20 +1,27 @@
-import path from "node:path";
-import * as fs from "node:fs";
-import {logger} from "@/lib/Logger";
-import {execSync} from "node:child_process";
+import 'server-only';
+import { logger } from "@/lib/Logger";
 
 export class ServerEnvGuard {
-    public static ensureDatabaseExists(): void {
+    public static async ensureDatabaseExists(): Promise<void> {
+        if (process.env.NEXT_RUNTIME !== 'nodejs' || process.env.NEXT_PHASE === 'phase-production-build')
+            return;
+
+        const path = await import('node:path');
+        const fs = await import('node:fs');
+        const { execSync } = await import('node:child_process');
+
         const rawUrl = process.env.DATABASE_URL;
         if (!rawUrl) return;
+        
         const dbPath = rawUrl.replace('file:', '');
-
+        
         const absoluteDbPath = path.isAbsolute(dbPath)
             ? dbPath
-            : path.resolve(process.cwd(), dbPath);
+            : path.join( process.cwd(), dbPath);
 
         const dir = path.dirname(absoluteDbPath);
-        const schemaPath = path.resolve(process.cwd(), "prisma/schema.prisma");
+        
+        const schemaPath = path.join(process.cwd(), "prisma", "schema.prisma");
 
         try {
             if (!fs.existsSync(dir)) {

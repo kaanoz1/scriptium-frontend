@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default async function Page() {
     if (!EnvGuard.isDevelopment) notFound();
 
-    const data = await BackendApi.VerseController.get(1, 1);
+    const data = await BackendApi.RootController.get("ktb");
 
     return <React.Fragment>
         <Main initialResponse={data}/>
