@@ -3,22 +3,20 @@ import {notFound} from "next/navigation";
 import Main from "@/app/[locale]/test/main";
 import {BackendApi} from "@/tool/Fetchers/BackendApi";
 import {EnvGuard} from "@/util/EnvGuard";
+import React from "react";
+import Navbar from "@/components/Navbar/Navbar";
 
 export const metadata: Metadata = {
-    title: "Test Page | Scriptium",
-    description: "Internal testing page for API responses and model transformations.",
-    robots: {
-        index: false,
-        follow: false,
-    },
+    title: "API Test | Verse",
+    robots: {index: false, follow: false},
 };
 
 export default async function Page() {
-    if (EnvGuard.isProduction)
-        notFound();
+    if (!EnvGuard.isDevelopment) notFound();
 
+    const data = await BackendApi.VerseController.get(1, 1);
 
-    const data = await BackendApi.ChapterController.list();
-
-    return <Main initialResponse={data}/>;
+    return <React.Fragment>
+        <Main initialResponse={data}/>
+    </React.Fragment>;
 }

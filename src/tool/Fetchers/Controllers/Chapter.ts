@@ -6,6 +6,8 @@ import axios from "axios";
 import {ResponseCodes} from "@/util/types/ResponseCodes";
 import {TChapterWithVerseCount} from "@/dto/Islam/Quran/Chapter/WithVerseCount";
 import {TChapterWithVerses} from "@/dto/Islam/Quran/Chapter/WithVerses";
+import {EnvGuard} from "@/util/EnvGuard"
+
 
 export class ChapterController {
     private static _instance: ChapterController | null = null;
@@ -22,7 +24,8 @@ export class ChapterController {
         try {
             const res = await noCredentialsApiClient.get<Response<Array<TChapterWithVerseCount>>>("/api/islam/quranic/chapter/list");
 
-            logger.info("Requested to : " + res.config.url)
+            if (EnvGuard.isDevelopment)
+                logger.info("Requested to : " + res.config.url)
 
             return SerializedResponseConverter.toSerializedResponse(res);
         } catch (e) {
