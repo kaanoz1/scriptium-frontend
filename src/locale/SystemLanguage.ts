@@ -184,6 +184,68 @@ export type SystemLanguage = {
                                     }
                                 }
                             }
+                        },
+                        Verse: {
+                            Components: {
+                                VerseTranslation: {
+                                    Header: string;
+                                    Description: string;
+                                },
+
+                                VerseTranslationTable: {
+                                    NoActiveTranslationsSelected: string;
+                                    Translations: string;
+                                    StickyToggleInfo: string;
+                                }
+                                VerseTransliterations: {
+                                    NoTransliterationAvailable: string;
+                                },
+                                VerseWordTable: {
+                                    Sequence: string;
+                                    Word: string;
+                                    Root: string;
+                                    Words: string;
+                                    StickyToggleInfo: string;
+                                }
+                                UtilToolButtons: {
+                                    NextVerseButton: {
+                                        NoNextVerse: string;
+                                    },
+                                    PreviousVerseButton: {
+                                        NoPreviousVerse: string;
+                                    },
+                                    ShareButton: {
+                                        Title: string,
+                                        Description: string,
+                                        Copy: string,
+                                        Close: string;
+                                    },
+                                    AudioPlayButton: {
+                                        NotActiveYet: string;
+                                    },
+                                    QuranTranslationChangeButton: {
+                                        Title: string,
+                                        Description: string,
+                                        Done: string;
+                                    },
+                                    QuranConfigurationButton: {
+                                        Title: string,
+                                        Description: string,
+                                        FontFamily: string,
+                                        FontSize: string,
+                                        Disclaimer: string,
+                                        DataProvider: string,
+                                        Done: string,
+                                        ViewSettings: string,
+                                        ShowArabicText: string,
+                                        ShowArabicTextDescription: string,
+                                        ShowTranslation: string,
+                                        ShowTranslationDescription: string,
+                                        ShowTransliteration: string,
+                                        ShowTransliterationDescription: string
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -199,8 +261,12 @@ export type SystemLanguage = {
                 this: string;
                 Chapter: {
                     this: string;
+                },
+                Verse: {
+                    this: string;
                 }
-            }
+            },
+
         }
     },
     Util: {

@@ -9,7 +9,7 @@ export type TLocaleInformation = {
     translations: SystemLanguage;
 };
 
-export const SUPPORTED_LOCALES: Record<string, TLocaleInformation> = {
+export const SUPPORTED_LOCALES = {
     en: {
         nameEnglish: "English",
         nameOwn: "English",

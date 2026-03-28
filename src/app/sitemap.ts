@@ -4,7 +4,7 @@ import {MetadataRoute} from 'next'
 import {Sitemaps} from '@prisma/client'
 import {db} from '@/lib/prisma'
 
-export const revalidate = 1 // 1 minute
+export const revalidate = 60 * 60 // 1 hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const allEntries: Sitemaps[] = await db.sitemaps.findMany()
@@ -12,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return allEntries.map((entry) => ({
         url: entry.url,
         lastModified: entry.lastMod,
-        changeFrequency: 'daily' as const,
+        changeFrequency: 'hourly' as const,
         priority: 0.7,
     }))
 }

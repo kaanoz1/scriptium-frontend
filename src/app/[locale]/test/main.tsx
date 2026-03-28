@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import { SerializedResponse, TSerializedResponse } from "@/util/types/SerializedResponse";
 
 interface MainProps {
-    initialResponse: TSerializedResponse<any>;
+    initialResponse: TSerializedResponse<unknown>;
 }
 
 const Main = ({ initialResponse }: MainProps) => {

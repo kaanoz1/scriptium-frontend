@@ -20,10 +20,12 @@ export class VerseController {
 
     public async get(chapterNumber: number, verseNumber: number) {
         try {
-            const res = await noCredentialsApiClient.get<Response<Array<TVerseBoth>>>(`/api/islam/quranic/verse/${chapterNumber}/${verseNumber}`);
+            const res = await noCredentialsApiClient.get<Response<TVerseBoth>>(`/api/islam/quranic/verse/${chapterNumber}/${verseNumber}`);
 
             if (EnvGuard.isDevelopment)
                 logger.info("Requested to : " + res.config.url)
+
+            logger.info(res.data ?? "undefined")
 
             return SerializedResponseConverter.toSerializedResponse(res);
         } catch (e) {

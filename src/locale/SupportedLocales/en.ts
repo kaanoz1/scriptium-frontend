@@ -174,7 +174,67 @@ export const en: SystemLanguage = {
                                 }
                             }
                         },
-
+                    },
+                    Verse: {
+                        Components: {
+                            VerseTranslation: {
+                                Header: "Translations",
+                                Description: "Compare different translations for this verse."
+                            },
+                            VerseTransliterations: {
+                                NoTransliterationAvailable: "No transliteration available for this verse."
+                            },
+                            VerseWordTable: {
+                                Sequence: "Sequence",
+                                Word: "Text",
+                                Root: "Root(s)",
+                                Words: "Word(s)",
+                                StickyToggleInfo: "Enable sticky mode to keep this table visible while scrolling the page."
+                            },
+                            UtilToolButtons: {
+                                NextVerseButton: {
+                                    NoNextVerse: "You are at the last verse."
+                                },
+                                PreviousVerseButton: {
+                                    NoPreviousVerse: "You are at the first verse."
+                                },
+                                ShareButton: {
+                                    Title: "Share Verse",
+                                    Description: "Share the text below via social media or copy it to your clipboard.",
+                                    Copy: "Copy",
+                                    Close: "Done"
+                                },
+                                AudioPlayButton: {
+                                    NotActiveYet: "Audio playback is not available yet."
+                                },
+                                QuranTranslationChangeButton: {
+                                    Title: "Translations",
+                                    Description: "Change the translation of the Quran",
+                                    Done: "Done"
+                                },
+                                QuranConfigurationButton: {
+                                    Title: "Reading Settings",
+                                    Description: "Customize the appearance and content of the Quran view.",
+                                    FontFamily: "Arabic Font Family",
+                                    FontSize: "Arabic Font Size",
+                                    Disclaimer: "Variation names and their text structures are strictly provided and categorized by our",
+                                    DataProvider: "Data Provider",
+                                    Done: "Done",
+                                    ViewSettings: "View Options",
+                                    ShowArabicText: "Show Arabic Text",
+                                    ShowArabicTextDescription: "Display the original Arabic verses.",
+                                    ShowTranslation: "Show Translation",
+                                    ShowTranslationDescription: "Display the selected translations.",
+                                    ShowTransliteration: "Show Transliteration",
+                                    ShowTransliterationDescription: "Display Latin pronunciation of the Arabic text."
+                                }
+                            },
+                            VerseTranslationTable: {
+                                NoActiveTranslationsSelected: "No active translations selected.",
+                                StickyToggleInfo: "Enable sticky mode to keep this table visible while scrolling the page.",
+                                Translations: "Translations"
+                            }
+                        }
                     }
                 }
             }
@@ -190,8 +250,12 @@ export const en: SystemLanguage = {
                 this: "Qur'an",
                 Chapter: {
                     this: "Chapter"
+                },
+                Verse: {
+                    this: "Verse"
                 }
-            }
+            },
+
         }
     },
     Util: {

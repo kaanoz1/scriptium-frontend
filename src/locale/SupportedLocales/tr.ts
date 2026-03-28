@@ -174,6 +174,67 @@ export const tr: SystemLanguage = {
                                 }
                             }
                         },
+                    },
+                    Verse: {
+                        Components: {
+                            VerseTranslation: {
+                                Header: "Mealler",
+                                Description: "Bu ayet için farklı mealleri karşılaştırın."
+                            },
+                            VerseTransliterations: {
+                                NoTransliterationAvailable: "Bu ayet için okunuş bilgisi mevcut değil."
+                            },
+                            VerseWordTable: {
+                                Sequence: "Sıra",
+                                Word: "Kelime",
+                                Root: "Kök",
+                                Words: "Kelimeler",
+                                StickyToggleInfo: "Sayfayı kaydırırken bu tablonun ekranda sabit kalması için bu ayarı açın."
+                            },
+                            UtilToolButtons: {
+                                NextVerseButton: {
+                                    NoNextVerse: "Son ayettesiniz."
+                                },
+                                PreviousVerseButton: {
+                                    NoPreviousVerse: "İlk ayettesiniz."
+                                },
+                                ShareButton: {
+                                    Title: "Ayeti Paylaş",
+                                    Description: "Aşağıdaki metni sosyal medya aracılığıyla paylaşın veya panoya kopyalayın.",
+                                    Copy: "Kopyala",
+                                    Close: "Kapat"
+                                },
+                                AudioPlayButton: {
+                                    NotActiveYet: "Sesli dinleme henüz aktif değil."
+                                },
+                                QuranTranslationChangeButton: {
+                                    Title: "Mealler",
+                                    Description: "Okumak istediğiniz Kuran mealini seçin.",
+                                    Done: "Kapat"
+                                },
+                                QuranConfigurationButton: {
+                                    Title: "Okuma Ayarları",
+                                    Description: "Kur'an görünümünün tarzını ve içeriğini kişiselleştirin.",
+                                    FontFamily: "Arapça Yazı Tipi",
+                                    FontSize: "Arapça Yazı Boyutu",
+                                    Disclaimer: "Varyasyon isimleri ve metin yapılarının hangi kuruluşlar tarafından sağlandığını incelemek için tıklayın:",
+                                    DataProvider: "Veri Sağlayıcıları",
+                                    Done: "Bitti",
+                                    ViewSettings: "Görünüm Seçenekleri",
+                                    ShowArabicText: "Arapça Metni Göster",
+                                    ShowArabicTextDescription: "Orijinal Arapça ayetleri görüntüler.",
+                                    ShowTranslation: "Meali Göster",
+                                    ShowTranslationDescription: "Seçili mealleri görüntüler.",
+                                    ShowTransliteration: "Transliterasyonu Göster",
+                                    ShowTransliterationDescription: "Arapça metnin Latin harfleriyle okunuşunu görüntüler."
+                                }
+                            },
+                            VerseTranslationTable: {
+                                NoActiveTranslationsSelected: "Bir çeviri seçmediniz.",
+                                StickyToggleInfo: "Sayfayı kaydırırken bu tablonun ekranda sabit kalması için bu ayarı açın.",
+                                Translations: "Çeviri"
+                            }
+                        }
                     }
                 }
             }
@@ -189,8 +250,12 @@ export const tr: SystemLanguage = {
                 this: "Kur'an",
                 Chapter: {
                     this: "Sure"
+                },
+                Verse: {
+                    this: "Ayet"
                 }
-            }
+            },
+
         }
     },
     Util: {

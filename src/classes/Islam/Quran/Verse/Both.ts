@@ -18,11 +18,16 @@ export class VerseBoth extends VerseComplete {
         this._chapter = ChapterUpToQuran.fromJson(data.chapter);
     }
 
-    public get words(){
+
+    static fromJson(data: TVerseBoth): VerseBoth {
+        return new VerseBoth(data);
+    }
+
+    public get words() {
         return this._words
     }
 
-    public get chapter(){
+    public get chapter() {
         return this._chapter;
     }
 }
