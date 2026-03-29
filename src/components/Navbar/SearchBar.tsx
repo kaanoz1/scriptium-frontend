@@ -26,14 +26,6 @@ const SearchBar: React.FC<Props> = ({ isCentered = true }) => {
 
     const t = useTranslations('Navbar');
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter" && input.length >= 2) {
-            toast.info("Search started", {
-                description: `Searching for "${input}" using ${selectedSearchAlgorithm.key}...`,
-                duration: 2000,
-            });
-        }
-    };
 
     return (
         <div
@@ -62,7 +54,6 @@ const SearchBar: React.FC<Props> = ({ isCentered = true }) => {
                     onChange={(e) => setInput(e.target.value)}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setTimeout(() => setIsFocused(false), 200)} // Delay to allow clicks on results
-                    onKeyDown={handleKeyDown}
                     type="text"
                     placeholder={t('Placeholder')}
                     className="flex-1 min-w-[320px] bg-transparent px-3 py-2.5 text-base md:text-sm outline-none placeholder:text-muted-foreground"
