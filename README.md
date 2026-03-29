@@ -1,6 +1,6 @@
 # Scriptium Frontend
 
-Scriptium is a platform designed to collect and present theological and philosophical sources.
+[Scriptium](github.com/scriptium-project) is a platform designed to collect and present theological and philosophical sources.
 
 ## Quick Start
 
@@ -17,7 +17,9 @@ To initialize the project, ensure you have Node.js v24+ installed, then run:
 cp .env.example .env && npm install && npx prisma generate && npx prisma db push
 ```
 
-After that you can start the application either by Docker or locally.
+Do not forget to pass necessary environment variables. Check the [.env.example](./.env.example) file.
+
+After that you can start the application either by **Docker** or locally using `npm run dev`
 
 ---
 
