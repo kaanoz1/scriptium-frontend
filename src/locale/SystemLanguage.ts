@@ -247,6 +247,19 @@ export type SystemLanguage = {
                                 }
                             }
                         }
+                    },
+                    Root: {
+                        Messages: {
+                            HighOccurrencesWarningTitle: string;
+                            HighOccurrencesWarningDesc: string
+                        },
+                        Components: {
+                            Header: {
+                                Header: string;
+                                Description: string;
+                                Occurrences: string;
+                            },
+                        }
                     }
                 }
             }
@@ -263,6 +276,9 @@ export type SystemLanguage = {
                     this: string;
                 },
                 Verse: {
+                    this: string;
+                },
+                Root: {
                     this: string;
                 }
             },

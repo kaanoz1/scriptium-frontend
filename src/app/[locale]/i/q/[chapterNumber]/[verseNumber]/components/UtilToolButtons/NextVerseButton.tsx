@@ -23,7 +23,7 @@ const NextVerseButton: React.FC<Props> = ({verse}) => {
     const chapter = verse.chapter;
     const chapterNumber = chapter.sequence;
 
-    const verseLimitOfChapter = ClientUtils.Islam.Quran.VerseCountIndicator[chapterNumber - 1];
+    const verseLimitOfChapter = ClientUtils.Islam.Quran.Verse.CountIndicator[chapterNumber - 1];
 
     const doesNextVerseExists = verseNumber < verseLimitOfChapter;
 

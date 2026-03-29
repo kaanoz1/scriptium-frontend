@@ -236,6 +236,19 @@ export const tr: SystemLanguage = {
                             }
                         }
                     }
+                },
+                Root: {
+                    Components: {
+                        Header: {
+                            Occurrences: "Tekrar",
+                            Header: "Kökler",
+                            Description: ""
+                        }
+                    },
+                    Messages: {
+                        HighOccurrencesWarningTitle: "Çok fazla tekrar",
+                        HighOccurrencesWarningDesc: "Tüm sonuçları gösteriyoruz. Bu, cihazınızın güçünden bağımlı olarak yavaşlamanıza neden olabilir. Bu sorunu optimize etmek için uğraşıyoruz."
+                    }
                 }
             }
         }
@@ -253,6 +266,9 @@ export const tr: SystemLanguage = {
                 },
                 Verse: {
                     this: "Ayet"
+                },
+                Root: {
+                    this: "Kök"
                 }
             },
 

@@ -1,5 +1,3 @@
-// noinspection JSUnusedGlobalSymbols,TypeScriptUMDGlobal
-
 "use client"
 
 import { useMemo } from "react"

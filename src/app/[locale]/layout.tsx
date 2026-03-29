@@ -1,7 +1,6 @@
+import "../globals.css";
 import type {Metadata} from "next";
-import "./globals.css";
 import React from "react";
-
 import Providers from "./providers";
 import {EnvGuard} from "@/util/EnvGuard";
 import {Geist} from "next/font/google";

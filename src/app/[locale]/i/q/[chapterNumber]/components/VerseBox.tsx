@@ -24,10 +24,10 @@ type Props = {
 const VerseBox: React.FC<Props> = observer(({chapter, verse}) => {
     const preferences = QuranViewPreferences.getInstance();
 
-    const pathname = usePathname();
     const locale = useLocale();
 
     const verseNumber = verse.sequence;
+    const chapterNumber = chapter.sequence;
     const transliteration = verse.transliterations.find(t => t.language.code === locale);
 
 
@@ -54,7 +54,7 @@ const VerseBox: React.FC<Props> = observer(({chapter, verse}) => {
                     </Button>
 
                     <Button variant="ghost" size="icon" asChild>
-                        <Link href={`${pathname}/${verseNumber}`}>
+                        <Link href={`/${locale}/i/q/${chapterNumber}/${verseNumber}`}>
                             <LuExternalLink size={16}/>
                         </Link>
                     </Button>

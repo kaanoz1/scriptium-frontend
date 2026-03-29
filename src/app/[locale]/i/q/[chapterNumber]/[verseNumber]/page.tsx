@@ -72,7 +72,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 
     const isChapterValid = (!isNaN(cNum) && Number.isInteger(cNum) && cNum > 0 && cNum < 114);
 
-    const chapterVerseLimit = ClientUtils.Islam.Quran.VerseCountIndicator[cNum - 1]
+    const chapterVerseLimit = ClientUtils.Islam.Quran.Verse.CountIndicator[cNum - 1]
 
     const isVerseValid = (!isNaN(vNum) && Number.isInteger(vNum) && vNum > 0 && vNum <= chapterVerseLimit)
 

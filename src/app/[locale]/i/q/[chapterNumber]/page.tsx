@@ -10,6 +10,7 @@ import NotFoundError from "@/util/components/Error/NotFoundError";
 import Client from "@/app/[locale]/i/q/[chapterNumber]/client";
 
 import {ServerUtils} from "@/util/ServerUtils";
+import {redirect} from "next/navigation";
 
 type Props = {
     params: Promise<{ chapterNumber?: string; locale: string }>;
@@ -61,6 +62,15 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 
 const Page: NextPage<Props> = async ({params}) => {
     const {chapterNumber, locale} = await params;
+
+
+    // For some reason, Nextjs catches param as a root where it is a different page. This is a temporary fix.
+    if (chapterNumber === "root") {
+        console.log(params)
+        redirect(`/${locale}/i/q/root`)
+    }
+
+
     const lang = locale as keyof typeof SUPPORTED_LOCALES;
 
     const chapterNotFoundErrorDescriptions: Record<keyof typeof SUPPORTED_LOCALES, string> = {

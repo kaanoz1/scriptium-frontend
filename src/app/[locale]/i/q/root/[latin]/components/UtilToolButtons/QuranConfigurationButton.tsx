@@ -95,7 +95,6 @@ const QuranConfigurationButton: React.FC = observer(() => {
                                 step={1}
                                 className="w-full"
                             />
-
                         </section>
                     </div>
 
@@ -185,8 +184,6 @@ const QuranConfigurationButton: React.FC = observer(() => {
                                 <Switch checked={viewSettings.shouldTransliterationShown}
                                         className="pointer-events-none"/>
                             </div>
-
-
                         </section>
                     </div>
                 </main>

@@ -236,6 +236,19 @@ export const en: SystemLanguage = {
                             }
                         }
                     }
+                },
+                Root: {
+                    Components: {
+                        Header: {
+                            Occurrences: "Occurrences",
+                            Header: "Roots of Qur'an",
+                            Description: ""
+                        }
+                    },
+                    Messages: {
+                        HighOccurrencesWarningTitle: "High number of occurrences",
+                        HighOccurrencesWarningDesc: "We are showing all results. This may cause freezes depending on your device power. We are actively working to optimize this.",
+                    }
                 }
             }
         }
@@ -253,6 +266,9 @@ export const en: SystemLanguage = {
                 },
                 Verse: {
                     this: "Verse"
+                },
+                Root: {
+                    this: "Root"
                 }
             },
 
