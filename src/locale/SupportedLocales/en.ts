@@ -49,7 +49,7 @@ export const en: SystemLanguage = {
                     }
                 },
                 RootSearch: {
-                    Header: "Root Search",
+                    Header: "Root Search. NOT ACTIVE YET",
                     Description: "Search based on Arabic word roots."
                 }
             }
@@ -84,6 +84,37 @@ export const en: SystemLanguage = {
         }
     },
     Pages: {
+        Home: {
+            HeroSubtitle: "Universal theology library. Explore texts, roots, and semantics seamlessly.",
+            QuranCard: {
+                Title: "Qur'an",
+                ArabicTitle: "القرآن الكريم",
+                Description: "Access the complete Arabic text, translations, and advanced root-word methodology search."
+            },
+            TorahCard: {
+                Title: "Torah",
+                HebrewTitle: "תּוֹרָה",
+                Description: "Explore the foundational Hebrew scriptures with cross-linguistic tools and historical analysis."
+            },
+            BibleCard: {
+                Title: "Bible",
+                GreekTitle: "Biblion",
+                Description: "Comprehensive study of the Old and New Testaments with comparative translation analysis."
+            },
+            HinduismCard: {
+                Title: "Hinduism",
+                SanskritTitle: "Sanatana Dharma",
+                Description: "Vedic texts, Upanishads, and philosophical analysis of ancient Sanskrit scriptures."
+            },
+            BuddhismCard: {
+                Title: "Buddhism",
+                PaliTitle: "Buddhadharma",
+                Description: "Analysis of Pali Canon, Sutras, and the core teachings of the enlightened path."
+            },
+            Messages: {
+                DatabaseIncapability: "Our databases do not have enough capability for this book yet. We are constantly searching for data to provide for our users."
+            }
+        },
         Islam: {
             Quran: {
                 Components: {
@@ -251,6 +282,36 @@ export const en: SystemLanguage = {
                     }
                 }
             }
+        },
+        About: {
+            WhatIsScriptium: {
+                Badge: "About the Project",
+                Title: "What is Scriptium?",
+                Description: "Scriptium is a dedicated platform built to collect, structure, and present the world's most profound theological and philosophical sources in a modern, accessible format."
+            },
+            BetaWarning: {
+                Title: "Beta Version Warning",
+                Description: "Scriptium is currently in Beta. You may occasionally encounter incoherent data or incomplete features. If you spot any issues, please help us by reporting them to "
+            },
+            DataSuppliers: {
+                Title: "Data Suppliers",
+                Description: "We extend our deepest gratitude to the following platforms for providing the comprehensive Quranic data and translations that power Scriptium's Islamic texts."
+            },
+            Contact: {
+                Title: "Contact Us",
+                Description: "Have a question, feedback, or want to contribute? Reach out to us directly."
+            },
+            Discord: {
+                Title: "Discord Community",
+                Description: "Our Discord bot is currently under construction.",
+                Status: "Coming Soon"
+            },
+            Support: {
+                DisabledStatus: "Not Active Yet.",
+                NotActiveYet: "Not Active Yet.",
+                Title: "Support the Project",
+                Description: "Funding options are currently disabled, but we appreciate your willingness to support us!"
+            }
         }
     },
     Terms: {
@@ -293,6 +354,10 @@ export const en: SystemLanguage = {
                     Title: "An Unknown Error Occurred",
                     DefaultDescription: "An unexpected anomaly disrupted your request. Please try refreshing the page or navigating back."
                 }
+            },
+            ThisPageIsUnderConstruction: {
+                Header: "Under Construction",
+                Description: "We are currently working hard to bring this page to life. Please check back later!"
             }
         }
     }

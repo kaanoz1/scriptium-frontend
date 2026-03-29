@@ -94,6 +94,38 @@ export type SystemLanguage = {
     },
     Pages:
         {
+            Home: {
+                HeroSubtitle: string;
+                QuranCard: {
+                    Title: string;
+                    ArabicTitle: string;
+                    Description: string;
+                },
+                BibleCard:{
+                    Title: string;
+                    Description: string;
+                    GreekTitle: string;
+                },
+                TorahCard: {
+                    Title: string;
+                    Description: string;
+                    HebrewTitle: string;
+                },
+                HinduismCard: {
+                    Title: string;
+                    Description: string;
+                    SanskritTitle: string;
+                },
+                BuddhismCard: {
+                    Title: string;
+                    Description: string;
+                    PaliTitle: string;
+                },
+
+                Messages: {
+                    DatabaseIncapability: string;
+                };
+            }
             Islam: {
                 Quran: {
                     Components: {
@@ -262,7 +294,37 @@ export type SystemLanguage = {
                         }
                     }
                 }
-            }
+            },
+            About: {
+                WhatIsScriptium: {
+                    Badge: string;
+                    Title: string;
+                    Description: string;
+                };
+                BetaWarning: {
+                    Title: string;
+                    Description: string;
+                };
+                DataSuppliers: {
+                    Title: string;
+                    Description: string;
+                };
+                Contact: {
+                    Title: string;
+                    Description: string;
+                };
+                Discord: {
+                    Title: string;
+                    Description: string;
+                    Status: string;
+                };
+                Support: {
+                    DisabledStatus: string;
+                    NotActiveYet: string;
+                    Title: string;
+                    Description: string;
+                };
+            },
         },
     Terms: {
         General: {
@@ -287,6 +349,10 @@ export type SystemLanguage = {
     },
     Util: {
         Components: {
+            ThisPageIsUnderConstruction: {
+                Header: string;
+                Description: string;
+            },
             Error: {
                 NotFound: {
                     Title: string;

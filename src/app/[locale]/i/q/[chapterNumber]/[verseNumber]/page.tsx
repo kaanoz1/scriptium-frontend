@@ -10,7 +10,6 @@ import NotFoundError from "@/util/components/Error/NotFoundError";
 import {ServerUtils} from "@/util/ServerUtils";
 import {ClientUtils} from "@/util/ClientUtils";
 import Client from "@/app/[locale]/i/q/[chapterNumber]/[verseNumber]/client";
-import {logger} from "@/lib/Logger";
 
 type Props = {
     params: Promise<{ chapterNumber: string; verseNumber: string; locale: string }>;
@@ -32,9 +31,9 @@ const Page: NextPage<Props> = async ({params}) => {
         tr: `Veritabanımızda ${chapterNumber}:${verseNumber} numaralı ayet bulunamadı.`
     };
 
-    if (isNaN(cNum) || isNaN(vNum)) {
+    if (isNaN(cNum) || isNaN(vNum))
         return <NotFoundError>{errorMsgs[lang] || errorMsgs.en}</NotFoundError>;
-    }
+
 
     const response = await getVerseData(cNum, vNum);
 
@@ -87,7 +86,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
         return {title: titles.error[lang] || titles.error.en};
     }
 
-    const {words, chapter} = response.data
+    const {chapter} = response.data
 
     const possibleChapterMeanings = response.data.chapter.meanings;
 

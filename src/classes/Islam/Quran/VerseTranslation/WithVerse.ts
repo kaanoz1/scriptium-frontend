@@ -11,6 +11,10 @@ export class VerseTranslationWithVerse extends VerseTranslationComplete {
         this._verse = VerseTransliterationUpToQuran.fromJson(data.verse)
     }
 
+    static fromJson(data: TVerseTranslationWithVerse): VerseTranslationWithVerse {
+        return new VerseTranslationWithVerse(data);
+    }
+
     public get verse() {
         return this._verse;
     }

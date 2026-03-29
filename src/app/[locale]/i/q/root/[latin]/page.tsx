@@ -21,7 +21,7 @@ const Page: NextPage<Props> = async ({params}) => {
 
     switch (response.status) {
         case ResponseCodes.OK:
-            const currentUrl = `https://scriptium.com/${locale}/i/q/root`;
+            const currentUrl = `https://scriptium.com/${locale}/i/q/root/${latin}`;
             await ServerUtils.General.Pages.upsertUrlToSitemap(currentUrl);
 
             return <Client root={response.data}/>;
@@ -40,7 +40,6 @@ const Page: NextPage<Props> = async ({params}) => {
 export async function generateMetadata({params}: Props): Promise<Metadata> {
     const {locale, latin} = await params;
 
-    // Dil anahtarı kontrolü (Opsiyonel ama güvenli bir yaklaşım)
     const currentLocale = (locale as keyof typeof SUPPORTED_LOCALES) || "en";
 
     const titleMap: Record<keyof typeof SUPPORTED_LOCALES, string> = {

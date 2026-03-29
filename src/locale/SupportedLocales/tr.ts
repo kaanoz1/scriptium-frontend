@@ -84,6 +84,37 @@ export const tr: SystemLanguage = {
         }
     },
     Pages: {
+        Home: {
+            HeroSubtitle: "Evrensel teoloji kütüphanesi.",
+            QuranCard: {
+                Title: "Kur'an-ı Kerim",
+                ArabicTitle: "القرآن الكريم",
+                Description: "Tam Arapça metne, çevirilere ve gelişmiş kök kelime metodolojisi aramasına erişin."
+            },
+            TorahCard: {
+                Title: "Tevrat",
+                HebrewTitle: "תּוֹרָה",
+                Description: "İbranice metinlerin dilbilimsel analizi."
+            },
+            BibleCard: {
+                Title: "İncil",
+                GreekTitle: "Biblion",
+                Description: "Yeni Ahit metinleri, çeviriler ve inceleme."
+            },
+            HinduismCard: {
+                Title: "Hinduizm",
+                SanskritTitle: "Sanatana Dharma",
+                Description: "Vedik metinler, Upanişadlar ve antik Sanskrit kaynaklarının felsefi analizi."
+            },
+            BuddhismCard: {
+                Title: "Budizm",
+                PaliTitle: "Buddhadharma",
+                Description: "Pali Külliyatı, Sutralar ve aydınlanma yolunun temel öğretilerinin incelenmesi."
+            },
+            Messages: {
+                DatabaseIncapability: "Veritabanlarımız henüz bu kitap için yeterli kapasiteye sahip değil. Kullanıcılarımıza sunabileceğimiz veriler için sürekli araştırmalarımıza devam ediyoruz."
+            }
+        },
         Islam: {
             Quran: {
                 Components: {
@@ -251,6 +282,36 @@ export const tr: SystemLanguage = {
                     }
                 }
             }
+        },
+        About: {
+            WhatIsScriptium: {
+                Badge: "Proje Hakkında",
+                Title: "Scriptium Nedir?",
+                Description: "Scriptium, dünyanın en derin teolojik ve felsefi kaynaklarını modern ve erişilebilir bir formatta toplamak, yapılandırmak ve sunmak için oluşturulmuş özel bir platformdur."
+            },
+            BetaWarning: {
+                Title: "Beta Sürümü Uyarısı",
+                Description: "Scriptium şu anda Beta aşamasındadır. Zaman zaman tutarsız verilerle veya eksik özelliklerle karşılaşabilirsiniz. Herhangi bir sorun fark ederseniz, lütfen bize bildirin: "
+            },
+            DataSuppliers: {
+                Title: "Veri Sağlayıcıları",
+                Description: "Scriptium'un İslami metinlerine güç veren kapsamlı Kuran verilerini ve çevirilerini sağladıkları için aşağıdaki platformlara en derin şükranlarımızı sunarız."
+            },
+            Contact: {
+                Title: "İletişim",
+                Description: "Bir sorunuz, geri bildiriminiz mi var veya katkıda bulunmak mı istiyorsunuz? Bize doğrudan ulaşın."
+            },
+            Discord: {
+                Title: "Discord Topluluğu",
+                Description: "Discord botumuz ve topluluk sunucumuz şu anda yapım aşamasındadır.",
+                Status: "Yakında"
+            },
+            Support: {
+                DisabledStatus: "Devre Dışı",
+                NotActiveYet: "Aktid değil.",
+                Title: "Projeyi Destekle",
+                Description: "Bağış ve destek seçenekleri şu anda devre dışıdır, ancak bizi destekleme isteğinizi takdir ediyoruz!"
+            }
         }
     },
     Terms: {
@@ -293,6 +354,10 @@ export const tr: SystemLanguage = {
                     Title: "Bilinmeyen Bir Hata Oluştu",
                     DefaultDescription: "Beklenmedik bir anomali isteğinizi kesintiye uğrattı. Lütfen sayfayı yenilemeyi veya geri dönmeyi deneyin."
                 }
+            },
+            ThisPageIsUnderConstruction: {
+                Header: "Yapım Aşamasında",
+                Description: "Bu sayfayı hayata geçirmek için yoğun bir şekilde çalışıyoruz. Lütfen daha sonra tekrar kontrol edin!"
             }
         }
     }

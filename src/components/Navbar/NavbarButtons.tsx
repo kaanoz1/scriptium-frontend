@@ -15,10 +15,11 @@ import {IoBookOutline} from "react-icons/io5";
 import Link from "next/link";
 import ChangeLanguageMenuContent from "@/components/Navbar/ChangeLanguageMenuContent";
 import DocumentationMenuContent from "@/components/Navbar/DocumentationMenuContent";
+import {useLocale} from "use-intl";
 
 const NavbarButtons = () => {
 
-
+    const locale = useLocale();
 
     return (
         <NavigationMenu>
@@ -32,7 +33,7 @@ const NavbarButtons = () => {
 
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} h-11 px-4`}>
-                        <Link href="/statistics" className="flex items-center justify-center gap-2">
+                        <Link href={`/${locale}/statistics`} className="flex items-center justify-center gap-2">
                             <StatisticsCustomSvgIcon className="w-5 h-5"/>
                             <span className="sr-only">Statistics</span>
                         </Link>
@@ -45,7 +46,7 @@ const NavbarButtons = () => {
                     </NavigationMenuTrigger>
 
                     <NavigationMenuContent>
-                        <ChangeLanguageMenuContent />
+                        <ChangeLanguageMenuContent/>
                     </NavigationMenuContent>
                 </NavigationMenuItem>
 
@@ -55,7 +56,7 @@ const NavbarButtons = () => {
                     </NavigationMenuTrigger>
 
                     <NavigationMenuContent>
-                      <DocumentationMenuContent/>
+                        <DocumentationMenuContent/>
                     </NavigationMenuContent>
                 </NavigationMenuItem>
 

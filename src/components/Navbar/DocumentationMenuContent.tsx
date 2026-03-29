@@ -3,18 +3,20 @@ import Link from "next/link";
 import {Info, Terminal} from "lucide-react";
 import {FaDiscord} from "react-icons/fa";
 import {useTranslations} from "next-intl";
+import {useLocale} from "use-intl";
 
 const DocumentationMenuContent = () => {
 
 
     const t = useTranslations("Navbar.Buttons.Documentation");
 
+    const locale = useLocale();
 
     return <ul className="w-[320px] p-3 flex flex-col gap-2">
         <li>
             <NavigationMenuLink asChild>
                 <Link
-                    href="/about"
+                    href={`/${locale}/about`}
                     className="w-full flex items-start gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors group cursor-pointer outline-none"
                 >
                     <div className="p-2.5 bg-muted/20 rounded-xl transition-colors shrink-0">
@@ -38,7 +40,7 @@ const DocumentationMenuContent = () => {
         <li>
             <NavigationMenuLink asChild>
                 <Link
-                    href="/discord"
+                    href={`/${locale}/discord`}
                     className="w-full flex items-start gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors group cursor-pointer outline-none"
                 >
                     <div className="p-2.5 bg-muted/20 rounded-xl transition-colors shrink-0">
@@ -62,7 +64,7 @@ const DocumentationMenuContent = () => {
         <li>
             <NavigationMenuLink asChild>
                 <Link
-                    href="/developers"
+                    href={`/${locale}/developers`}
                     className="w-full flex items-start gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors group cursor-pointer outline-none"
                 >
                     <div className="p-2.5 bg-muted/20 rounded-xl transition-colors shrink-0">

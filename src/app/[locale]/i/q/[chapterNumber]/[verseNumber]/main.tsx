@@ -8,12 +8,17 @@ import VerseTransliteration from "@/app/[locale]/i/q/[chapterNumber]/[verseNumbe
 import VerseTable from "@/app/[locale]/i/q/[chapterNumber]/[verseNumber]/components/VerseTable";
 import UtilToolButtons from "@/app/[locale]/i/q/[chapterNumber]/[verseNumber]/components/UtilToolButtons";
 import VerseText from "@/app/[locale]/i/q/[chapterNumber]/components/VerseText";
+import {QuranViewPreferences} from "@/configuration/UserPreferences/Islam/Quran/QuranViewPreferences";
+import {observer} from "mobx-react-lite";
 
 type Props = {
     verse: VerseBoth
 }
 
-const Main: React.FC<Props> = ({verse}) => {
+const Main: React.FC<Props> = observer(({verse}) => {
+
+    const isTranslationShown = QuranViewPreferences.getInstance().shouldTranslationShown;
+    const isArabicTextShown = QuranViewPreferences.getInstance().shouldVerseTextShown;
 
     return (
         <main className="flex flex-col items-center w-full max-w-480 mx-auto pb-24">
@@ -30,13 +35,13 @@ const Main: React.FC<Props> = ({verse}) => {
 
             <section className="flex flex-col lg:flex-row w-full gap-12 lg:gap-24 px-4 sm:px-8 md:px-12 lg:px-24 xl:px-48 items-start relative">
 
-                <div className="w-full flex-1 lg:sticky lg:top-32">
+                {isTranslationShown && <div className="w-full flex-1 lg:sticky lg:top-32">
                     <VerseTranslation verse={verse}/>
                 </div>
-
-                <div className="w-full flex-1 pt-2 lg:sticky lg:top-32">
+                }
+                {isArabicTextShown && <div className="w-full flex-1 pt-2 lg:sticky lg:top-32">
                     <VerseText verse={verse}/>
-                </div>
+                </div>}
 
             </section>
 
@@ -54,6 +59,6 @@ const Main: React.FC<Props> = ({verse}) => {
 
         </main>
     );
-}
+});
 
 export default Main;

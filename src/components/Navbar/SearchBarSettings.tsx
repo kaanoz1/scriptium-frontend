@@ -17,8 +17,8 @@ import {observer} from "mobx-react-lite";
 import {useTranslations} from "next-intl";
 
 type Props = {
-    selectedSearchAlgorithm: SearchAlgorithm;
-    setSelectedSearchAlgorithm: (searchAlgorithm: SearchAlgorithm) => void;
+    selectedSearchAlgorithm: SearchAlgorithm<unknown>;
+    setSelectedSearchAlgorithm: (searchAlgorithm: SearchAlgorithm<unknown>) => void;
 }
 
 const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, setSelectedSearchAlgorithm}) => {
@@ -82,7 +82,7 @@ const SearchBarSettings: React.FC<Props> = observer(({selectedSearchAlgorithm, s
                                         {t("SearchAlgorithms.RootSearch.Description")}
                                     </FieldDescription>
                                 </FieldContent>
-                                <RadioGroupItem value={RootSearchAlgorithm.getInstance().key}
+                                <RadioGroupItem disabled={true} value={RootSearchAlgorithm.getInstance().key}
                                                 id={RootSearchAlgorithm.getInstance().key}/>
                             </Field>
                         </FieldLabel>

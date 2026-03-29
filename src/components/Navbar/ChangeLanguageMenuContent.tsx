@@ -27,6 +27,11 @@ const ChangeLanguageMenuContent = () => {
                 const localeInfo = SUPPORTED_LOCALES[localeKey];
                 const isSelected = locale === localeKey;
 
+
+                // Turkish is not active yet.
+                if(localeKey == "tr")
+                    return null;
+
                 return (
                     <li key={localeKey}>
                         <button

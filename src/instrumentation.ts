@@ -4,7 +4,6 @@ export async function register() {
         const { EnvGuard } = await import('./util/EnvGuard');
 
         EnvGuard.checkEnv();
-        // Await the database check
         await ServerEnvGuard.ensureDatabaseExists();
         EnvGuard.printValuesMasked();
     }
