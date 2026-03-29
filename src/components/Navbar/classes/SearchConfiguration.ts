@@ -11,7 +11,7 @@ export class SearchConfiguration {
         return this._instance;
     }
 
-    public algorithm: SearchAlgorithm = TranslationSearchAlgorithm.getInstance();
+    public algorithm: SearchAlgorithm<unknown> = TranslationSearchAlgorithm.getInstance();
 
     private constructor() {}
 }
