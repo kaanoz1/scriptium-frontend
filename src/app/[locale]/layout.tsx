@@ -21,12 +21,12 @@ export const metadata: Metadata = {
         {
             rel: 'icon',
             url: ClientUtils.AssetManager.ScriptiumIconDark,
-            media: '(prefers-color-scheme: light)',
+            media: '(prefers-color-scheme: dark)',
         },
         {
             rel: 'icon',
             url: ClientUtils.AssetManager.ScriptiumIconLight,
-            media: '(prefers-color-scheme: dark)',
+            media: '(prefers-color-scheme: light)',
         },
     ],
 };
@@ -43,10 +43,9 @@ export default async function RootLayout({
 
     // TODO: This will be changed. For now, only English is supported
 
-    if (!locale || !(["en"].includes(locale))) {
+    if (!locale || !(["en"].includes(locale)))
         notFound();
 
-    }
 
     const messages = await getMessages();
 
