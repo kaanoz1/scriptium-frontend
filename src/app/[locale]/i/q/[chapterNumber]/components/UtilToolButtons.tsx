@@ -26,7 +26,7 @@ const UtilToolButtons: React.FC<Props> = observer(({chapter}) => {
     const shareText = ClientUtils.Islam.Quran.Chapter.createChapterShareText(chapter, locale);
 
     return (
-        <aside className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
+        <aside className="w-full flex flex-wrap items-center justify-between sm:justify-end gap-1.5 sm:gap-2 gap-y-2 ">
             <AudioPlayButton/>
             <ShareButton shareText={shareText}/>
             <div className="h-6 w-px bg-border mx-1 hidden sm:block"/>

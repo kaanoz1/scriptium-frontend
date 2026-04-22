@@ -1,3 +1,5 @@
+// noinspection GrazieInspectionRunner
+
 "use client"
 import { Vazirmatn as Vazirmatn_Font } from 'next/font/google';
 import { ArabicFont } from "@/fonts/Arabic/ArabicFont";

@@ -5,7 +5,9 @@ type Props ={
 }
 const ScriptiumText: React.FC<Props> = ({className}) => {
 
-    return <h1 className={syne.className + " text-2xl transition-opacity group-hover:opacity-80 " + className}>Scriptium</h1>;
+    return <h1 className={`${syne.className} text-xl sm:text-2xl transition-opacity group-hover:opacity-80 ${className}`}>
+        Scriptium
+    </h1>
 }
 
 export default ScriptiumText;

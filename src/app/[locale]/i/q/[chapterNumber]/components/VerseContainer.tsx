@@ -17,7 +17,7 @@ const VerseContainer: React.FC<Props> = observer(({chapter}) => {
         <section className="flex w-full flex-col gap-6">
 
             <div
-                className="sticky top-20 z-10 w-full rounded-lg border border-border/50 bg-background/95 p-3 shadow-sm backdrop-blur supports-backdrop-filter:bg-background/60">
+                className="sticky top-4 sm:top-20 z-10 w-[calc(100%-1rem)] mx-auto sm:w-full rounded-lg border border-border/50 bg-background/95 p-1.5 sm:p-3 shadow-sm backdrop-blur supports-backdrop-filter:bg-background/60 transition-all">
                 <VerseContainerHeader chapter={chapter}/>
             </div>
 

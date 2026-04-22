@@ -43,15 +43,15 @@ const Breadcrumbs: React.FC<Props> = observer(({ verse }) => {
             className="overflow-x-auto pb-2 scrollbar-hide"
         >
             <Breadcrumb>
-                <BreadcrumbList className="flex-nowrap whitespace-nowrap">
+                <BreadcrumbList className="flex-nowrap whitespace-nowrap text-[13px]">
                     <BreadcrumbItem>
                         <BreadcrumbLink href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-primary">
                             <HomeIcon size={14} />
                             <span className="hidden sm:inline">{gt("HomePage")}</span>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
+                    <BreadcrumbSeparator className="hidden sm:block" />
+                    <BreadcrumbItem className="hidden sm:inline-flex">
                         <BreadcrumbLink href={`/${locale}/i`} className="transition-colors hover:text-primary">
                             {t("this")}
                         </BreadcrumbLink>

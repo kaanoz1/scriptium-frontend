@@ -1,8 +1,7 @@
 import {makeObservable} from "mobx";
 import {SearchAlgorithm} from "@/components/Navbar/classes/SearchAlgorithm";
-import {RootPlain} from "@/classes/Islam/Quran/Root/Plain";
 
-export class RootSearchAlgorithm extends SearchAlgorithm<RootPlain[]> {
+export class RootSearchAlgorithm extends SearchAlgorithm {
 
     public readonly key: string = "root-search"
     private static _instance: RootSearchAlgorithm | null = null;
@@ -19,11 +18,4 @@ export class RootSearchAlgorithm extends SearchAlgorithm<RootPlain[]> {
         super();
         makeObservable(this);
     }
-
-    public search(query: string): Promise<RootPlain[]> {
-        throw new Error("Method not implemented.");
-    }
-
-
-
 }

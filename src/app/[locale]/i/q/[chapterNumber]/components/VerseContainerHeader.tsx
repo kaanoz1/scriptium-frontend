@@ -12,13 +12,14 @@ type Props = {
 
 const VerseContainerHeader: React.FC<Props> = observer(({ chapter }) => {
     return (
-        <header className="flex w-full flex-col-reverse items-center justify-between gap-4 py-2 sm:flex-row">
-            <div className="flex w-full sm:w-auto">
+        <header className="flex w-full flex-col items-center justify-between gap-4 py-2 sm:flex-row">
+            <div className="flex w-full justify-center sm:justify-start sm:w-auto">
                 <TranslationIndicator />
             </div>
-            <div className="flex w-full justify-end sm:w-auto">
+            <div className="flex w-full justify-center sm:justify-end sm:w-auto">
                 <UtilToolButtons chapter={chapter} />
             </div>
+
         </header>
     );
 });

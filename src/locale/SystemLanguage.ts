@@ -2,7 +2,8 @@
 
 export type SystemLanguage = {
     Navbar: {
-        Placeholder: string;
+        Placeholder: string,
+
         QuickNavigation: {
             Header: string;
             Description: string;
@@ -15,6 +16,19 @@ export type SystemLanguage = {
                 Verse: string;
                 GoesToSurah: string;
                 WarningDescription: string;
+            },
+            MobileHamburgerButton: {
+                Title: string;
+                Language: string;
+                Resources: string;
+                Appearance: string;
+            }
+            MobileSearchModal: {
+                SearchInputPlaceholder: string,
+                PressEnterToNavigateDirectly: string;
+                IfThisPersistContactUs: string;
+                NoResultsFound: string;
+                TryAdjustingYourSearch: string;
             }
         }
         Configuration: {
@@ -64,6 +78,7 @@ export type SystemLanguage = {
 
         },
         Buttons: {
+            Statistics: string;
             LanguageChange: {
                 Header: string;
                 Description: string;
@@ -101,7 +116,7 @@ export type SystemLanguage = {
                     ArabicTitle: string;
                     Description: string;
                 },
-                BibleCard:{
+                BibleCard: {
                     Title: string;
                     Description: string;
                     GreekTitle: string;

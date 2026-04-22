@@ -9,7 +9,6 @@ import Navbar from "@/components/Navbar/Navbar";
 import {NextIntlClientProvider} from 'next-intl';
 import {getMessages} from 'next-intl/server';
 import {notFound} from 'next/navigation';
-import {SUPPORTED_LOCALES} from "@/locale/SupportedLocales/_index";
 import Footer from "@/components/Footer/Footer";
 import {ClientUtils} from "@/util/ClientUtils";
 
@@ -41,9 +40,14 @@ export default async function RootLayout({
 }>) {
     const {locale} = await params;
 
-    if (!locale || !(locale in SUPPORTED_LOCALES)) {
+
+    // TODO: This will be changed. For now, only English is supported
+
+    if (!locale || !(["en"].includes(locale))) {
         notFound();
+
     }
+
     const messages = await getMessages();
 
     return (

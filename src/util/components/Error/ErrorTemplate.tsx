@@ -43,7 +43,7 @@ const ErrorTemplate: React.FC<ErrorTemplateProps> = ({
     return (
         <div className={cn(
             "relative flex flex-col items-center justify-center overflow-hidden px-6 text-center w-full",
-            fullPage ? "h-[calc(100vh-150px)]" : "py-12 h-full min-h-100"
+            fullPage ? "max-h-[calc(100vh-150px)]" : "py-12 h-full min-h-100"
         )}>
             <div
                 className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-75 w-125 rounded-full blur-[120px] pointer-events-none opacity-50 dark:opacity-30 ${colors.glow}`}/>

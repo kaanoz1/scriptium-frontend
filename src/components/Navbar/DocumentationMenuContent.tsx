@@ -12,7 +12,7 @@ const DocumentationMenuContent = () => {
 
     const locale = useLocale();
 
-    return <ul className="w-[320px] p-3 flex flex-col gap-2">
+    return <ul className="w-[320px] max-w-[calc(100vw-1rem)] p-2 sm:p-3 flex flex-col gap-1 sm:gap-2">
         <li>
             <NavigationMenuLink asChild>
                 <Link

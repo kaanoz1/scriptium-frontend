@@ -6,7 +6,6 @@ import BetaWarningSection from "./components/BetaWarningSection";
 import DataSupplierSection from "./components/DataSupplierSection";
 import ContactSection from "./components/ContactSection";
 import DiscordSection from "./components/DiscordSection";
-import SupportSection from "./components/SupportSection";
 import TechnologiesSection from "@/app/[locale]/about/components/TechnologiesSection";
 
 const Main: React.FC = () => {
@@ -21,7 +20,6 @@ const Main: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <ContactSection />
                     <DiscordSection />
-                    {/* <SupportSection /> */}
                 </div>
             </section>
 

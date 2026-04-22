@@ -1,84 +1,106 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import { LuSearch } from "react-icons/lu";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import React, {useEffect, useMemo, useState} from "react";
+import {LuSearch} from "react-icons/lu";
+import {Separator} from "@/components/ui/separator";
+import {cn} from "@/lib/utils";
 import SearchBarSettings from "@/components/Navbar/SearchBarSettings";
-import { SearchAlgorithm } from "@/components/Navbar/classes/SearchAlgorithm";
-import { SearchConfiguration } from "@/components/Navbar/classes/SearchConfiguration";
 import QuickNavigationInformation from "@/components/Navbar/QuickNavigationInformation";
-import SearchBarResults from "./SearchBarResults"; // Ensure this path is correct
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import {useTranslations} from "next-intl";
+import {observer} from "mobx-react-lite";
+import {SearchBarState} from "@/components/Navbar/classes/SearchBarState";
+import MobileSearchModal from "@/components/Navbar/MobileSearchModal";
+import {Button} from "@/components/ui/button";
 
 type Props = {
     isCentered?: boolean;
 }
 
-const SearchBar: React.FC<Props> = ({ isCentered = true }) => {
+const SearchBar: React.FC<Props> = observer(({isCentered = true}) => {
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [isFocused, setIsFocused] = useState<boolean>(false);
-    const [input, setInput] = useState<string>("");
+    const [isMobileModalOpen, setIsMobileModalOpen] = useState<boolean>(false);
 
-    const searchConfiguration = useMemo(() => SearchConfiguration.getInstance(), []);
-    const [selectedSearchAlgorithm, setSelectedSearchAlgorithm] = useState<SearchAlgorithm<unknown>>(searchConfiguration.algorithm);
-
+    const searchBarState = useMemo(() => SearchBarState.getInstance(), []);
     const t = useTranslations('Navbar');
 
+    useEffect(() => {
+        if (!searchBarState.query.trim()) return;
+
+        const timeoutId = setTimeout(async () => {
+            await searchBarState.search();
+        }, 1000);
+
+        return () => clearTimeout(timeoutId);
+    }, [searchBarState.query, searchBarState]);
+
+    const handleFocus = () => {
+        const isDeviceAComputer = typeof window !== 'undefined' && window.innerWidth > 1024;
+        if (isDeviceAComputer) {
+            setIsFocused(true);
+            return;
+        }
+        setIsMobileModalOpen(true);
+    };
 
     return (
-        <div
-            className={cn(
-                "relative w-full max-w-2xl transition-all",
-                isCentered && "fixed z-50 left-1/2 top-5 -translate-x-1/2"
-            )}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            <div className={cn(
-                "flex items-center rounded-lg border border-input bg-background transition-all",
-                "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20",
-                isFocused && "rounded-b-none border-b-transparent shadow-lg"
-            )}>
-                <aside className="px-2 ps-3 flex items-center justify-center">
-                    <div className="p-1 cursor-pointer text-muted-foreground hover:text-primary transition-colors">
-                        <LuSearch size={18} />
-                    </div>
-                </aside>
+        <>
+            <div className="flex lg:hidden items-center justify-end w-full">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleFocus}
+                    className="rounded-full h-10 w-10 text-muted-foreground"
+                >
+                    <LuSearch size={22}/>
+                </Button>
+            </div>
 
-                <Separator orientation="vertical" className="h-6 my-auto" />
-
-                <input
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setTimeout(() => setIsFocused(false), 200)} // Delay to allow clicks on results
-                    type="text"
-                    placeholder={t('Placeholder')}
-                    className="flex-1 min-w-[320px] bg-transparent px-3 py-2.5 text-base md:text-sm outline-none placeholder:text-muted-foreground"
-                />
-
+            <div
+                className={cn(
+                    "hidden lg:flex items-center transition-all duration-300",
+                    isCentered && "fixed z-50 left-1/2 top-5 -translate-x-1/2 w-full max-w-2xl px-0"
+                )}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
                 <div className={cn(
-                    "flex items-center pr-3 transition-opacity duration-300 text-muted-foreground gap-2",
-                    (isHovered || isFocused) ? "opacity-100" : "opacity-0 pointer-events-none"
+                    "flex w-full items-center rounded-lg border border-input bg-background transition-all",
+                    "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20",
+                    isFocused && "rounded-b-none border-b-transparent shadow-lg"
                 )}>
-                    <QuickNavigationInformation />
-                    <Separator orientation="vertical" className="h-6 my-auto" />
-                    <SearchBarSettings
-                        selectedSearchAlgorithm={selectedSearchAlgorithm}
-                        setSelectedSearchAlgorithm={setSelectedSearchAlgorithm}
+                    <aside className="px-3 flex items-center justify-center shrink-0">
+                        <LuSearch size={18} className="text-muted-foreground"/>
+                    </aside>
+
+                    <Separator orientation="vertical" className="h-6 my-auto shrink-0"/>
+
+                    <input
+                        value={searchBarState.query}
+                        onChange={(e) => searchBarState.query = e.target.value}
+                        onFocus={handleFocus}
+                        onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+                        type="text"
+                        placeholder={t('Placeholder')}
+                        className="flex-1 bg-transparent px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground"
                     />
+
+                    <div className={cn(
+                        "flex items-center pr-3 gap-2 shrink-0 transition-opacity",
+                        isHovered || isFocused ? "opacity-100" : "opacity-0 pointer-events-none"
+                    )}>
+                        <QuickNavigationInformation/>
+                        <Separator orientation="vertical" className="h-6"/>
+                        <SearchBarSettings/>
+                    </div>
                 </div>
             </div>
 
-            <SearchBarResults
-                searchAlgorithm={selectedSearchAlgorithm}
-                query={input}
-                onClose={() => setInput("")}
-            />
-        </div>
+            {isMobileModalOpen && (
+                <MobileSearchModal onClose={() => setIsMobileModalOpen(false)}/>
+            )}
+        </>
     );
-};
+});
 
 export default SearchBar;

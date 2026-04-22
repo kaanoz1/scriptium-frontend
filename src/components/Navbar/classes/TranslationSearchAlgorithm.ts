@@ -1,18 +1,13 @@
-import {makeObservable, observable, action} from "mobx";
-import {SearchAlgorithm} from "@/components/Navbar/classes/SearchAlgorithm";
-import {BackendApi} from "@/tool/Fetchers/BackendApi";
-import {SearchResultPlain} from "@/classes/Shared/SearchResult/Plain";
+import { makeObservable, observable, computed } from "mobx";
+import { SearchAlgorithm } from "@/components/Navbar/classes/SearchAlgorithm";
 
-export class TranslationSearchAlgorithm extends SearchAlgorithm<SearchResultPlain> {
-
+export class TranslationSearchAlgorithm extends SearchAlgorithm {
     public readonly key: string = "translation-search";
     private static _instance: TranslationSearchAlgorithm | null = null;
 
-    private _methodlogy: TranslationSearchMethodology = TranslationSearchMethodology.ContextSearch
-
-
-    public emphasize: boolean = false;
-    public filterSameVerse: boolean = false;
+    private _methodology: TranslationSearchMethodology = TranslationSearchMethodology.ContextSearch;
+    private _emphasize: boolean = false;
+    private _filterSameVerse: boolean = false;
 
     public static getInstance(): TranslationSearchAlgorithm {
         if (this._instance === null)
@@ -24,38 +19,42 @@ export class TranslationSearchAlgorithm extends SearchAlgorithm<SearchResultPlai
     private constructor() {
         super();
 
-        makeObservable(this, {
-            emphasize: observable,
-            filterSameVerse: observable,
-            setEmphasize: action,
-            setFilterSameVerse: action
+        makeObservable<TranslationSearchAlgorithm, "_methodology" | "_emphasize" | "_filterSameVerse">(this, {
+            _methodology: observable,
+            _emphasize: observable,
+            _filterSameVerse: observable,
+            methodology: computed,
+            emphasize: computed,
+            filterSameVerse: computed,
         });
     }
 
-    public setEmphasize = (value: boolean) => {
-        this.emphasize = value;
+    public get methodology(): TranslationSearchMethodology {
+        return this._methodology;
     }
 
-    public setFilterSameVerse = (value: boolean) => {
-        this.filterSameVerse = value;
+    public set methodology(value: TranslationSearchMethodology) {
+        this._methodology = value;
     }
 
+    public get emphasize(): boolean {
+        return this._emphasize;
+    }
 
-    public async search(query: string): Promise<SearchResultPlain> {
-       const SearchController = BackendApi.SearchController;
+    public set emphasize(value: boolean) {
+        this._emphasize = value;
+    }
 
-       const response = this._methodlogy == TranslationSearchMethodology.TextSearch ? await SearchController.textSearch(query) : await SearchController.contextSearch(query);
+    public get filterSameVerse(): boolean {
+        return this._filterSameVerse;
+    }
 
-       if(response.ok)
-           return SearchResultPlain.fromJson(response.data);
-       else
-           throw new Error("Search failed");
+    public set filterSameVerse(value: boolean) {
+        this._filterSameVerse = value;
     }
 }
 
-
-
-enum TranslationSearchMethodology {
+export enum TranslationSearchMethodology {
     TextSearch,
     ContextSearch
 }

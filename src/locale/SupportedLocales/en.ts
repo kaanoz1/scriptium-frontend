@@ -13,6 +13,19 @@ export const en: SystemLanguage = {
                 Verse: "Verse",
                 GoesToSurah: "Goes to surah:",
                 WarningDescription: "Destination existence is not verified before navigation. Ensure the Surah/Verse exists in the Quran."
+            },
+            MobileHamburgerButton: {
+                Title: "Menu",
+                Language: "Language",
+                Resources: "Resources",
+                Appearance: "Appearance"
+            },
+            MobileSearchModal: {
+                SearchInputPlaceholder: "Search...",
+                PressEnterToNavigateDirectly: "Click to navigate directly",
+                IfThisPersistContactUs: "If this persists, contact us",
+                NoResultsFound: "No results found",
+                TryAdjustingYourSearch: "Try adjusting your search"
             }
         },
         Configuration: {
@@ -72,7 +85,8 @@ export const en: SystemLanguage = {
                     Header: "For Developers",
                     Description: "API and documentation details."
                 }
-            }
+            },
+            Statistics: "Statistics"
         }
     },
     Footer: {

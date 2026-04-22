@@ -12,12 +12,12 @@ const ChangeLanguageMenuContent = () => {
     const pathname = usePathname();
     const handleLanguageChange = (newLocale: string) => router.replace(pathname, {locale: newLocale})
 
-    return    <div className="w-80 p-4">
+    return <div className="w-80 max-w-[calc(100vw-1rem)] p-4">
         <div className="mb-4">
             <h4 className="text-xs font-semibold leading-none mb-1 text-foreground">
                 {t("Header")}
             </h4>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground line-clamp-2">
                 {t("Description")}
             </p>
         </div>
@@ -48,7 +48,7 @@ const ChangeLanguageMenuContent = () => {
                                     {localeInfo.nameEnglish}
                                 </span>
                             </div>
-                            {isSelected && <FiCheck className="w-4 h-4 text-primary"/>}
+                            {isSelected && <FiCheck className="w-4 h-4 text-primary shrink-0"/>}
                         </button>
                     </li>
                 );

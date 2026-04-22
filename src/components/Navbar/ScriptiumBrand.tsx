@@ -17,9 +17,8 @@ const ScriptiumBrand: React.FC<Props> = ({showText = true}) => {
     const isHomePage = (pathname === "/" || pathname === "/en" || pathname === "/tr") && showText;
 
     return (
-        <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-12 h-12 shrink-0">
-
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
+            <div className="relative w-10 h-10 sm:w-12 sm:h-12 shrink-0">
                 <Image
                     src={ClientUtils.AssetManager.ScriptiumIconLight}
                     alt="Scriptium Logo"
@@ -38,7 +37,7 @@ const ScriptiumBrand: React.FC<Props> = ({showText = true}) => {
             </div>
 
             {isHomePage && (
-                <ScriptiumText/>
+                <ScriptiumText className="hidden sm:block"/>
             )}
         </Link>
     );

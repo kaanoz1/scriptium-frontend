@@ -23,12 +23,11 @@ const Main: React.FC<Props> = observer(({verse}) => {
     return (
         <main className="flex flex-col items-center w-full max-w-480 mx-auto pb-24">
 
-            <div className="w-full px-4 sm:px-8 md:px-12 lg:px-24 xl:px-48 pt-6 pb-12 flex flex-row justify-between items-center gap-4">
-                <div className="overflow-x-auto scrollbar-hide flex items-center">
+            <div className="w-full px-4 sm:px-8 md:px-12 lg:px-24 xl:px-48 pt-6 pb-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+                <div     className="w-full sm:w-auto overflow-x-auto scrollbar-hide flex items-center">
                     <Breadcrumbs verse={verse}/>
                 </div>
-
-                <div className="flex shrink-0 items-center">
+                <div className="w-full sm:w-auto flex shrink-0 items-center justify-center sm:justify-end">
                     <UtilToolButtons verse={verse}/>
                 </div>
             </div>

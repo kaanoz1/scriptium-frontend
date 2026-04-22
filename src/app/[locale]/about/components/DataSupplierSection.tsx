@@ -26,7 +26,7 @@ const DataSupplierSection: React.FC = () => {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <Button variant="outline" asChild className="rounded-full">
-                        <Link href="https://tanzil.net" target="_blank" rel="noopener noreferrer">
+                        <Link href="https://tanzil.net/trans/" target="_blank" rel="noopener noreferrer">
                             Tanzil.net <ExternalLink size={14} className="ml-2" />
                         </Link>
                     </Button>

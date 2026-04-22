@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
-import { SearchAlgorithm } from "@/components/Navbar/classes/SearchAlgorithm";
-import { TranslationSearchAlgorithm } from "@/components/Navbar/classes/TranslationSearchAlgorithm";
-import { RootSearchAlgorithm } from "@/components/Navbar/classes/RootSearchAlgorithm";
-import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
-import { LuBook, LuSearchCode, LuArrowRight } from "react-icons/lu";
-import { SearchResultPlain } from "@/classes/Shared/SearchResult/Plain";
-import { RootPlain } from "@/classes/Islam/Quran/Root/Plain";
+import React, {useCallback, useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
+import {useLocale} from "next-intl";
+import {SearchAlgorithm} from "@/components/Navbar/classes/SearchAlgorithm";
+import {TranslationSearchAlgorithm} from "@/components/Navbar/classes/TranslationSearchAlgorithm";
+import {RootSearchAlgorithm} from "@/components/Navbar/classes/RootSearchAlgorithm";
+import {Command, CommandEmpty, CommandGroup, CommandItem, CommandList} from "@/components/ui/command";
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {cn} from "@/lib/utils";
+import {LuArrowRight, LuBook, LuSearchCode} from "react-icons/lu";
+import {SearchResultPlain} from "@/classes/Shared/SearchResult/Plain";
+import {RootPlain} from "@/classes/Islam/Quran/Root/Plain";
 
 type Props = {
-    searchAlgorithm: SearchAlgorithm<unknown>;
+    searchAlgorithm: SearchAlgorithm;
     query: string;
     onClose: () => void;
 };
@@ -29,7 +29,7 @@ interface NavigationShortcut {
 // Due to time constraints, this component was written by AI.
 // CAUTION!!
 
-const SearchBarResults: React.FC<Props> = ({ searchAlgorithm, query, onClose }) => {
+const SearchBarResults: React.FC<Props> = ({searchAlgorithm, query, onClose}) => {
     const router = useRouter();
     const locale = useLocale();
 
@@ -52,7 +52,7 @@ const SearchBarResults: React.FC<Props> = ({ searchAlgorithm, query, onClose }) 
                 onClose();
                 return;
             } else {
-                setShortcut({ url: targetUrl, chapter, verse });
+                setShortcut({url: targetUrl, chapter, verse});
                 setResults(null);
                 setIsLoading(false);
                 return;
@@ -66,15 +66,16 @@ const SearchBarResults: React.FC<Props> = ({ searchAlgorithm, query, onClose }) 
 
         setIsLoading(true);
         try {
-            const data = await searchAlgorithm.search(query);
-            setResults(data);
+
+            // const data = await searchAlgorithm.search();
+            // setResults(data);
         } catch (error) {
             console.error("Scriptium Search Error:", error);
 
         } finally {
             setIsLoading(false);
         }
-    }, [query, searchAlgorithm, locale, router, onClose]);
+    }, [query, locale, router, onClose]);
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
@@ -122,7 +123,8 @@ const SearchBarResults: React.FC<Props> = ({ searchAlgorithm, query, onClose }) 
                                         onClose();
                                     }}
                                 >
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
+                                    <div
+                                        className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
                                         <LuArrowRight size={18}/>
                                     </div>
                                     <div className="flex flex-col flex-1">
@@ -160,13 +162,15 @@ const SearchBarResults: React.FC<Props> = ({ searchAlgorithm, query, onClose }) 
                                         >
                                             <div className="flex items-center justify-between w-full">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
+                                                    <div
+                                                        className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
                                                         <LuBook size={14}/>
                                                     </div>
                                                     <span className="font-semibold text-sm text-foreground">
                                                         {chapterName}
                                                     </span>
-                                                    <span className="text-xs font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-sm">
+                                                    <span
+                                                        className="text-xs font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-sm">
                                                         {verseReference}
                                                     </span>
                                                 </div>
@@ -178,7 +182,8 @@ const SearchBarResults: React.FC<Props> = ({ searchAlgorithm, query, onClose }) 
                                                 </p>
                                             </div>
 
-                                            <div className="flex items-center flex-wrap gap-x-2 gap-y-1 w-full pl-9 mt-1 text-[11px] text-muted-foreground">
+                                            <div
+                                                className="flex items-center flex-wrap gap-x-2 gap-y-1 w-full pl-9 mt-1 text-[11px] text-muted-foreground">
                                                 <span className="font-medium text-foreground/80">
                                                     {translationName}
                                                 </span>

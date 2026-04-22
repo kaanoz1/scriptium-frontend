@@ -1,3 +1,5 @@
+// noinspection GrazieInspectionRunner
+
 import {SystemLanguage} from "@/locale/SystemLanguage";
 
 export const tr: SystemLanguage = {
@@ -13,6 +15,19 @@ export const tr: SystemLanguage = {
                 Verse: "Ayet",
                 GoesToSurah: "Şu sureye gider:",
                 WarningDescription: "Hedefin varlığı navigasyon öncesi doğrulanmaz. Sure/Ayetin Kur'an'da mevcut olduğundan emin olun."
+            },
+            MobileHamburgerButton: {
+                Title: "Menü",
+                Language: "Sistem Dili",
+                Resources: "Kaynaklar",
+                Appearance: "Görünüm"
+            },
+            MobileSearchModal: {
+                SearchInputPlaceholder: "Ara...",
+                PressEnterToNavigateDirectly: "Enter tuşuna basın.",
+                IfThisPersistContactUs: "Bu durum devam ederse, bize ulaşın.",
+                NoResultsFound: "Sonuç bulunamadı.",
+                TryAdjustingYourSearch: "Aramayı değiştirerek tekrar deneyin."
             }
         },
         Configuration: {
@@ -72,7 +87,8 @@ export const tr: SystemLanguage = {
                     Header: "Geliştiriciler İçin",
                     Description: "API ve dökümantasyon detayları."
                 }
-            }
+            },
+            Statistics: "İstatistikler"
         }
     },
     Footer: {
