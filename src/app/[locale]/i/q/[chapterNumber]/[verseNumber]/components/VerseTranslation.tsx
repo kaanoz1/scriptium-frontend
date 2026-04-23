@@ -33,7 +33,7 @@ const VerseTranslation: React.FC<Props> = observer(({verse}) => {
             const translationName = transl.name;
             const authorNamesConcatenated = transl.authors.map(author => author.name).join(', ');
 
-            const translationText = verse.translations.find((translation) => translation.translation.id === transl.id)?.text ?? t("NoProvidedTranslation");
+            const translationText = verse.translations.find((translation) => translation.translation.id === transl.id)?.text ?? t("VerseBoxTranslation.NoProvidedTranslation");
 
 
             return (

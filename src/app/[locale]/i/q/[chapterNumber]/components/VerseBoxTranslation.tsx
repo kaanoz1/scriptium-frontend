@@ -24,10 +24,10 @@ const VerseBoxTranslation: React.FC<Props> = observer(({verse}) => {
             {preferredTranslations.map((transl, index) => {
 
                 const translationName = transl.name;
-                const firstAuthorName = transl.authors[0].name;
+                const firstAuthorName = transl.authors[0]?.name ?? "Unkown Author.";
 
 
-                const translationText = verse.translations.find((translation) => translation.translation.id === transl.id)?.text ?? t("NoProvidedTranslation");
+                const translationText = verse.translations.find((translation) => translation.translation.id === transl.id)?.text ?? t("VerseBoxTranslation.NoProvidedTranslation");
 
 
                 return (

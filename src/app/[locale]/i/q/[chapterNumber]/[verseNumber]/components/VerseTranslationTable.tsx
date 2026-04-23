@@ -111,7 +111,7 @@ const VerseTranslationTable: React.FC<Props> = observer(({ translationOfVerse })
                                     <p>{content.text}</p>
                                 ) : (
                                     <span className="italic text-muted-foreground/60">
-                                        {t("NoProvidedTranslation") || "No translation provided."}
+                                        {t("VerseBoxTranslation.NoProvidedTranslation") || "No translation provided."}
                                     </span>
                                 )}
                             </main>

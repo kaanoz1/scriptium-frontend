@@ -15,7 +15,10 @@ const TranslationIndicator: React.FC = observer(() => {
 
     if (length === 1) {
         const authorsConcatenated = preferences[0].authors.map(a => a.name).join(", ");
-        text = `${preferences[0].name} (${authorsConcatenated})`;
+
+        text = authorsConcatenated.length > 0
+            ? `${preferences[0].name} (${authorsConcatenated})`
+            : preferences[0].name;
     } else {
         text = `${length} ${t("Translations")}`;
     }

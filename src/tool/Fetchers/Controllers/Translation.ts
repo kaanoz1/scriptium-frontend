@@ -2,10 +2,11 @@ import {noCredentialsApiClient} from "@/lib/NoCredentialApiClient";
 import {TTranslationComplete} from "@/dto/Islam/Quran/Translation/Complete";
 import {EnvGuard} from "@/util/EnvGuard";
 import {logger} from "@/lib/Logger";
-import {SerializedResponseConverter} from "@/util/types/SerializedResponse";
+import {SerializedResponseConverter, TSerializedResponse} from "@/util/types/SerializedResponse";
 import {Response} from "@/util/types/Response";
 import axios from "axios";
 import {ResponseCodes} from "@/util/types/ResponseCodes";
+import {TranslationComplete} from "@/classes/Islam/Quran/Translation/Complete";
 
 export class TranslationController {
     private static _instance: TranslationController | null = null;
@@ -20,7 +21,7 @@ export class TranslationController {
         return TranslationController._instance;
     }
 
-    public async list() {
+    public async list(): Promise<TSerializedResponse<TTranslationComplete[]>> {
         try {
             const res = await noCredentialsApiClient.get<Response<TTranslationComplete[]>>(`/api/islam/quranic/translation/list`);
 

@@ -31,8 +31,18 @@ export default function Providers({ children }: { children: ReactNode }) {
         QuranTranslationPreferences.getInstance().hydrate();
         QuranTextVariationPreferences.getInstance().hydrate();
 
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setMounted(true);
+        const init = async () => {
+            try {
+                await QuranTranslationPreferences.getInstance().initializeAsync();
+            } catch (error) {
+                console.error("Initialization failed:", error);
+            } finally {
+                setMounted(true);
+            }
+        };
+
+        init();
+
     }, []);
 
     return (

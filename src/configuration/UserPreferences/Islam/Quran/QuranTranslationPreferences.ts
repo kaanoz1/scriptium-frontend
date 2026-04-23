@@ -7,6 +7,7 @@ import {VerseTranslationComplete} from "@/classes/Islam/Quran/VerseTranslation/C
 import {TranslationComplete} from "@/classes/Islam/Quran/Translation/Complete";
 import {TTranslationComplete} from "@/dto/Islam/Quran/Translation/Complete";
 import {autorun, makeAutoObservable} from "mobx";
+import {BackendApi} from "@/tool/Fetchers/BackendApi";
 
 
 type HasTranslationId = TranslationPlain | VerseTranslationComplete;
@@ -17,12 +18,24 @@ export class QuranTranslationPreferences {
     private readonly defaultTranslationId = 1;
 
 
-    private _allTranslations: Array<TranslationComplete> = AllTranslations.map(TranslationComplete.fromJson);
+    private _allTranslations: Array<TranslationComplete> = [];
     private _preferredTranslations: Array<TranslationComplete> = [];
 
     private constructor() {
         makeAutoObservable(this);
-        this._preferredTranslations = this._allTranslations.filter(t => t.id === this.defaultTranslationId);
+        this.preferredTranslations = this._allTranslations.filter(t => t.id === this.defaultTranslationId);
+    }
+
+    public async initializeAsync() {
+        const translationsPlain = await BackendApi.TranslationController.list();
+        console.log(translationsPlain)
+        this._allTranslations = translationsPlain.data.map(TranslationComplete.fromJson);
+        this.preferredTranslations = this._allTranslations.filter(t => t.id === this.defaultTranslationId);
+
+    }
+
+    public length() {
+        return this._preferredTranslations.length
     }
 
     public hydrate() {
@@ -63,8 +76,8 @@ export class QuranTranslationPreferences {
 
     public addPreferredTranslation(translation: TranslationComplete): void {
 
-        if (!this._preferredTranslations.some(t => t.id === translation.id))
-            this._preferredTranslations.push(translation);
+        if (!this.preferredTranslations.some(t => t.id === translation.id))
+            this.preferredTranslations.push(translation);
     }
 
     public get allTranslations(): Array<TranslationComplete> {
@@ -72,7 +85,7 @@ export class QuranTranslationPreferences {
     }
 
     public isPreferred(translation: TranslationComplete): boolean {
-        return this._preferredTranslations.some(t => t.id === translation.id);
+        return this.preferredTranslations.some(t => t.id === translation.id);
     }
 
     private getTranslationId(item: HasTranslationId): number {
@@ -110,144 +123,3 @@ export class QuranTranslationPreferences {
 
 }
 
-
-const AllTranslations: TTranslationComplete[] = [
-    {
-        "authors": [
-            {
-                "language": {
-                    "name": "English",
-                    "nameEnglish": "English",
-                    "code": "en"
-                },
-                "nameTranslations": [],
-                "name": "Saheeh International",
-                "url": null,
-                "description": null
-            }
-        ],
-        "id": 1,
-        "name": "Saheeh International",
-        "description": null,
-        "language": {
-            "name": "English",
-            "nameEnglish": "English",
-            "code": "en"
-        }
-    },
-    {
-        "authors": [
-            {
-                "language": {
-                    "name": "English",
-                    "nameEnglish": "English",
-                    "code": "en"
-                },
-                "nameTranslations": [],
-                "name": "Abdullah Yusuf Ali",
-                "url": null,
-                "description": null
-            }
-        ],
-        "id": 2,
-        "name": "Abdullah Yusuf Ali",
-        "description": null,
-        "language": {
-            "name": "English",
-            "nameEnglish": "English",
-            "code": "en"
-        }
-    },
-    {
-        "authors": [
-            {
-                "language": {
-                    "name": "English",
-                    "nameEnglish": "English",
-                    "code": "en"
-                },
-                "nameTranslations": [],
-                "name": "Arthur John Arberry",
-                "url": null,
-                "description": null
-            }
-        ],
-        "id": 3,
-        "name": "Arthur John Arberry",
-        "description": null,
-        "language": {
-            "name": "English",
-            "nameEnglish": "English",
-            "code": "en"
-        }
-    },
-    {
-        "authors": [
-            {
-                "language": {
-                    "name": "English",
-                    "nameEnglish": "English",
-                    "code": "en"
-                },
-                "nameTranslations": [],
-                "name": "Ahmed Raza Khan",
-                "url": null,
-                "description": null
-            }
-        ],
-        "id": 4,
-        "name": "Ahmed Raza Khan",
-        "description": null,
-        "language": {
-            "name": "English",
-            "nameEnglish": "English",
-            "code": "en"
-        }
-    },
-    {
-        "authors": [
-            {
-                "language": {
-                    "name": "English",
-                    "nameEnglish": "English",
-                    "code": "en"
-                },
-                "nameTranslations": [],
-                "name": "Wahiduddin Khan",
-                "url": null,
-                "description": null
-            }
-        ],
-        "id": 5,
-        "name": "Wahiduddin Khan",
-        "description": null,
-        "language": {
-            "name": "English",
-            "nameEnglish": "English",
-            "code": "en"
-        }
-    },
-    {
-        "authors": [
-            {
-                "language": {
-                    "name": "English",
-                    "nameEnglish": "English",
-                    "code": "en"
-                },
-                "nameTranslations": [],
-                "name": "Ahmed Ali",
-                "url": null,
-                "description": null
-            }
-        ],
-        "id": 6,
-        "name": "Ahmed Ali",
-        "description": null,
-        "language": {
-            "name": "English",
-            "nameEnglish": "English",
-            "code": "en"
-        }
-    }
-]
