@@ -3,7 +3,7 @@
 import React from "react";
 import {useTranslations} from "next-intl";
 import {LuCopy} from "react-icons/lu";
-import {FaThreads, FaXTwitter} from "react-icons/fa6";
+import {FaThreads, FaWhatsapp, FaXTwitter} from "react-icons/fa6";
 import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
 import {
@@ -47,16 +47,20 @@ const ShareButton: React.FC<Props> = ({shareText}) => {
                         className="resize-none h-24 bg-muted/50 focus-visible:ring-0"
                     />
 
-                    <div className="flex items-center gap-3">
-                        <Button variant="outline" className="flex-1 gap-2"
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <Button variant="outline" className="gap-2"
                                 onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank')}>
                             <FaXTwitter size={16}/> X
                         </Button>
-                        <Button variant="outline" className="flex-1 gap-2"
+                        <Button variant="outline" className="gap-2"
                                 onClick={() => window.open(`https://threads.net/intent/post?text=${encodeURIComponent(shareText)}`, '_blank')}>
                             <FaThreads size={16}/> Threads
                         </Button>
-                        <Button variant="default" className="flex-1 gap-2" onClick={copyToClipboard}>
+                        <Button variant="outline" className="gap-2"
+                                onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank')}>
+                            <FaWhatsapp size={16}/> WhatsApp
+                        </Button>
+                        <Button variant="default" className="gap-2" onClick={copyToClipboard}>
                             <LuCopy size={16}/> {t("Copy")}
                         </Button>
                     </div>
