@@ -34,7 +34,7 @@ export const createVerseShareText = (
 
   let result = "";
 
-  result += `Qur'an, ${chapterNumber}.${chapterMeaning}:${verseNumber}\n`;
+  result += `Qur'an, ${chapterNumber}. ${chapterMeaning}:${verseNumber}\n`;
   result += verseText + "\n\n";
 
   for (const t of translationShown) {
