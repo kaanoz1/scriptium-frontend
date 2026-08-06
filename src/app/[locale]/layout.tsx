@@ -17,18 +17,27 @@ const geist = Geist({subsets: ['latin'], variable: '--font-sans'});
 export const metadata: Metadata = {
     title: "Scriptium",
     description: "Universal theology library",
-    icons: [
-        {
-            rel: 'icon',
-            url: ClientUtils.AssetManager.ScriptiumIconDark,
-            media: '(prefers-color-scheme: dark)',
-        },
-        {
-            rel: 'icon',
-            url: ClientUtils.AssetManager.ScriptiumIconLight,
-            media: '(prefers-color-scheme: light)',
-        },
+    icons: {
+    icon: [
+      {
+        url: '/icon/scriptium-dark-theme-icon-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
+        url: '/icon/scriptium-dark-theme-icon-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+      },
     ],
+    apple: [
+      {
+        url: '/icon/scriptium-dark-theme-icon-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+      },
+    ],
+  },
 };
 
 export default async function RootLayout({
