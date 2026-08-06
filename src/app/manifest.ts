@@ -10,28 +10,28 @@ export default function manifest(): MetadataRoute.Manifest {
         background_color: '#ffffff',
         theme_color: '#1a1a1a',
         icons: [
-            {
-                src: '/icon/scriptium-light-theme-icon-1024x1024.png',
-                sizes: '1024x1024',
-                type: 'image/png',
-                purpose: 'any',
-            },
-            {
-                src: '/icon/scriptium-dark-theme-icon-1024x1024.png',
-                sizes: '1024x1024',
-                type: 'image/png',
-                purpose: 'maskable',
-            },
-            {
-                src: '/icon/scriptium-light-theme-icon-1024x1024.png',
-                sizes: '192x192',
-                type: 'image/png',
-            },
-            {
-                src: '/icon/scriptium-light-theme-icon-1024x1024.png',
-                sizes: '512x512',
-                type: 'image/png',
-            },
-        ],
+                {
+                  src: '/icon/scriptium-dark-theme-icon-192x192.png',
+                  sizes: '192x192',
+                  type: 'image/png',
+                  purpose: 'maskable',
+                },
+                {
+                  src: '/icon/scriptium-dark-theme-icon-512x512.png',
+                  sizes: '512x512',
+                  type: 'image/png',
+                  purpose: 'any',
+                },
+                {
+                  src: '/icon/scriptium-light-theme-icon-192x192.png',
+                  sizes: '192x192',
+                  type: 'image/png',
+                },
+                {
+                  src: '/icon/scriptium-light-theme-icon-512x512.png',
+                  sizes: '512x512',
+                  type: 'image/png',
+                },
+        ]   
     }
 }
