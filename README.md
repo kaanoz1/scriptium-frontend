@@ -63,7 +63,7 @@ This is the **final composition layer**, where:
 - Preferences are already applied
 - Data is assumed to be ready
 
-> ⚠️ No validation or checks should be performed here.  
+> ! No validation or checks should be performed here.  
 > All validation must be handled in either `page.tsx` or `client.tsx`.
 
 ---
@@ -98,6 +98,6 @@ This ensures:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](LICENCE) on behalf of Scriptium.
