@@ -15,19 +15,33 @@ import {ClientUtils} from "@/util/ClientUtils";
 const geist = Geist({subsets: ['latin'], variable: '--font-sans'});
 
 export const metadata: Metadata = {
-    title: "Scriptium",
-    description: "Universal theology library",
-    icons: {
+  title: "Scriptium",
+  description: "Universal theology library",
+  icons: {
     icon: [
       {
         url: '/icon/scriptium-dark-theme-icon-192x192.png',
         sizes: '192x192',
         type: 'image/png',
+        media: '(prefers-color-scheme: dark)',
       },
       {
         url: '/icon/scriptium-dark-theme-icon-512x512.png',
         sizes: '512x512',
         type: 'image/png',
+        media: '(prefers-color-scheme: dark)',
+      },
+      {
+        url: '/icon/scriptium-light-theme-icon-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        media: '(prefers-color-scheme: light)',
+      },
+      {
+        url: '/icon/scriptium-light-theme-icon-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        media: '(prefers-color-scheme: light)',
       },
     ],
     apple: [
@@ -35,6 +49,13 @@ export const metadata: Metadata = {
         url: '/icon/scriptium-dark-theme-icon-512x512.png',
         sizes: '512x512',
         type: 'image/png',
+        media: '(prefers-color-scheme: dark)',
+      },
+      {
+        url: '/icon/scriptium-light-theme-icon-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        media: '(prefers-color-scheme: light)',
       },
     ],
   },
