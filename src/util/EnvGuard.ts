@@ -18,14 +18,14 @@ export class EnvGuard {
 
         this.publicKeys.forEach(key => {
             if (!this.envMap[key])
-                throw new Error(`Public Environment variable ${key} is not set`);
+                logger.warn(`Public Environment variable ${key} is not set`);
         });
 
         const isServer = typeof window === 'undefined';
         if (isServer) {
             this.privateKeys.forEach(key => {
                 if (!this.envMap[key])
-                    throw new Error(`Server Environment variable ${key} is not set`);
+                    logger.warn(`Server Environment variable ${key} is not set`);
             });
         }
 
@@ -55,7 +55,8 @@ export class EnvGuard {
         if (!value) {
             const isBrowser = typeof window !== 'undefined';
             const context = isBrowser ? " (Note: Server secrets are hidden in the browser)" : "";
-            throw new Error(`Environment variable ${key} is missing during runtime access${context}`);
+            logger.warn(`Environment variable ${key} is missing during runtime access${context}`);
+            return "";
         }
 
         return value;

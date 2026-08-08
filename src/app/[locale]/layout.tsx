@@ -20,6 +20,11 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
+        url: '/icon/scriptium-light-theme-icon-192x192-padded.png',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
         url: '/icon/scriptium-dark-theme-icon-192x192.png',
         sizes: '192x192',
         type: 'image/png',
