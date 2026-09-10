@@ -44,7 +44,7 @@ const ErrorTemplate: React.FC<ErrorTemplateProps> = ({
     <div
       className={cn(
         "relative flex flex-col items-center justify-center overflow-hidden px-6 text-center w-full",
-        fullPage ? "h-[calc(100vh - 150px)]" : "py-12 h-full min-h-100",
+        fullPage ? "h-[calc(100vh_-_150px)]" : "py-12 h-full min-h-100",
       )}
     >
       <div
