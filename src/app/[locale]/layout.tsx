@@ -23,6 +23,7 @@ export const metadata: Metadata = {
         url: '/icon/scriptium-light-theme-icon-192x192-padded.png',
         sizes: '192x192',
         type: 'image/png',
+        media: '(prefers-color-scheme: light)'
       },
       {
         url: '/icon/scriptium-dark-theme-icon-192x192.png',
