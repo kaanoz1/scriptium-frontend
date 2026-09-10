@@ -7,15 +7,31 @@ import RateLimitError from "@/util/components/Error/RateLimitError";
 import NotFoundError from "@/util/components/Error/NotFoundError";
 import Client from "@/app/[locale]/i/q/client";
 import { ServerUtils } from "@/util/ServerUtils";
+import { SITE_URL } from "@/configuration";
 
 type Props = {
   params: Promise<{ locale: string }>;
 };
 
-export const metadata: Metadata = {
-  title: "Scriptium - Qur'an Chapters",
-  description: "All chapters from Qur'an",
-};
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const path = `/${locale}/i/q`;
+
+  return {
+    title: {
+      absolute: "Scriptium - Qur'an Chapters",
+    },
+    description: "All chapters from Qur'an",
+    alternates: {
+      canonical: path,
+    },
+    openGraph: {
+      title: "Scriptium - Qur'an Chapters",
+      description: "All chapters from Qur'an",
+      url: path,
+    },
+  };
+}
 
 const Page: NextPage<Props> = async ({ params }) => {
   const { locale } = await params;
@@ -24,7 +40,7 @@ const Page: NextPage<Props> = async ({ params }) => {
 
   switch (response.status) {
     case ResponseCodes.OK:
-      const currentUrl = `https://scriptium.com/${locale}/i/q`;
+      const currentUrl = `${SITE_URL}/${locale}/i/q`;
       await ServerUtils.General.Pages.upsertUrlToSitemap(currentUrl);
 
       return <Client chapters={response.data} />;

@@ -10,13 +10,75 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer/Footer";
-import { ClientUtils } from "@/util/ClientUtils";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
+const SITE_URL = "https://scriptium.net";
+const SITE_NAME = "Scriptium";
+const SITE_DESCRIPTION =
+  "Theology Library - Scriptium is a dedicated platform built to collect, structure, and present the world's most profound theological and philosophical sources in a modern, accessible format.";
+
 export const metadata: Metadata = {
-  title: "Scriptium",
-  description: "Universal theology library",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "theology",
+    "religion",
+    "philosophy",
+    "Quran",
+    "scripture",
+    "religious texts",
+    "Islam",
+  ],
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+
+  alternates: {
+    canonical: "/",
+  },
+
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    locale: "en_US",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: SITE_NAME,
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    images: ["/og-image.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+
   icons: {
     icon: [
       {
