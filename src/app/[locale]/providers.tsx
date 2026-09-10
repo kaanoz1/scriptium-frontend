@@ -9,66 +9,68 @@ import { Toaster } from "sonner";
 import { QuranViewPreferences } from "@/configuration/UserPreferences/Islam/Quran/QuranViewPreferences";
 import { QuranTranslationPreferences } from "@/configuration/UserPreferences/Islam/Quran/QuranTranslationPreferences";
 import { QuranTextVariationPreferences } from "@/configuration/UserPreferences/Islam/Quran/QuranTextVariationPreferences";
+import { LoadingProvider } from "@/context/LoadingContext";
+import GlobalLoadingOverlay from "@/components/GlobalLoadingOverlay";
 
 export default function Providers({ children }: { children: ReactNode }) {
-    const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-    const [queryClient] = useState(
-        () =>
-            new QueryClient({
-                defaultOptions: {
-                    queries: {
-                        staleTime: 60 * 1000,
-                        refetchOnWindowFocus: false,
-                    },
-                },
-            })
-    );
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+  );
 
-    useEffect(() => {
-        // Hydration for preferences.
-        QuranViewPreferences.getInstance().hydrate();
-        QuranTranslationPreferences.getInstance().hydrate();
-        QuranTextVariationPreferences.getInstance().hydrate();
+  useEffect(() => {
+    QuranViewPreferences.getInstance().hydrate();
+    QuranTranslationPreferences.getInstance().hydrate();
+    QuranTextVariationPreferences.getInstance().hydrate();
 
-        const init = async () => {
-            try {
-                await QuranTranslationPreferences.getInstance().initializeAsync();
-            } catch (error) {
-                console.error("Initialization failed:", error);
-            } finally {
-                setMounted(true);
-            }
-        };
+    const init = async () => {
+      try {
+        await QuranTranslationPreferences.getInstance().initializeAsync();
+      } catch (error) {
+        console.error("Initialization failed:", error);
+      } finally {
+        setMounted(true);
+      }
+    };
 
-        init();
+    init();
+  }, []);
 
-    }, []);
-
-    return (
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            enableColorScheme={false}
-        >
-            <TooltipProvider>
-                <QueryClientProvider client={queryClient}>
-
-                    {mounted ? (
-                        <>
-                            {children}
-                            {EnvGuard.isDevelopment && (
-                                <ReactQueryDevtools initialIsOpen={false} />
-                            )}
-                            <Toaster />
-                        </>
-                    ) : (
-                        <div className="fixed inset-0 bg-background" aria-hidden="true" />
-                    )}
-                </QueryClientProvider>
-            </TooltipProvider>
-        </ThemeProvider>
-    );
+  return (
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+      enableColorScheme={false}
+    >
+      <TooltipProvider>
+        <QueryClientProvider client={queryClient}>
+          <LoadingProvider>
+            {mounted ? (
+              <>
+                {children}
+                {EnvGuard.isDevelopment && (
+                  <ReactQueryDevtools initialIsOpen={false} />
+                )}
+                <Toaster />
+              </>
+            ) : (
+              <div className="fixed inset-0 bg-background" aria-hidden="true" />
+            )}
+            <GlobalLoadingOverlay />
+          </LoadingProvider>
+        </QueryClientProvider>
+      </TooltipProvider>
+    </ThemeProvider>
+  );
 }

@@ -1,84 +1,84 @@
 "use client";
 
 import React from "react";
-import {motion, Variants} from "framer-motion";
-import {LuBookOpen} from "react-icons/lu";
-import {useLocale} from "use-intl";
-import {ChapterWithVerseCount} from "@/classes/Islam/Quran/Chapter/WithVerseCount";
-import {useTranslations} from "next-intl";
-import {usePathname} from "next/navigation";
+import { motion, Variants } from "framer-motion";
+import { LuBookOpen } from "react-icons/lu";
+import { useLocale } from "use-intl";
+import { ChapterWithVerseCount } from "@/classes/Islam/Quran/Chapter/WithVerseCount";
+import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
-import {QuranViewPreferences} from "@/configuration/UserPreferences/Islam/Quran/QuranViewPreferences";
-import {observer} from "mobx-react-lite";
+import { QuranViewPreferences } from "@/configuration/UserPreferences/Islam/Quran/QuranViewPreferences";
+import { observer } from "mobx-react-lite";
+import LoadingLink from "@/components/LoadingLink";
 
 type Props = {
-    chapter: ChapterWithVerseCount
-}
+  chapter: ChapterWithVerseCount;
+};
 
+const ChapterCard: React.FC<Props> = observer(({ chapter }) => {
+  const locale = useLocale();
 
-const ChapterCard: React.FC<Props> = observer(({chapter}) => {
-    const locale = useLocale();
+  const t = useTranslations("Pages.Islam.Quran.Components.ChapterCard");
 
-    const t = useTranslations("Pages.Islam.Quran.Components.ChapterCard");
+  const selectedFont = QuranViewPreferences.getInstance().selectedArabicFont;
 
+  const matchedMeaning = chapter.meanings.find(
+    (meaning) => meaning.language.code === locale,
+  );
 
-    const selectedFont = QuranViewPreferences.getInstance().selectedArabicFont;
+  const meaningText = matchedMeaning ? matchedMeaning.text : "";
 
-    const matchedMeaning = chapter.meanings.find(
-        (meaning) => meaning.language.code === locale
+  const path = usePathname();
 
-    );
+  return (
+    <motion.div variants={itemVariants} className="h-full">
+      <LoadingLink href={path + `/${chapter.sequence}`}>
+        <div className="group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-xl border border-border/50 bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg dark:bg-card/50 dark:backdrop-blur-sm">
+          <div className="flex items-start justify-between">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+              {chapter.sequence}
+            </div>
 
-    const meaningText = matchedMeaning ? matchedMeaning.text : "";
+            <div className="text-right">
+              <h3
+                className={`text-2xl font-bold leading-none tracking-tight ${selectedFont.className}`}
+              >
+                {chapter.name}
+              </h3>
+            </div>
+          </div>
 
+          <div className="mt-8 flex items-end justify-between">
+            <div className="space-y-1.5 flex-1 pr-4">
+              <h4 className="min-h-5 text-sm font-semibold tracking-tight">
+                {meaningText}
+              </h4>
 
-    const path = usePathname();
-
-    return (
-        <motion.div variants={itemVariants} className="h-full">
-            <Link href={path + `/${chapter.sequence}`}>
-                <div
-                    className="group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-xl border border-border/50 bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg dark:bg-card/50 dark:backdrop-blur-sm">
-
-                    <div className="flex items-start justify-between">
-                        <div
-                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                            {chapter.sequence}
-                        </div>
-
-                        <div className="text-right">
-                            <h3 className={`text-2xl font-bold leading-none tracking-tight ${selectedFont.className}`}>
-                                {chapter.name}
-                            </h3>
-                        </div>
-                    </div>
-
-                    <div className="mt-8 flex items-end justify-between">
-                        <div className="space-y-1.5 flex-1 pr-4">
-                            <h4 className="min-h-5 text-sm font-semibold tracking-tight">
-                                {meaningText}
-                            </h4>
-
-                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                <LuBookOpen size={14} className="transition-colors group-hover:text-primary"/>
-                                <span>{chapter.verseCount} {t("Verses")}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </Link>
-        </motion.div>
-    );
-})
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <LuBookOpen
+                  size={14}
+                  className="transition-colors group-hover:text-primary"
+                />
+                <span>
+                  {chapter.verseCount} {t("Verses")}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </LoadingLink>
+    </motion.div>
+  );
+});
 
 export default ChapterCard;
 
 const itemVariants: Variants = {
-    hidden: {opacity: 0, y: 20},
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {type: "spring", stiffness: 300, damping: 24}
-    }
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 300, damping: 24 },
+  },
 };

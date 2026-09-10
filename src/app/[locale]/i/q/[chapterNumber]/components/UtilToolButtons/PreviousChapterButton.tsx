@@ -1,44 +1,53 @@
 import React from "react";
-import {useLocale} from "use-intl";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {Button} from "@/components/ui/button";
-import {GrPrevious} from "react-icons/gr";
+import { useLocale } from "use-intl";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { GrPrevious } from "react-icons/gr";
 import Link from "next/link";
-import {ChapterPlain} from "@/classes/Islam/Quran/Chapter/Plain";
-import {useTranslations} from "next-intl";
+import { ChapterPlain } from "@/classes/Islam/Quran/Chapter/Plain";
+import { useTranslations } from "next-intl";
+import LoadingLink from "@/components/LoadingLink";
 
 type Props = {
-    chapter: ChapterPlain;
-}
+  chapter: ChapterPlain;
+};
 
-const PreviousChapterButton: React.FC<Props> = ({
-                                                    chapter
-                                                }) => {
+const PreviousChapterButton: React.FC<Props> = ({ chapter }) => {
+  const t = useTranslations(
+    "Pages.Islam.Quran.Chapter.Components.VerseContainer.VerseContainerHeader.UtilToolButtons.PreviousChapterButton",
+  );
 
-    const t = useTranslations("Pages.Islam.Quran.Chapter.Components.VerseContainer.VerseContainerHeader.UtilToolButtons.PreviousChapterButton");
+  const chapterNumber = chapter.sequence;
 
-    const chapterNumber = chapter.sequence;
+  const locale = useLocale();
 
-    const locale = useLocale();
-
-
-    if (chapterNumber === 1) return <Tooltip>
+  if (chapterNumber === 1)
+    return (
+      <Tooltip>
         <TooltipTrigger asChild>
           <span>
-            <Button variant="ghost" disabled><GrPrevious/></Button>
+            <Button variant="ghost" disabled>
+              <GrPrevious />
+            </Button>
           </span>
         </TooltipTrigger>
         <TooltipContent>
-            <p>{t("NoPreviousChapter")}</p>
+          <p>{t("NoPreviousChapter")}</p>
         </TooltipContent>
-    </Tooltip>;
+      </Tooltip>
+    );
 
-
-    return <Button variant="ghost" size="icon" asChild>
-        <Link href={`/${locale}/i/q/${chapterNumber - 1}`}>
-            <GrPrevious/>
-        </Link>
-    </Button>;
-}
+  return (
+    <Button variant="ghost" size="icon" asChild>
+      <LoadingLink href={`/${locale}/i/q/${chapterNumber - 1}`}>
+        <GrPrevious />
+      </LoadingLink>
+    </Button>
+  );
+};
 
 export default PreviousChapterButton;
