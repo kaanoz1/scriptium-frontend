@@ -19,7 +19,7 @@ const ScriptiumBrand: React.FC<Props> = ({ showText = true }) => {
     (pathname === "/" || pathname === "/en" || pathname === "/tr") && showText;
 
   return (
-    <LoadingLink href="/" className="flex items-center gap-2 sm:gap-3 group">
+    <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
       <div className="relative w-10 h-10 sm:w-12 sm:h-12 shrink-0">
         <Image
           src={ClientUtils.AssetManager.ScriptiumIconLight}
@@ -39,7 +39,7 @@ const ScriptiumBrand: React.FC<Props> = ({ showText = true }) => {
       </div>
 
       {isHomePage && <ScriptiumText className="hidden sm:block" />}
-    </LoadingLink>
+    </Link>
   );
 };
 
