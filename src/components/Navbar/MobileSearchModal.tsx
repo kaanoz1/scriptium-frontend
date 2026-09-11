@@ -57,42 +57,42 @@ const MobileSearchModal: React.FC<Props> = observer(({ onClose }) => {
 
   const modalContent = (
     <main className="fixed inset-0 z-9999 bg-background flex flex-col animate-in fade-in duration-200">
-      <header className="flex items-center gap-1 p-2 border-b bg-card">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onClose}
-          className="shrink-0 rounded-full h-9 w-9"
-        >
-          <ArrowLeft className="h-5 w-5 text-muted-foreground" />
-        </Button>
+      <Command
+        shouldFilter={false}
+        className="flex h-full w-full flex-col rounded-none border-none bg-transparent"
+      >
+        <header className="flex items-center gap-1 p-2 border-b bg-card">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="shrink-0 rounded-full h-9 w-9"
+          >
+            <ArrowLeft className="h-5 w-5 text-muted-foreground" />
+          </Button>
 
-        <div className="flex-1">
-          <Input
-            autoFocus
-            value={state.query}
-            onChange={(e) => (state.query = e.target.value)}
-            type="text"
-            placeholder={t("SearchInputPlaceholder")}
-            className="h-9 border-none bg-accent/50 shadow-none text-base px-3"
-          />
-        </div>
+          <div className="flex-1">
+            <Input
+              autoFocus
+              value={state.query}
+              onChange={(e) => (state.query = e.target.value)}
+              type="text"
+              placeholder={t("SearchInputPlaceholder")}
+              className="h-9 border-none bg-accent/50 shadow-none text-base px-3"
+            />
+          </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsSettingsOpen(true)}
-          className="shrink-0 rounded-full h-9 w-9"
-        >
-          <LuSettings2 size={18} className="text-muted-foreground" />
-        </Button>
-      </header>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsSettingsOpen(true)}
+            className="shrink-0 rounded-full h-9 w-9"
+          >
+            <LuSettings2 size={18} className="text-muted-foreground" />
+          </Button>
+        </header>
 
-      <section className="flex-1 overflow-y-auto overflow-x-hidden">
-        <Command
-          shouldFilter={false}
-          className="rounded-none border-none h-full bg-transparent"
-        >
+        <section className="flex-1 overflow-y-auto overflow-x-hidden">
           <CommandList className="max-h-full h-full p-4">
             {state.isLoading ? (
               <div className="flex flex-col items-center justify-center gap-3 py-16">
@@ -105,8 +105,8 @@ const MobileSearchModal: React.FC<Props> = observer(({ onClose }) => {
               <SearchResultsList state={state} onNavigate={onClose} />
             )}
           </CommandList>
-        </Command>
-      </section>
+        </section>
+      </Command>
 
       {isSettingsOpen && (
         <MobileSearchBarSettingsModal
