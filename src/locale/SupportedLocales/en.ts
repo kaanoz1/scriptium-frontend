@@ -2,7 +2,7 @@ import { SystemLanguage } from "@/locale/SystemLanguage";
 
 export const en: SystemLanguage = {
   Navbar: {
-    Placeholder: "Search for a text.",
+    Placeholder: "Search..",
     QuickNavigation: {
       Header: "Quick Navigation",
       Description: "Access directly using surah and verse numbers.",
@@ -101,8 +101,7 @@ export const en: SystemLanguage = {
   },
   Pages: {
     Home: {
-      HeroSubtitle:
-        "Universal theology library. Explore texts, roots, and semantics seamlessly.",
+      HeroSubtitle: "Theology library.",
       QuranCard: {
         Title: "Qur'an",
         ArabicTitle: "القرآن الكريم",

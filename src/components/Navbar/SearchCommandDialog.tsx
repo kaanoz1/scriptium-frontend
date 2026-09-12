@@ -122,9 +122,9 @@ const SearchCommandDialog: React.FC<Props> = observer(
                   ) : !state.query.trim() ? (
                     <div className="flex flex-col items-center justify-center gap-1 px-6 py-16 text-center">
                       <span className="text-sm font-medium text-muted-foreground">
-                        {t(
+                        {/* {t(
                           "QuickNavigation.MobileSearchModal.SearchInputPlaceholder",
-                        )}
+                        )} */}
                       </span>
                     </div>
                   ) : (
