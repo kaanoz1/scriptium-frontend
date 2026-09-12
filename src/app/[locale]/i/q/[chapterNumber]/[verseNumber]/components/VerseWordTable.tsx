@@ -75,7 +75,9 @@ const VerseWordTable: React.FC<Props> = observer(({ words }) => {
         </div>
       </div>
 
-      <div className={`w-full ${isSticky ? "overflow-y-auto" : ""}`}>
+      <div
+        className={`w-full flex-1 min-h-0 ${isSticky ? "overflow-y-auto" : ""}`}
+      >
         <Table className="table-fixed w-full relative">
           <TableHeader className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
             <TableRow className="hover:bg-transparent">
