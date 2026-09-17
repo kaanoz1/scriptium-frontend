@@ -101,7 +101,7 @@ const Footer = () => {
           </Link>
 
           <Link
-            href="https://github.com/scriptium-project"
+            href="https://github.com/scriptium"
             target="_blank"
             className="text-muted-foreground transition-all hover:text-foreground hover:scale-110"
           >
