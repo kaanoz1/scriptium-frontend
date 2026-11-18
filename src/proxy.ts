@@ -1,12 +1,31 @@
-import createMiddleware from 'next-intl/middleware';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import createMiddleware from "next-intl/middleware";
 
-export default createMiddleware({
-
-    locales: ["en"],
-    defaultLocale: 'en'
+const intlMiddleware = createMiddleware({
+  locales: ["en"],
+  defaultLocale: "en",
 });
+
+const isTestRoute = (pathname: string) =>
+  pathname === "/test" || pathname.startsWith("/test/");
+
+export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // In production, /test and everything under it redirects to "/".
+  // TODO: Fix. This routes should return notfound().
+  if (isTestRoute(pathname)) {
+    if (process.env.NODE_ENV === "production")
+      return NextResponse.redirect(new URL("/", request.url));
+
+    return NextResponse.next();
+  }
+
+  return intlMiddleware(request);
+}
 
 // noinspection JSUnusedGlobalSymbols
 export const config = {
-    matcher: ['/', '/en/:path*']
+  matcher: ["/", "/en/:path*", "/test", "/test/:path*"],
 };

@@ -58,12 +58,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         entries.push(entry(`${base}/i/q/${chapter}/${verse}`, 0.6, "monthly"));
     });
 
-    // Roots — Buckwalter latin contains characters like "$", so encode it.
     for (const latin of roots)
       entries.push(
         entry(`${base}/i/q/root/${encodeURIComponent(latin)}`, 0.5, "monthly"),
       );
   }
-
   return entries;
 }
