@@ -20,20 +20,20 @@ const ScriptiumBrand: React.FC<Props> = ({ showText = true }) => {
 
   return (
     <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
-      <div className="relative w-10 h-10 sm:w-12 sm:h-12 shrink-0">
+      <div className="relative w-10 h-10 sm:w-16 sm:h-16 shrink-0">
         <Image
-          src={ClientUtils.AssetManager.ScriptiumIconLight}
+          src={ClientUtils.AssetManager.ScriptiumIconLightSvg}
           alt="Scriptium Logo"
-          width={48}
-          height={48}
+          width={96}
+          height={96}
           className="dark:hidden"
         />
 
         <Image
-          src={ClientUtils.AssetManager.ScriptiumIconDark}
+          src={ClientUtils.AssetManager.ScriptiumIconDarkSvg}
           alt="Scriptium Logo"
-          width={48}
-          height={48}
+          width={96}
+          height={96}
           className="hidden dark:block"
         />
       </div>
