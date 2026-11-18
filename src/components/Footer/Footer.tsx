@@ -66,7 +66,7 @@ const Footer = () => {
 
         <div className="flex items-center gap-5">
           <Link
-            href="mailto:contact@scriptium.org"
+            href="mailto:info@scriptium.net"
             className="text-muted-foreground transition-all hover:text-gray-500 hover:scale-110"
           >
             <FaEnvelope className="w-5 h-5" />
