@@ -4,10 +4,9 @@ import { ResponseCodes } from "@/util/types/ResponseCodes";
 import UnknownError from "@/util/components/Error/UnknownError";
 import ServerError from "@/util/components/Error/ServerError";
 import RateLimitError from "@/util/components/Error/RateLimitError";
-import NotFoundError from "@/util/components/Error/NotFoundError";
 import Client from "@/app/[locale]/i/q/client";
-import { ServerUtils } from "@/util/ServerUtils";
-import { SITE_URL } from "@/configuration";
+import { breadcrumbJsonLd, buildMetadata, crumbs, JsonLd } from "@/lib/seo";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -15,22 +14,14 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const path = `/${locale}/i/q`;
 
-  return {
-    title: {
-      absolute: "Scriptium - Qur'an Chapters",
-    },
-    description: "All chapters from Qur'an",
-    alternates: {
-      canonical: path,
-    },
-    openGraph: {
-      title: "Scriptium - Qur'an Chapters",
-      description: "All chapters from Qur'an",
-      url: path,
-    },
-  };
+  return buildMetadata({
+    title: "The Holy Qur'an — All 114 Surahs with Translations",
+    description:
+      "Browse all 114 surahs of the Qur'an. Read each chapter in Arabic with English translations, transliteration and word-by-word analysis.",
+    path: `/${locale}/i/q`,
+    locale,
+  });
 }
 
 const Page: NextPage<Props> = async ({ params }) => {
@@ -40,12 +31,20 @@ const Page: NextPage<Props> = async ({ params }) => {
 
   switch (response.status) {
     case ResponseCodes.OK:
-      const currentUrl = `${SITE_URL}/${locale}/i/q`;
-      await ServerUtils.General.Pages.upsertUrlToSitemap(currentUrl);
-
-      return <Client chapters={response.data} />;
+      return (
+        <>
+          <JsonLd
+            data={breadcrumbJsonLd([
+              crumbs.home(locale),
+              crumbs.islam(locale),
+              crumbs.quran(locale),
+            ])}
+          />
+          <Client chapters={response.data} />
+        </>
+      );
     case ResponseCodes.NOT_FOUND:
-      return <NotFoundError />;
+      notFound();
     case ResponseCodes.TOO_MANY_REQUESTS:
       return <RateLimitError />;
     case ResponseCodes.INTERNAL_SERVER_ERROR:

@@ -2,14 +2,10 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { LuBookOpen } from "react-icons/lu";
-import { useLocale } from "use-intl";
-import { ChapterWithVerseCount } from "@/classes/Islam/Quran/Chapter/WithVerseCount";
-import { useTranslations } from "next-intl";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { QuranViewPreferences } from "@/configuration/UserPreferences/Islam/Quran/QuranViewPreferences";
+import { useLocale, useTranslations } from "next-intl";
 import { observer } from "mobx-react-lite";
+import { ChapterWithVerseCount } from "@/classes/Islam/Quran/Chapter/WithVerseCount";
+import { QuranViewPreferences } from "@/configuration/UserPreferences/Islam/Quran/QuranViewPreferences";
 import LoadingLink from "@/components/LoadingLink";
 
 type Props = {
@@ -18,55 +14,43 @@ type Props = {
 
 const ChapterCard: React.FC<Props> = observer(({ chapter }) => {
   const locale = useLocale();
-
   const t = useTranslations("Pages.Islam.Quran.Components.ChapterCard");
-
   const selectedFont = QuranViewPreferences.getInstance().selectedArabicFont;
 
-  const matchedMeaning = chapter.meanings.find(
-    (meaning) => meaning.language.code === locale,
-  );
-
-  const meaningText = matchedMeaning ? matchedMeaning.text : "";
-
-  const path = usePathname();
+  const meaningText =
+    chapter.meanings.find((meaning) => meaning.language.code === locale)
+      ?.text ?? "";
 
   return (
     <motion.div variants={itemVariants} className="h-full">
-      <LoadingLink href={path + `/${chapter.sequence}`}>
-        <div className="group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-xl border border-border/50 bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg dark:bg-card/50 dark:backdrop-blur-sm">
-          <div className="flex items-start justify-between">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-              {chapter.sequence}
-            </div>
-
-            <div className="text-right">
-              <h3
-                className={`text-2xl font-bold leading-none tracking-tight ${selectedFont.className}`}
-              >
-                {chapter.name}
-              </h3>
-            </div>
-          </div>
-
-          <div className="mt-8 flex items-end justify-between">
-            <div className="space-y-1.5 flex-1 pr-4">
-              <h4 className="min-h-5 text-sm font-semibold tracking-tight">
-                {meaningText}
-              </h4>
-
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <LuBookOpen
-                  size={14}
-                  className="transition-colors group-hover:text-primary"
-                />
-                <span>
-                  {chapter.verseCount} {t("Verses")}
-                </span>
-              </div>
-            </div>
-          </div>
+      <LoadingLink
+        href={`/${locale}/i/q/${chapter.sequence}`}
+        className="group relative flex h-full items-center gap-4 overflow-hidden rounded-2xl border border-border/60 bg-card/70 p-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
+          <span className="absolute inset-1.5 rounded-md border border-border transition-colors group-hover:border-emerald-500/50" />
+          <span className="absolute inset-1.5 rotate-45 rounded-md border border-border transition-colors group-hover:border-emerald-500/50" />
+          <span className="relative text-sm font-semibold tabular-nums transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+            {chapter.sequence}
+          </span>
         </div>
+
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-sm font-semibold tracking-tight">
+            {meaningText}
+          </h3>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            <span className="tabular-nums">{chapter.verseCount}</span>{" "}
+            {t("Verses")}
+          </p>
+        </div>
+
+        <span
+          dir="rtl"
+          className={`shrink-0 text-2xl leading-none text-foreground/90 transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-300 ${selectedFont.className}`}
+        >
+          {chapter.name}
+        </span>
       </LoadingLink>
     </motion.div>
   );
@@ -75,10 +59,10 @@ const ChapterCard: React.FC<Props> = observer(({ chapter }) => {
 export default ChapterCard;
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 12 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 300, damping: 24 },
+    transition: { type: "spring", stiffness: 320, damping: 26 },
   },
 };
