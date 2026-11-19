@@ -1,18 +1,28 @@
 import { Metadata, NextPage } from "next";
-import { SUPPORTED_LOCALES } from "@/locale/SupportedLocales/_index";
+import { notFound } from "next/navigation";
 import { BackendApi } from "@/tool/Fetchers/BackendApi";
 import { ResponseCodes } from "@/util/types/ResponseCodes";
-import { ServerUtils } from "@/util/ServerUtils";
 import Client from "@/app/[locale]/i/q/root/client";
-import NotFoundError from "@/util/components/Error/NotFoundError";
 import RateLimitError from "@/util/components/Error/RateLimitError";
 import ServerError from "@/util/components/Error/ServerError";
 import UnknownError from "@/util/components/Error/UnknownError";
-import { SITE_URL } from "@/configuration";
+import { breadcrumbJsonLd, buildMetadata, crumbs, JsonLd } from "@/lib/seo";
 
 type Props = {
   params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+
+  return buildMetadata({
+    title: "Arabic Roots of the Qur'an — Complete Root Index",
+    description:
+      "Browse every Arabic root in the Qur'an with its number of occurrences. Open a root to see all the words derived from it and the verses where they appear.",
+    path: `/${locale}/i/q/root`,
+    locale,
+  });
+}
 
 const Page: NextPage<Props> = async ({ params }) => {
   const { locale } = await params;
@@ -21,12 +31,21 @@ const Page: NextPage<Props> = async ({ params }) => {
 
   switch (response.status) {
     case ResponseCodes.OK:
-      const currentUrl = `${SITE_URL}/${locale}/i/q/root`;
-      await ServerUtils.General.Pages.upsertUrlToSitemap(currentUrl);
-
-      return <Client roots={response.data} />;
+      return (
+        <>
+          <JsonLd
+            data={breadcrumbJsonLd([
+              crumbs.home(locale),
+              crumbs.islam(locale),
+              crumbs.quran(locale),
+              crumbs.roots(locale),
+            ])}
+          />
+          <Client roots={response.data} />
+        </>
+      );
     case ResponseCodes.NOT_FOUND:
-      return <NotFoundError />;
+      notFound();
     case ResponseCodes.TOO_MANY_REQUESTS:
       return <RateLimitError />;
     case ResponseCodes.INTERNAL_SERVER_ERROR:
@@ -38,39 +57,3 @@ const Page: NextPage<Props> = async ({ params }) => {
 };
 
 export default Page;
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
-
-  const lang = locale as keyof typeof SUPPORTED_LOCALES;
-
-  const title: Record<keyof typeof SUPPORTED_LOCALES, string> = {
-    en: "Roots of Quran",
-    tr: "Kök",
-  };
-
-  const descriptions: Record<keyof typeof SUPPORTED_LOCALES, string> = {
-    en: "Explore the linguistic roots and deep etymology of the Quran with Scriptium. Analyze word origins and patterns to enhance your understanding.",
-    tr: "Scriptium ile Kur'an'ın dilbilimsel köklerini ve derin etimolojisini keşfedin. Kelime kökenlerini ve kalıplarını analiz ederek anlayışınızı derinleştirin.",
-  };
-
-  const label = title[lang] || title.en;
-  const pageTitle = `Scriptium - ${label}`;
-  const description = descriptions[lang] || descriptions.en;
-  const path = `/${locale}/i/q/root`;
-
-  return {
-    title: {
-      absolute: pageTitle,
-    },
-    description,
-    alternates: {
-      canonical: path,
-    },
-    openGraph: {
-      title: pageTitle,
-      description,
-      url: path,
-    },
-  };
-}

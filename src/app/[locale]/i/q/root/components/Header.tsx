@@ -1,26 +1,32 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import PageHeader from "@/components/Page/PageHeader";
+import { Amiri } from "@/fonts/Arabic/Amiri";
 
-const Header = () => {
-    const t = useTranslations("Pages.Islam.Quran.Root.Components.Header");
+type Props = {
+  count: number;
+};
 
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="flex flex-col items-center text-center gap-4"
-        >
-            <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
-                {t("Header")}
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
-                {t("Description")}
-            </p>
-        </motion.div>
-    );
-}
+const Header: React.FC<Props> = ({ count }) => {
+  const t = useTranslations("Pages.Islam.Quran.Root.Components.Header");
+  const it = useTranslations("Terms.Islam.Quran");
+
+  return (
+    <PageHeader
+      eyebrow={it("this")}
+      title={t("Header")}
+      native="الجذور"
+      nativeClassName={Amiri.className}
+      description={t("Description") || undefined}
+      actions={
+        <span className="rounded-2xl border border-border/60 bg-background/70 px-4 py-3 text-sm text-muted-foreground backdrop-blur">
+          <span className="font-semibold tabular-nums text-foreground">{count}</span>{" "}
+          {it("Root.this")}
+        </span>
+      }
+    />
+  );
+};
 
 export default Header;

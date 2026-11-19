@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useMemo } from "react";
-import Link from "next/link";
 import { observer } from "mobx-react-lite";
 import { useLocale, useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { BarChart2 } from "lucide-react";
 import { RootWithWordCount } from "@/classes/Islam/Quran/Root/WithWordCount";
 import { QuranViewPreferences } from "@/configuration/UserPreferences/Islam/Quran/QuranViewPreferences";
-import { Badge } from "@/components/ui/badge";
 import LoadingLink from "@/components/LoadingLink";
 
 type Props = {
@@ -18,7 +16,7 @@ type Props = {
 
 const RootContainer: React.FC<Props> = observer(({ filterQuery, roots }) => {
   const locale = useLocale();
-  const t = useTranslations("Pages.Islam.Quran.Root.Components");
+  const nt = useTranslations("Navbar.QuickNavigation.MobileSearchModal");
   const arabicFont = QuranViewPreferences.getInstance().selectedArabicFont;
 
   const processedRoots = useMemo(() => {
@@ -52,36 +50,28 @@ const RootContainer: React.FC<Props> = observer(({ filterQuery, roots }) => {
       variants={container}
       initial="hidden"
       animate="show"
-      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6"
+      className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
     >
       <AnimatePresence>
         {processedRoots.map((r) => (
           <motion.div key={r.latin} variants={item} layout>
-            <LoadingLink href={`/${locale}/i/q/root/${r.latin}`}>
-              <div className="group flex flex-col items-center justify-center p-6 pt-10 rounded-2xl border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/50 hover:-translate-y-1 cursor-pointer h-full relative overflow-hidden">
-                <div className="absolute top-3 right-3">
-                  <Badge
-                    variant="secondary"
-                    className="flex items-center gap-1.5 text-[10px] font-medium opacity-80 group-hover:opacity-100 transition-opacity bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
-                  >
-                    <BarChart2 size={12} />
-                    <span>
-                      {r.occurrences} {t("Header.Occurrences")}
-                    </span>
-                  </Badge>
-                </div>
-
-                <span
-                  className={`text-5xl mb-4 mt-2 font-medium text-foreground group-hover:text-primary transition-colors ${arabicFont.className}`}
-                  dir="rtl"
-                >
-                  {r.text}
-                </span>
-
-                <span className="text-sm font-mono text-muted-foreground tracking-wider group-hover:text-foreground transition-colors">
-                  {r.latin}
-                </span>
-              </div>
+            <LoadingLink
+              href={`/${locale}/i/q/root/${r.latin}`}
+              className="group relative flex h-full flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border border-border/60 bg-card/70 px-4 pb-5 pt-8 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-500/5"
+            >
+              <span className="absolute right-3 top-3 inline-flex items-center gap-1 text-[10px] font-medium tabular-nums text-muted-foreground">
+                <BarChart2 size={11} />
+                {r.occurrences}
+              </span>
+              <span
+                className={`text-4xl text-foreground transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-300 ${arabicFont.className}`}
+                dir="rtl"
+              >
+                {r.text}
+              </span>
+              <span className="font-mono text-xs tracking-wider text-muted-foreground transition-colors group-hover:text-foreground">
+                {r.latin}
+              </span>
             </LoadingLink>
           </motion.div>
         ))}
@@ -89,7 +79,7 @@ const RootContainer: React.FC<Props> = observer(({ filterQuery, roots }) => {
 
       {processedRoots.length === 0 && (
         <div className="col-span-full py-20 text-center text-muted-foreground">
-          {t("NoRootsFound") || "No roots found matching your search."}
+          {nt("NoResultsFound")}
         </div>
       )}
     </motion.div>

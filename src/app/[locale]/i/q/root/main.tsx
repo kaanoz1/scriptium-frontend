@@ -1,47 +1,43 @@
 "use client";
 
-import React, {useState} from "react";
-import {Search} from "lucide-react";
-import {RootWithWordCount} from "@/classes/Islam/Quran/Root/WithWordCount";
+import React, { useState } from "react";
+import { useTranslations } from "next-intl";
+import { LuSearch } from "react-icons/lu";
+import { RootWithWordCount } from "@/classes/Islam/Quran/Root/WithWordCount";
 import Breadcrumbs from "@/app/[locale]/i/q/root/components/Breadcrumbs";
 import Header from "@/app/[locale]/i/q/root/components/Header";
 import RootContainer from "@/app/[locale]/i/q/root/components/RootContainer";
-import {Input} from "@/components/ui/input";
+import PageShell from "@/components/Page/PageShell";
 
 type Props = {
-    roots: RootWithWordCount[]
-}
+  roots: RootWithWordCount[];
+};
 
-const Main: React.FC<Props> = ({roots}) => {
-    const [val, setVal] = useState("");
+const Main: React.FC<Props> = ({ roots }) => {
+  const [val, setVal] = useState("");
+  const t = useTranslations("Pages.Islam.Quran.Root.Components.Header");
 
-    return (
-        <main className="flex flex-col items-center w-full max-w-480 mx-auto pb-24">
+  return (
+    <PageShell size="xl">
+      <Breadcrumbs />
+      <Header count={roots.length} />
 
-            <div className="w-full px-4 sm:px-8 md:px-12 lg:px-24 xl:px-48 pt-10 pb-6">
-                <Breadcrumbs/>
-            </div>
+      <label className="sticky top-24 z-20 block">
+        <LuSearch
+          size={18}
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+        />
+        <input
+          className="h-12 w-full rounded-xl border border-border/60 bg-background/80 pl-11 pr-4 text-sm shadow-sm outline-none backdrop-blur transition-all placeholder:text-muted-foreground focus:border-foreground/30 focus:ring-4 focus:ring-foreground/5"
+          placeholder={t("SearchPlaceholder")}
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+        />
+      </label>
 
-            <div className="w-full px-4 sm:px-8 md:px-12 lg:px-24 xl:px-48 py-8 flex justify-center">
-                <Header/>
-            </div>
-
-            <div className="w-full max-w-2xl px-4 sm:px-8 relative mb-16 mt-4">
-                <Search className="absolute left-12 top-1/2 -translate-y-1/2 text-muted-foreground/70" size={20}/>
-                <Input
-                    className="pl-14 h-14 text-lg rounded-full shadow-sm bg-card border-border/50 focus-visible:ring-primary transition-all focus-visible:shadow-md"
-                    placeholder="Search roots..."
-                    value={val}
-                    onChange={(e) => setVal(e.target.value)}
-                />
-            </div>
-
-            <div className="w-full px-4 sm:px-8 md:px-12 lg:px-24 xl:px-48">
-                <RootContainer filterQuery={val} roots={roots}/>
-            </div>
-
-        </main>
-    );
-}
+      <RootContainer filterQuery={val} roots={roots} />
+    </PageShell>
+  );
+};
 
 export default Main;
