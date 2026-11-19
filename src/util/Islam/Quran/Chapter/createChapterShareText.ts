@@ -12,8 +12,7 @@ export const createChapterShareText = (chapter: ChapterComplete, locale: string)
 
     result += `Qur'an, ${chapterNumber}.${chapterMeaning}\n\n`
 
-    if (typeof window !== 'undefined')
-        result += window.location.href;
+    result += `scriptium.net/${locale}/i/q/${chapterNumber}`;
 
     return result.trim();
 }

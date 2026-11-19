@@ -13,6 +13,7 @@ import NextChapterButton from "@/app/[locale]/i/q/[chapterNumber]/components/Uti
 import {useLocale} from "use-intl";
 import {ChapterComplete} from "@/classes/Islam/Quran/Chapter/Complete";
 import {ClientUtils} from "@/util/ClientUtils";
+import {SITE_URL} from "@/configuration";
 
 
 type Props = {
@@ -28,7 +29,10 @@ const UtilToolButtons: React.FC<Props> = observer(({chapter}) => {
     return (
         <aside className="w-full flex flex-wrap items-center justify-between sm:justify-end gap-1.5 sm:gap-2 gap-y-2 ">
             <AudioPlayButton/>
-            <ShareButton shareText={shareText}/>
+            <ShareButton
+                shareText={shareText}
+                shareUrl={`${SITE_URL}/${locale}/i/q/${chapter.sequence}`}
+            />
             <div className="h-6 w-px bg-border mx-1 hidden sm:block"/>
             <QuranTranslationChangeButton/>
             <QuranConfigurationButton/>

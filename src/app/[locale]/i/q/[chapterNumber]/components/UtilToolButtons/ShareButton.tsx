@@ -13,9 +13,9 @@ import {
 import {GoShareAndroid} from "react-icons/go";
 import {toast} from "sonner";
 
-type Props = { shareText: string; }
+type Props = { shareText: string; shareUrl: string; }
 
-const ShareButton: React.FC<Props> = ({shareText}) => {
+const ShareButton: React.FC<Props> = ({shareText, shareUrl}) => {
     const t = useTranslations("Pages.Islam.Quran.Chapter.Components.VerseContainer.VerseContainerHeader.UtilToolButtons.ShareButton");
 
     const copyToClipboard = () => {
@@ -33,7 +33,7 @@ const ShareButton: React.FC<Props> = ({shareText}) => {
         const successfulMessage = t("CopySuccessful");
         const failMessage = t("CopyFailed");
 
-        navigator.clipboard.writeText(window.location.href).then(() => toast.success(successfulMessage, {
+        navigator.clipboard.writeText(shareUrl).then(() => toast.success(successfulMessage, {
             position: "bottom-right",
         }), () => toast.error(failMessage, {
             position: "bottom-right",

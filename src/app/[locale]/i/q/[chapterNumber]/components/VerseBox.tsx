@@ -14,6 +14,7 @@ import { QuranTranslationPreferences } from "@/configuration/UserPreferences/Isl
 import { ChapterComplete } from "@/classes/Islam/Quran/Chapter/Complete";
 import { ClientUtils } from "@/util/ClientUtils";
 import LoadingLink from "@/components/LoadingLink";
+import { SITE_URL } from "@/configuration";
 
 type Props = {
   chapter: ChapterComplete;
@@ -65,7 +66,10 @@ const VerseBox: React.FC<Props> = observer(({ chapter, verse }) => {
 
         <div className="flex gap-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
           <Button variant="ghost" size="icon" asChild>
-            <ShareButton shareText={shareText} />
+            <ShareButton
+              shareText={shareText}
+              shareUrl={`${SITE_URL}/${locale}/i/q/${chapterNumber}/${verseNumber}`}
+            />
           </Button>
 
           <Button variant="ghost" size="icon" asChild>
