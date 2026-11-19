@@ -56,16 +56,25 @@ export default function Providers({ children }: { children: ReactNode }) {
       <TooltipProvider>
         <QueryClientProvider client={queryClient}>
           <LoadingProvider>
+            {children}
             {mounted ? (
               <>
-                {children}
                 {EnvGuard.isDevelopment && (
                   <ReactQueryDevtools initialIsOpen={false} />
                 )}
                 <Toaster />
               </>
             ) : (
-              <div className="fixed inset-0 bg-background" aria-hidden="true" />
+              <>
+                <div
+                  id="boot-cover"
+                  className="fixed inset-0 z-[100] bg-background"
+                  aria-hidden="true"
+                />
+                <noscript>
+                  <style>{"#boot-cover{display:none}"}</style>
+                </noscript>
+              </>
             )}
             <GlobalLoadingOverlay />
           </LoadingProvider>
