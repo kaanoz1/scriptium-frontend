@@ -300,6 +300,8 @@ export const tr: SystemLanguage = {
                     DataProvider: "Veri Sağlayıcıları",
                     Done: "Bitti",
                     ViewSettings: "Görünüm Seçenekleri",
+                    TextVariations: "Metin Varyasyonları",
+                    Preview: "Önizleme",
                     ShowArabicText: "Arapça Metni Göster",
                     ShowArabicTextDescription:
                       "Orijinal Arapça ayetleri görüntüler.",

@@ -298,6 +298,8 @@ export const en: SystemLanguage = {
                     DataProvider: "Data Provider",
                     Done: "Done",
                     ViewSettings: "View Options",
+                    TextVariations: "Text Variations",
+                    Preview: "Preview",
                     ShowArabicText: "Show Arabic Text",
                     ShowArabicTextDescription:
                       "Display the original Arabic verses.",

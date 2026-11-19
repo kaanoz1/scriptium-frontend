@@ -253,6 +253,8 @@ export type SystemLanguage = {
                     DataProvider: string;
                     Done: string;
                     ViewSettings: string;
+                    TextVariations: string;
+                    Preview: string;
                     ShowArabicText: string;
                     ShowArabicTextDescription: string;
                     ShowTranslation: string;
