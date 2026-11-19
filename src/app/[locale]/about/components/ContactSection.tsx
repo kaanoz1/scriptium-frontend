@@ -5,22 +5,29 @@ import { useTranslations } from "next-intl";
 import { Mail } from "lucide-react";
 
 const ContactSection: React.FC = () => {
-    const t = useTranslations("Pages.About.Contact");
+  const t = useTranslations("Pages.About.Contact");
 
-    return (
-        <div className="flex flex-col p-6 rounded-2xl bg-card border border-border/50 shadow-sm text-center items-center group hover:border-primary/50 transition-colors">
-            <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Mail size={24} />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">{t("Title")}</h3>
-            <p className="text-sm text-muted-foreground mb-4 flex-1">
-                {t("Description")}
-            </p>
-            <a href="mailto:info@scriptium.net" className="text-primary font-medium hover:underline">
-                info@scriptium.net
-            </a>
+  return (
+    <div className="group flex h-full flex-col justify-between gap-6 rounded-2xl border border-border/60 bg-card/70 p-6 backdrop-blur-sm transition-colors hover:border-emerald-500/40 md:p-8">
+      <div className="flex items-start gap-4">
+        <div className="rounded-xl bg-emerald-500/10 p-2.5 text-emerald-600 dark:text-emerald-400">
+          <Mail size={20} />
         </div>
-    );
+        <div>
+          <h3 className="text-lg font-semibold">{t("Title")}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("Description")}
+          </p>
+        </div>
+      </div>
+      <a
+        href="mailto:info@scriptium.net"
+        className="w-fit rounded-xl border border-border/60 bg-background/70 px-4 py-2.5 font-mono text-sm transition-colors hover:border-emerald-500/40"
+      >
+        info@scriptium.net
+      </a>
+    </div>
+  );
 };
 
 export default ContactSection;

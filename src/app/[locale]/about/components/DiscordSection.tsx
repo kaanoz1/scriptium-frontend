@@ -2,27 +2,33 @@
 
 import React from "react";
 import { useTranslations } from "next-intl";
-import { MessageSquare } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import {FaDiscord} from "react-icons/fa";
+import { FaDiscord } from "react-icons/fa";
 
 const DiscordSection: React.FC = () => {
-    const t = useTranslations("Pages.About.Discord");
+  const t = useTranslations("Pages.About.Discord");
 
-    return (
-        <div className="flex flex-col p-6 rounded-2xl bg-card border border-border/50 shadow-sm text-center items-center group hover:border-indigo-500/50 transition-colors relative overflow-hidden">
-            <div className="w-12 h-12 bg-indigo-500/10 text-indigo-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <FaDiscord size={24} />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">{t("Title")}</h3>
-            <p className="text-sm text-muted-foreground mb-4 flex-1">
-                {t("Description")}
-            </p>
-            <Badge variant="secondary" className="bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/20">
-                {t("Status")}
-            </Badge>
+  return (
+    <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-2xl border border-[#5865F2]/25 bg-[#5865F2]/[0.06] p-6 md:p-8">
+      <FaDiscord
+        aria-hidden
+        className="pointer-events-none absolute -bottom-6 -right-6 h-32 w-32 text-[#5865F2]/10"
+      />
+      <div className="flex items-start gap-4">
+        <div className="rounded-xl bg-[#5865F2]/15 p-2.5 text-[#5865F2]">
+          <FaDiscord size={20} />
         </div>
-    );
+        <div>
+          <h3 className="text-lg font-semibold">{t("Title")}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("Description")}
+          </p>
+        </div>
+      </div>
+      <span className="w-fit rounded-full border border-[#5865F2]/30 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#5865F2]">
+        {t("Status")}
+      </span>
+    </div>
+  );
 };
 
 export default DiscordSection;

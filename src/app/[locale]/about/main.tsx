@@ -7,25 +7,26 @@ import DataSupplierSection from "./components/DataSupplierSection";
 import ContactSection from "./components/ContactSection";
 import DiscordSection from "./components/DiscordSection";
 import TechnologiesSection from "@/app/[locale]/about/components/TechnologiesSection";
+import PageShell from "@/components/Page/PageShell";
 
 const Main: React.FC = () => {
   return (
-    <main className="flex flex-col items-center w-full max-w-480 mx-auto pb-24 overflow-hidden gap-12 sm:gap-16 pt-16">
+    <PageShell size="lg" className="gap-6 md:gap-8">
       <WhatIsScriptiumSection />
       <BetaWarningSection />
-      <DataSupplierSection />
 
-      <section className="w-full px-4 sm:px-8 md:px-12 lg:px-24 xl:px-48 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ContactSection />
-          <DiscordSection />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="md:col-span-3">
+          <DataSupplierSection />
         </div>
-      </section>
-
-      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-24 xl:px-48 max-w-7xl mx-auto">
-        <TechnologiesSection />
+        <div className="md:col-span-2">
+          <ContactSection />
+        </div>
+        <DiscordSection />
       </div>
-    </main>
+
+      <TechnologiesSection />
+    </PageShell>
   );
 };
 

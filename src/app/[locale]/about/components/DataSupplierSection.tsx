@@ -3,45 +3,52 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { Info, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowUpRight, Database } from "lucide-react";
+
+const SUPPLIERS = [
+  { name: "Tanzil.net", url: "https://tanzil.net/trans/" },
+  { name: "AçıkKuran", url: "https://acikkuran.com" },
+];
 
 const DataSupplierSection: React.FC = () => {
   const t = useTranslations("Pages.About.DataSuppliers");
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="w-full px-4 sm:px-8 md:px-12 lg:px-24 xl:px-48 flex justify-center"
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="flex flex-col gap-6 rounded-2xl border border-border/60 bg-card/70 p-6 backdrop-blur-sm md:flex-row md:items-center md:justify-between md:p-8"
     >
-      <div className="w-full max-w-4xl p-8 rounded-3xl bg-card border border-border/50 shadow-sm text-center">
-        <Info className="w-10 h-10 mx-auto text-primary mb-4 opacity-80" />
-        <h2 className="text-2xl font-bold mb-4">{t("Title")}</h2>
-        <p className="text-muted-foreground mb-6">{t("Description")}</p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Button variant="outline" asChild className="rounded-full">
-            <Link
-              href="https://tanzil.net/trans/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Tanzil.net <ExternalLink size={14} className="ml-2" />
-            </Link>
-          </Button>
-          <Button variant="outline" asChild className="rounded-full">
-            <Link
-              href="https://acikkuran.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              AçıkKuran <ExternalLink size={14} className="ml-2" />
-            </Link>
-          </Button>
+      <div className="flex max-w-2xl items-start gap-4">
+        <div className="rounded-xl bg-sky-500/10 p-2.5 text-sky-600 dark:text-sky-400">
+          <Database size={20} />
         </div>
+        <div>
+          <h2 className="text-lg font-semibold">{t("Title")}</h2>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            {t("Description")}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {SUPPLIERS.map((s) => (
+          <a
+            key={s.name}
+            href={s.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/70 px-4 py-2 text-sm font-medium transition-colors hover:border-sky-500/40"
+          >
+            {s.name}
+            <ArrowUpRight
+              size={14}
+              className="text-muted-foreground transition-transform group-hover:-translate-y-px group-hover:translate-x-px"
+            />
+          </a>
+        ))}
       </div>
     </motion.section>
   );
