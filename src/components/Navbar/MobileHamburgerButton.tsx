@@ -241,8 +241,10 @@ const MobileHamburgerButton = () => {
           <SheetDescription className="sr-only">{t("Title")}</SheetDescription>
         </SheetHeader>
 
-        <ScrollArea className="min-h-0 flex-1">
-          <div className="flex flex-col gap-7 px-4 py-5">
+        {/* Radix wraps children in a `display: table` div that grows to fit the
+            widest content (breaking `truncate`); force it back to block. */}
+        <ScrollArea className="min-h-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!">
+          <div className="flex min-w-0 flex-col gap-7 px-4 py-5">
             <section>
               <SectionTitle>{t("Explore")}</SectionTitle>
               <ul className="flex flex-col gap-0.5">
