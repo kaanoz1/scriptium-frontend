@@ -26,5 +26,7 @@ export function proxy(request: NextRequest) {
 
 // noinspection JSUnusedGlobalSymbols
 export const config = {
-  matcher: ["/", "/en/:path*", "/test", "/test/:path*"],
+  // Everything except API routes, Next internals and files with an extension
+  // (robots.txt, sitemap.xml, manifest.webmanifest, images...).
+  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 };
