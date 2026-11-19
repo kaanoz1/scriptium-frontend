@@ -18,7 +18,7 @@ const UtilToolButtons: React.FC<Props> = observer(({ root }) => {
     const shareText = ClientUtils.Islam.Quran.Root.createRootShareText(root);
 
     return (
-        <aside className="flex flex-wrap items-center justify-end gap-1 sm:gap-2 rounded-full px-2 py-1 ">
+        <aside className="flex flex-wrap items-center gap-1 rounded-2xl border border-border/60 bg-background/70 p-1 backdrop-blur">
             <AudioPlayButton />
             <ShareButton shareText={shareText} />
             <div className="mx-1 hidden h-4 w-px bg-border sm:block" />

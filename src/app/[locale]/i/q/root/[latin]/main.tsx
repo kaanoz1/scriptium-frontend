@@ -7,42 +7,33 @@ import { RootUpToQuran } from "@/classes/Islam/Quran/Root/UpToQuran";
 import RootContainer from "@/app/[locale]/i/q/root/[latin]/components/RootContainer";
 import Header from "@/app/[locale]/i/q/root/[latin]/components/Header";
 import UtilToolButtons from "@/app/[locale]/i/q/root/[latin]/components/UtilToolButtons";
+import Breadcrumbs from "@/app/[locale]/i/q/root/components/Breadcrumbs";
+import PageShell from "@/components/Page/PageShell";
 
 type Props = {
-    root: RootUpToQuran
-}
+  root: RootUpToQuran;
+};
 
 const Main: React.FC<Props> = ({ root }) => {
-    const t = useTranslations("Pages.Islam.Quran.Root.Messages");
-    const occurrences = root.words.length;
+  const t = useTranslations("Pages.Islam.Quran.Root.Messages");
+  const occurrences = root.words.length;
 
-    useEffect(() => {
-        if (occurrences > 250) {
-            toast.warning(t("HighOccurrencesWarningTitle"), {
-                description: t("HighOccurrencesWarningDesc"),
-                duration: 8000,
-            });
-        }
-    }, [occurrences, t]);
+  useEffect(() => {
+    if (occurrences > 250) {
+      toast.warning(t("HighOccurrencesWarningTitle"), {
+        description: t("HighOccurrencesWarningDesc"),
+        duration: 8000,
+      });
+    }
+  }, [occurrences, t]);
 
-    return (
-        <main className="flex flex-col items-center w-full max-w-480 mx-auto pb-24">
-
-            <div className="w-full px-4 sm:px-8 md:px-12 lg:px-24 xl:px-48 pt-10 pb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-border/40">
-                <Header root={root} />
-                <div className="flex shrink-0">
-                    <UtilToolButtons root={root} />
-                </div>
-            </div>
-
-            <div className="w-full px-4 sm:px-8 md:px-12 lg:px-24 xl:px-48 pt-12 flex justify-center">
-                <div className="w-full max-w-8xl">
-                    <RootContainer root={root} />
-                </div>
-            </div>
-
-        </main>
-    );
-}
+  return (
+    <PageShell size="lg">
+      <Breadcrumbs current={root.latin} />
+      <Header root={root} actions={<UtilToolButtons root={root} />} />
+      <RootContainer root={root} />
+    </PageShell>
+  );
+};
 
 export default Main;

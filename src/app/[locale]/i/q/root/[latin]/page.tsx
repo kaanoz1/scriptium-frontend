@@ -1,37 +1,87 @@
 import { Metadata, NextPage } from "next";
 import { cache } from "react";
-import { SUPPORTED_LOCALES } from "@/locale/SupportedLocales/_index";
+import { notFound } from "next/navigation";
 import { BackendApi } from "@/tool/Fetchers/BackendApi";
 import { ResponseCodes } from "@/util/types/ResponseCodes";
 import Client from "@/app/[locale]/i/q/root/[latin]/client";
-import { ServerUtils } from "@/util/ServerUtils";
-import NotFoundError from "@/util/components/Error/NotFoundError";
 import RateLimitError from "@/util/components/Error/RateLimitError";
 import ServerError from "@/util/components/Error/ServerError";
 import UnknownError from "@/util/components/Error/UnknownError";
-import { SITE_URL } from "@/configuration";
+import {
+  breadcrumbJsonLd,
+  buildMetadata,
+  crumbs,
+  errorMetadata,
+  JsonLd,
+} from "@/lib/seo";
 
 type Props = {
   params: Promise<{ latin: string; locale: string }>;
 };
 
-const getRootData = cache(async (latin: string) => {
-  return await BackendApi.RootController.get(latin);
-});
+const getRootData = cache(async (latin: string) =>
+  BackendApi.RootController.get(latin),
+);
+
+const safeDecode = (value: string) => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
+const rootPath = (locale: string, latin: string) =>
+  `/${locale}/i/q/root/${encodeURIComponent(latin)}`;
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, latin: rawLatin } = await params;
+  const latin = safeDecode(rawLatin);
+
+  const response = await getRootData(latin);
+  if (response.status === ResponseCodes.NOT_FOUND)
+    return errorMetadata("Root not found");
+  if (response.status !== ResponseCodes.OK || !response.data)
+    return errorMetadata("Error");
+
+  const root = response.data;
+  const occurrences = root.words.length;
+
+  return buildMetadata({
+    title: `Root ${root.text} (${root.latin}) — Arabic Root in the Qur'an`,
+    description: `The Arabic root ${root.text} (${root.latin}) occurs ${occurrences} ${occurrences === 1 ? "time" : "times"} in the Qur'an. See every word derived from it and the verses where it appears, with translations.`,
+    path: rootPath(locale, root.latin),
+    locale,
+  });
+}
 
 const Page: NextPage<Props> = async ({ params }) => {
-  const { locale, latin } = await params;
+  const { locale, latin: rawLatin } = await params;
+  const latin = safeDecode(rawLatin);
 
   const response = await getRootData(latin);
 
   switch (response.status) {
     case ResponseCodes.OK:
-      const currentUrl = `${SITE_URL}/${locale}/i/q/root/${latin}`;
-      await ServerUtils.General.Pages.upsertUrlToSitemap(currentUrl);
-
-      return <Client root={response.data} />;
+      return (
+        <>
+          <JsonLd
+            data={breadcrumbJsonLd([
+              crumbs.home(locale),
+              crumbs.islam(locale),
+              crumbs.quran(locale),
+              crumbs.roots(locale),
+              {
+                name: `${response.data.text} (${response.data.latin})`,
+                path: rootPath(locale, response.data.latin),
+              },
+            ])}
+          />
+          <Client root={response.data} />
+        </>
+      );
     case ResponseCodes.NOT_FOUND:
-      return <NotFoundError />;
+      notFound();
     case ResponseCodes.TOO_MANY_REQUESTS:
       return <RateLimitError />;
     case ResponseCodes.INTERNAL_SERVER_ERROR:
@@ -41,64 +91,5 @@ const Page: NextPage<Props> = async ({ params }) => {
       return <UnknownError />;
   }
 };
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, latin } = await params;
-
-  const currentLocale = (locale as keyof typeof SUPPORTED_LOCALES) || "en";
-
-  const notFoundTitles: Record<keyof typeof SUPPORTED_LOCALES, string> = {
-    en: "Root Not Found - Scriptium",
-    tr: "Kök Bulunamadı - Scriptium",
-  };
-
-  const errorTitles: Record<keyof typeof SUPPORTED_LOCALES, string> = {
-    en: "Error - Scriptium",
-    tr: "Hata - Scriptium",
-  };
-
-  const response = await getRootData(latin);
-
-  if (response.status === ResponseCodes.NOT_FOUND) {
-    return {
-      title: { absolute: notFoundTitles[currentLocale] || notFoundTitles.en },
-    };
-  }
-
-  if (response.status !== ResponseCodes.OK || !response.data) {
-    return {
-      title: { absolute: errorTitles[currentLocale] || errorTitles.en },
-    };
-  }
-
-  const titleMap: Record<keyof typeof SUPPORTED_LOCALES, string> = {
-    en: `Scriptium - Root: ${latin}`,
-    tr: `Scriptium - Kök: ${latin}`,
-  };
-
-  const descriptionMap: Record<keyof typeof SUPPORTED_LOCALES, string> = {
-    en: `Scriptium - Root: ${latin} - Origins and details.`,
-    tr: `Scriptium - Kök: ${latin} - Kelime kökenleri ve detayları.`,
-  };
-
-  const title = titleMap[currentLocale] || titleMap["en"];
-  const description = descriptionMap[currentLocale] || descriptionMap["en"];
-  const path = `/${locale}/i/q/root/${latin}`;
-
-  return {
-    title: {
-      absolute: title,
-    },
-    description,
-    alternates: {
-      canonical: path,
-    },
-    openGraph: {
-      title,
-      description,
-      url: path,
-    },
-  };
-}
 
 export default Page;

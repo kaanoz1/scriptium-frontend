@@ -34,12 +34,12 @@ const RootRow: React.FC<Props> = observer(({ word, accordionValue: value }) => {
     return (
         <AccordionItem
             value={value}
-            className="border bg-card rounded-xl mb-4 px-2 sm:px-4 shadow-sm data-[state=open]:border-primary/50 transition-colors"
+            className="mb-2 rounded-2xl border border-border/60 bg-card/60 px-3 backdrop-blur-sm transition-colors last:border-b data-[state=open]:border-emerald-500/40 data-[state=open]:bg-card sm:px-5"
         >
             <AccordionTrigger className="hover:no-underline py-4">
                 <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-left w-full pr-4">
 
-                    <Badge variant="outline" className="text-xs font-mono text-muted-foreground shrink-0 bg-muted/50">
+                    <Badge variant="outline" className="shrink-0 rounded-full border-border/60 bg-background/60 font-mono text-[11px] tabular-nums text-muted-foreground">
                         #{wordIndex}
                     </Badge>
 
@@ -65,7 +65,7 @@ const RootRow: React.FC<Props> = observer(({ word, accordionValue: value }) => {
             </AccordionTrigger>
 
             <AccordionContent className="pt-2 pb-6 px-1">
-                <div className="rounded-xl p-1 sm:p-4">
+                <div className="pt-1">
                     <VerseBox chapter={chapter} verse={verse} />
                 </div>
             </AccordionContent>
