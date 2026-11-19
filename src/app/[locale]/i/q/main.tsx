@@ -43,7 +43,7 @@ const Page: NextPage<Props> = observer(({ chapters }) => {
       <Breadcrumbs />
       <Header />
 
-      <div className="z-20 flex flex-col gap-3 sm:sticky sm:top-24 sm:flex-row sm:items-center">
+      <div className="z-20 flex flex-col gap-3 sm:sticky sm:top-[calc(var(--navbar-offset,5rem)+1rem)] sm:flex-row sm:items-center">
         <label className="relative flex-1">
           <LuSearch
             size={18}

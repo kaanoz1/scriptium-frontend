@@ -22,7 +22,7 @@ const Main: React.FC<Props> = ({ roots }) => {
       <Breadcrumbs />
       <Header count={roots.length} />
 
-      <label className="sticky top-24 z-20 block">
+      <label className="sticky top-[calc(var(--navbar-offset,5rem)+1rem)] z-20 block">
         <LuSearch
           size={18}
           className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"

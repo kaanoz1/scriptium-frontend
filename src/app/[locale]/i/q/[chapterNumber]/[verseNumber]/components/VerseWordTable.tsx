@@ -42,7 +42,7 @@ const VerseWordTable: React.FC<Props> = observer(({ words }) => {
     <div
       className={`group rounded-2xl border border-border/60 bg-card/70 text-card-foreground backdrop-blur-sm flex flex-col transition-all duration-300 ${
         isSticky
-          ? "xl:sticky xl:top-44 xl:max-h-[calc(100vh-12rem)] overflow-hidden"
+          ? "xl:sticky xl:top-[calc(var(--navbar-offset,5rem)+6rem)] xl:max-h-[calc(100vh-12rem)] overflow-hidden"
           : ""
       }`}
     >

@@ -32,7 +32,7 @@ const Main: React.FC<Props> = observer(({ verse }) => {
 
   return (
     <PageShell size="xl" className="gap-8">
-      <div className="sticky top-22 z-20 flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/80 p-1.5 shadow-lg shadow-black/[0.03] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+      <div className="sticky top-[calc(var(--navbar-offset,5rem)+0.5rem)] z-20 flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/80 p-1.5 shadow-lg shadow-black/[0.03] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
         <Breadcrumbs verse={verse} />
         <div className="flex shrink-0 justify-center sm:justify-end">
           <UtilToolButtons verse={verse} />
