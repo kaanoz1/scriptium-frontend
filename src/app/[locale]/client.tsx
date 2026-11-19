@@ -9,6 +9,7 @@ import HeroBackground from "./components/HeroBackground";
 import ScriptureCard from "./components/ScriptureCard";
 import { Amiri } from "@/fonts/Arabic/Amiri";
 import { instrumentSerif } from "@/fonts";
+import { greekSerif, hebrewSerif } from "@/fonts/Watermark";
 import { cn } from "@/lib/utils";
 
 const containerVariants: Variants = {
@@ -86,7 +87,7 @@ const Client: React.FC = () => {
               description={t("ChristianityCard.Description")}
               icon={<FaCross size={20} />}
               watermark="Χριστός"
-              watermarkClassName={instrumentSerif.className}
+              watermarkClassName={greekSerif.className}
               accent="59 130 246"
               href={`/${locale}/c`}
               ctaLabel={t("Explore")}
@@ -104,6 +105,7 @@ const Client: React.FC = () => {
               description={t("JudaismCard.Description")}
               icon={<FaStarOfDavid size={20} />}
               watermark="תורה"
+              watermarkClassName={hebrewSerif.className}
               accent="245 158 11"
               href={`/${locale}/j`}
               ctaLabel={t("Explore")}

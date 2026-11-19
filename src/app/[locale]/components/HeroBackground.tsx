@@ -1,8 +1,28 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { Amiri } from "@/fonts/Arabic/Amiri";
+import { devanagariSerif, greekSerif, hebrewSerif } from "@/fonts/Watermark";
 
-const GLYPHS = ["ق", "א", "Ω", "ॐ", "ر", "ב", "Λ", "ك", "ש", "Σ", "ب", "ת"];
+const AR = Amiri.className;
+const HE = hebrewSerif.className;
+const GR = greekSerif.className;
+const DV = devanagariSerif.className;
+
+const GLYPHS: { char: string; font: string }[] = [
+  { char: "ق", font: AR },
+  { char: "א", font: HE },
+  { char: "Ω", font: GR },
+  { char: "ॐ", font: DV },
+  { char: "ر", font: AR },
+  { char: "ב", font: HE },
+  { char: "Λ", font: GR },
+  { char: "ك", font: AR },
+  { char: "ש", font: HE },
+  { char: "Σ", font: GR },
+  { char: "ب", font: AR },
+  { char: "ת", font: HE },
+];
 
 const HeroBackground = () => {
   const reduceMotion = useReducedMotion();
@@ -38,14 +58,14 @@ const HeroBackground = () => {
           return (
             <span
               key={i}
-              className="absolute select-none font-serif text-2xl text-foreground/[0.12] md:text-3xl"
+              className={`absolute select-none text-2xl text-foreground/[0.12] md:text-3xl ${glyph.font}`}
               style={{
                 left: `${50 + 50 * Math.cos(angle)}%`,
                 top: `${50 + 50 * Math.sin(angle)}%`,
                 transform: "translate(-50%, -50%)",
               }}
             >
-              {glyph}
+              {glyph.char}
             </span>
           );
         })}
