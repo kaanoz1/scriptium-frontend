@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
-import { LuArrowRight, LuLock } from "react-icons/lu";
+import { LuArrowRight, LuClock, LuLock } from "react-icons/lu";
 import LoadingLink from "@/components/LoadingLink";
 import {
   Tooltip,
@@ -25,6 +25,9 @@ type Props = {
   ctaLabel?: string;
   disabledLabel?: string;
   disabledTooltip?: string;
+  /** Shows a "coming soon" badge while keeping the card clickable. */
+  comingSoon?: boolean;
+  comingSoonLabel?: string;
   featured?: boolean;
   tags?: string[];
   className?: string;
@@ -42,6 +45,8 @@ const ScriptureCard: React.FC<Props> = ({
   ctaLabel,
   disabledLabel,
   disabledTooltip,
+  comingSoon = false,
+  comingSoonLabel,
   featured = false,
   tags,
   className,
@@ -107,6 +112,13 @@ const ScriptureCard: React.FC<Props> = ({
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-background/60 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
             <LuLock size={11} />
             {disabledLabel}
+          </span>
+        )}
+
+        {enabled && comingSoon && (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[rgb(var(--accent)/0.35)] bg-[rgb(var(--accent)/0.08)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[rgb(var(--accent))] backdrop-blur">
+            <LuClock size={11} />
+            {comingSoonLabel}
           </span>
         )}
       </div>

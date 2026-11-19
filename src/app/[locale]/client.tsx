@@ -90,6 +90,8 @@ const Client: React.FC = () => {
               watermarkClassName={greekSerif.className}
               accent="59 130 246"
               href={`/${locale}/c`}
+              comingSoon
+              comingSoonLabel={t("ComingSoon")}
               ctaLabel={t("Explore")}
               tags={[
                 ct("Bible.Title"),
@@ -108,6 +110,8 @@ const Client: React.FC = () => {
               watermarkClassName={hebrewSerif.className}
               accent="245 158 11"
               href={`/${locale}/j`}
+              comingSoon
+              comingSoonLabel={t("ComingSoon")}
               ctaLabel={t("Explore")}
               tags={[
                 jt("Tanakh.Title"),
