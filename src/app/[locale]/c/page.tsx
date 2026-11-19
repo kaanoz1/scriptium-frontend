@@ -15,6 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       "Christian scripture and scholarship on Scriptium: the Bible, apocrypha, exegesis, the Church Fathers, councils and creeds, dogmatics and canon law. Coming soon.",
     path: `/${locale}/c`,
     locale,
+    // TODO: Only "coming soon" placeholders so far: keep it out of search results until it has content.
     noindex: true,
   });
 }
