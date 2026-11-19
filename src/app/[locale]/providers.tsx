@@ -62,7 +62,7 @@ export default function Providers({ children }: { children: ReactNode }) {
                 {EnvGuard.isDevelopment && (
                   <ReactQueryDevtools initialIsOpen={false} />
                 )}
-                <Toaster />
+                <Toaster style={{ fontFamily: "var(--font-sans)" }} />
               </>
             ) : (
               <>
