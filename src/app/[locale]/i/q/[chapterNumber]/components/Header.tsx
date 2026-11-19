@@ -45,9 +45,9 @@ const Header: React.FC<Props> = observer(({ chapter }) => {
       </span>
 
       <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-        <span className="h-px w-6 bg-linear-to-r from-amber-500 to-emerald-500" />
+        <span className="h-px w-10 bg-linear-to-r from-amber-500 to-emerald-500" />
         {gt("this")} {chapter.sequence}
-        <span className="h-px w-6 bg-linear-to-l from-amber-500 to-emerald-500" />
+        <span className="h-px w-10 bg-linear-to-l from-amber-500 to-emerald-500" />
       </span>
 
       <h1
