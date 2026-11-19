@@ -2,6 +2,7 @@
 # Stage 1: Dependencies Installation Stage
 # ============================================
 ARG NODE_VERSION=24.13.0-slim
+ARG NODE_ENV=production
 FROM node:${NODE_VERSION} AS dependencies
 
 
@@ -54,7 +55,8 @@ WORKDIR /app
 # Ensure we have openssl at runtime for Prisma
 RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
-ENV NODE_ENV=production
+ARG NODE_ENV
+ENV NODE_ENV=$NODE_ENV
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 

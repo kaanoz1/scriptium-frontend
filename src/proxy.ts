@@ -7,8 +7,7 @@ const intlMiddleware = createMiddleware({
   defaultLocale: "en",
 });
 
-const isTestRoute = (pathname: string) =>
-  pathname === "/test" || pathname.startsWith("/test/");
+const isTestRoute = (pathname: string) => /^\/(en\/)?test(\/|$)/.test(pathname);
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

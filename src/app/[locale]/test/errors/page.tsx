@@ -10,6 +10,10 @@ export const metadata: Metadata = {
 
 /** Development-only gallery of every error state, rendered without triggering it. */
 export default function Page() {
+  console.log("[errors page]", {
+    NODE_ENV: process.env.NODE_ENV,
+    isDevelopment: EnvGuard.isDevelopment,
+  });
   if (!EnvGuard.isDevelopment) notFound();
 
   return <Client />;
