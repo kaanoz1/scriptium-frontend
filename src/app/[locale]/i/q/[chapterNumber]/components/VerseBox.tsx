@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { observer } from "mobx-react-lite";
-import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { LuExternalLink } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
@@ -48,13 +46,24 @@ const VerseBox: React.FC<Props> = observer(({ chapter, verse }) => {
   );
 
   return (
-    <aside className="group relative flex flex-col gap-4 rounded-xl border border-border/50 bg-card p-5 transition-all duration-300 hover:border-primary/40 hover:shadow-md dark:bg-card/50">
-      <header className="flex w-full items-center justify-between">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-          {verseNumber}
-        </div>
+    <article
+      id={`verse-${verseNumber}`}
+      className="group relative scroll-mt-40 rounded-2xl border border-border/60 bg-card/60 p-5 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-card hover:shadow-lg hover:shadow-black/[0.03] md:p-7"
+    >
+      <header className="mb-5 flex w-full items-center justify-between">
+        <LoadingLink
+          href={`/${locale}/i/q/${chapterNumber}/${verseNumber}`}
+          className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 py-1 pl-1 pr-3 text-xs text-muted-foreground transition-colors hover:border-emerald-500/40 hover:text-foreground"
+        >
+          <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-foreground px-1.5 text-[11px] font-semibold tabular-nums text-background">
+            {verseNumber}
+          </span>
+          <span className="font-mono tabular-nums">
+            {chapterNumber}:{verseNumber}
+          </span>
+        </LoadingLink>
 
-        <div className="flex gap-2 opacity-60 transition-opacity group-hover:opacity-100">
+        <div className="flex gap-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
           <Button variant="ghost" size="icon" asChild>
             <ShareButton shareText={shareText} />
           </Button>
@@ -69,7 +78,7 @@ const VerseBox: React.FC<Props> = observer(({ chapter, verse }) => {
         </div>
       </header>
 
-      <main className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6">
         {preferences.shouldVerseTextShown && (
           <div className="w-full text-right">
             <VerseText verse={verse} />
@@ -77,16 +86,16 @@ const VerseBox: React.FC<Props> = observer(({ chapter, verse }) => {
         )}
 
         {preferences.shouldTranslationShown && (
-          <div className="w-full border-t border-border/40 pt-4">
+          <div className="w-full border-t border-dashed border-border/60 pt-5">
             <VerseBoxTranslation verse={verse} />
           </div>
         )}
-      </main>
+      </div>
 
       {preferences.shouldTransliterationShown && (
-        <footer className="mt-2 rounded-lg bg-muted/50 p-3">
+        <footer className="mt-5 rounded-xl border border-border/40 bg-muted/40 px-4 py-3">
           {transliteration ? (
-            <p className="text-sm italic text-muted-foreground">
+            <p className="text-sm italic leading-relaxed text-muted-foreground">
               {stripHtml(transliteration.text)}
             </p>
           ) : (
@@ -96,7 +105,7 @@ const VerseBox: React.FC<Props> = observer(({ chapter, verse }) => {
           )}
         </footer>
       )}
-    </aside>
+    </article>
   );
 });
 

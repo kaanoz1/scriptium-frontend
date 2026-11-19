@@ -17,7 +17,7 @@ const VerseContainer: React.FC<Props> = observer(({chapter}) => {
         <section className="flex w-full flex-col gap-6">
 
             <div
-                className="sticky top-4 sm:top-20 z-10 w-[calc(100%-1rem)] mx-auto sm:w-full rounded-lg border border-border/50 bg-background/95 p-1.5 sm:p-3 shadow-sm backdrop-blur supports-backdrop-filter:bg-background/60 transition-all">
+                className="sticky top-22 z-20 w-full rounded-2xl border border-border/60 bg-background/80 p-1.5 shadow-lg shadow-black/[0.03] backdrop-blur-xl supports-backdrop-filter:bg-background/60 sm:px-3 sm:py-1.5">
                 <VerseContainerHeader chapter={chapter}/>
             </div>
 
@@ -25,7 +25,7 @@ const VerseContainer: React.FC<Props> = observer(({chapter}) => {
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="flex flex-col gap-4"
+                className="flex flex-col gap-3"
             >
                 {chapter.verses.map((verse) => (
                     <motion.div

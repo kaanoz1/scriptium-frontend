@@ -31,8 +31,8 @@ const TranslationIndicator: React.FC = observer(() => {
   }
 
   return (
-    <div className="flex sm:inline-flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto rounded-full border border-border bg-secondary/50 px-3 py-1.5 text-sm font-medium text-secondary-foreground shadow-sm backdrop-blur-sm">
-      <IoBookOutline size={16} className="text-primary shrink-0" />
+    <div className="flex w-full items-center justify-center gap-2 rounded-xl bg-muted/60 px-3 py-1.5 text-sm font-medium sm:inline-flex sm:w-auto sm:justify-start">
+      <IoBookOutline size={16} className="shrink-0 text-emerald-600 dark:text-emerald-400" />
       <span className="truncate max-w-none sm:max-w-75 text-center sm:text-left">
         {text}
       </span>

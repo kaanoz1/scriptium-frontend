@@ -1,116 +1,90 @@
 import { Metadata, NextPage } from "next";
 import { cache } from "react";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ResponseCodes } from "@/util/types/ResponseCodes";
 import { BackendApi } from "@/tool/Fetchers/BackendApi";
-import { SUPPORTED_LOCALES } from "@/locale/SupportedLocales/_index";
 import UnknownError from "@/util/components/Error/UnknownError";
 import ServerError from "@/util/components/Error/ServerError";
 import RateLimitError from "@/util/components/Error/RateLimitError";
-import NotFoundError from "@/util/components/Error/NotFoundError";
 import Client from "@/app/[locale]/i/q/[chapterNumber]/client";
-import { ServerUtils } from "@/util/ServerUtils";
-import { SITE_URL } from "@/configuration";
+import {
+  breadcrumbJsonLd,
+  buildMetadata,
+  crumbs,
+  errorMetadata,
+  JsonLd,
+} from "@/lib/seo";
 
 type Props = {
-  params: Promise<{ chapterNumber?: string; locale: string }>;
+  params: Promise<{ chapterNumber: string; locale: string }>;
 };
 
-const getChapterData = cache(async (num: number) => {
-  return await BackendApi.ChapterController.get(num);
-});
+const getChapterData = cache(async (num: number) =>
+  BackendApi.ChapterController.get(num),
+);
+
+const parseChapter = (raw: string): number | null => {
+  const n = Number.parseInt(raw, 10);
+  return Number.isInteger(n) && n >= 1 && n <= 114 ? n : null;
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { chapterNumber, locale } = await params;
-  const lang = locale as keyof typeof SUPPORTED_LOCALES;
-  const parsedNumber = parseInt(chapterNumber || "0");
+  const num = parseChapter(chapterNumber);
+  if (num === null) return errorMetadata("Chapter not found");
 
-  const notFoundTitles: Record<keyof typeof SUPPORTED_LOCALES, string> = {
-    en: "Chapter Not Found - Scriptium",
-    tr: "Sure Bulunamadı - Scriptium",
-  };
-
-  const errorTitles: Record<keyof typeof SUPPORTED_LOCALES, string> = {
-    en: "Error - Scriptium",
-    tr: "Hata - Scriptium",
-  };
-
-  if (isNaN(parsedNumber) || parsedNumber <= 0 || parsedNumber > 114)
-    return { title: { absolute: notFoundTitles[lang] || notFoundTitles.en } };
-
-  const response = await getChapterData(parsedNumber);
-
+  const response = await getChapterData(num);
   if (response.status !== ResponseCodes.OK || !response.data)
-    return { title: { absolute: errorTitles[lang] || errorTitles.en } };
+    return errorMetadata("Error");
 
-  const meaning = response.data.meanings.find(
-    (m) => m.language.code === locale,
-  );
-  const chapterLabel = meaning?.text || response.data.name;
+  const chapter = response.data;
+  // e.g. "Al-Baqarah (The Cow)"
+  const meaning =
+    chapter.meanings.find((m) => m.language.code === locale)?.text ??
+    chapter.meanings.find((m) => m.language.code === "en")?.text ??
+    chapter.name;
+  const verseCount = chapter.verses.length;
 
-  const descriptions: Record<keyof typeof SUPPORTED_LOCALES, string> = {
-    en: `Read Surah ${response.data.name} (${chapterLabel}) with translations.`,
-    tr: `${chapterLabel} suresini mealleri ile birlikte detaylı inceleyin.`,
-  };
-
-  const title = `Scriptium - ${chapterLabel}`;
-  const description = descriptions[lang] || descriptions.en;
-  const path = `/${locale}/i/q/${chapterNumber}`;
-
-  return {
-    title: {
-      absolute: title,
-    },
-    description,
-    alternates: {
-      canonical: path,
-    },
-    openGraph: {
-      title,
-      description,
-      url: path,
-    },
-  };
+  return buildMetadata({
+    title: `Surah ${meaning} — Qur'an Chapter ${num}`,
+    description: `Read Surah ${meaning}, chapter ${num} of the Qur'an (${chapter.name}): all ${verseCount} verses in Arabic with English translation, transliteration and word-by-word analysis.`,
+    path: `/${locale}/i/q/${num}`,
+    locale,
+  });
 }
 
 const Page: NextPage<Props> = async ({ params }) => {
   const { chapterNumber, locale } = await params;
+  const num = parseChapter(chapterNumber);
 
-  const lang = locale as keyof typeof SUPPORTED_LOCALES;
+  if (num === null) notFound();
 
-  const chapterNotFoundErrorDescriptions: Record<
-    keyof typeof SUPPORTED_LOCALES,
-    string
-  > = {
-    en: `There is no chapter of Qur'an in our library with number ${chapterNumber}.`,
-    tr: `Veritabanımızda Kur'an'da ${chapterNumber} numaralı bir sure bulunamadı.`,
-  };
+  // "/i/q/02" or "/i/q/2abc" would otherwise be duplicates of "/i/q/2".
+  if (chapterNumber !== String(num)) permanentRedirect(`/${locale}/i/q/${num}`);
 
-  const notFoundDescription =
-    chapterNotFoundErrorDescriptions[lang] ||
-    chapterNotFoundErrorDescriptions.en;
-
-  if (!chapterNumber)
-    return <NotFoundError>{notFoundDescription}</NotFoundError>;
-
-  const parsedChapterNumber = parseInt(chapterNumber);
-
-  if (
-    isNaN(parsedChapterNumber) ||
-    parsedChapterNumber <= 0 ||
-    parsedChapterNumber > 114
-  )
-    return <NotFoundError>{notFoundDescription}</NotFoundError>;
-
-  const response = await getChapterData(parsedChapterNumber);
+  const response = await getChapterData(num);
 
   switch (response.status) {
-    case ResponseCodes.OK:
-      const currentUrl = `${SITE_URL}/${locale}/i/q/${chapterNumber}`;
-      await ServerUtils.General.Pages.upsertUrlToSitemap(currentUrl);
-
-      return <Client chapter={response.data} />;
+    case ResponseCodes.OK: {
+      const meaning =
+        response.data.meanings.find((m) => m.language.code === locale)?.text ??
+        response.data.name;
+      return (
+        <>
+          <JsonLd
+            data={breadcrumbJsonLd([
+              crumbs.home(locale),
+              crumbs.islam(locale),
+              crumbs.quran(locale),
+              { name: `${num}. ${meaning}`, path: `/${locale}/i/q/${num}` },
+            ])}
+          />
+          <Client chapter={response.data} />
+        </>
+      );
+    }
     case ResponseCodes.NOT_FOUND:
-      return <NotFoundError>{notFoundDescription}</NotFoundError>;
+      notFound();
     case ResponseCodes.TOO_MANY_REQUESTS:
       return <RateLimitError />;
     case ResponseCodes.INTERNAL_SERVER_ERROR:
