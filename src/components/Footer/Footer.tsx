@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "@/navigation";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import {
   Tooltip,
   TooltipContent,
@@ -35,6 +36,14 @@ const Footer = () => {
   const t = useTranslations("Footer");
 
   const locale = useLocale();
+
+  // Touch devices have no hover tooltip, so explain on tap. A fixed id
+  // prevents toasts stacking on repeated taps.
+  const showNotActiveToast = () =>
+    toast.info(tt("NotActive"), {
+      id: "platform-not-active",
+      position: "bottom-right",
+    });
 
   return (
     <footer className="w-full border-t border-border/40 bg-background/95 mt-auto flex justify-center items-center">
@@ -111,7 +120,10 @@ const Footer = () => {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="text-muted-foreground/30 cursor-not-allowed">
+              <span
+                onClick={showNotActiveToast}
+                className="text-muted-foreground/30 cursor-not-allowed"
+              >
                 <FaPatreon className="w-5 h-5" />
                 <span className="sr-only">Patreon</span>
               </span>
@@ -123,7 +135,10 @@ const Footer = () => {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="text-muted-foreground/30 cursor-not-allowed">
+              <span
+                onClick={showNotActiveToast}
+                className="text-muted-foreground/30 cursor-not-allowed"
+              >
                 <FaPaypal className="w-5 h-5" />
                 <span className="sr-only">PayPal</span>
               </span>
