@@ -1,20 +1,12 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useId, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { observer } from "mobx-react-lite";
 import { useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldLabel,
-  FieldTitle,
-} from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
 import { SearchBarState } from "@/components/Navbar/classes/SearchBarState";
 import {
@@ -22,9 +14,57 @@ import {
   TranslationSearchMethodology,
 } from "@/components/Navbar/classes/TranslationSearchAlgorithm";
 import { RootSearchAlgorithm } from "@/components/Navbar/classes/RootSearchAlgorithm";
+import { cn } from "@/lib/utils";
 
 type Props = {
   onClose: () => void;
+};
+
+const SectionTitle: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <h4 className="px-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/70">
+    {children}
+  </h4>
+);
+
+/** Bordered list whose rows are separated by dividers. */
+const Group: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="divide-y divide-border/60 overflow-hidden rounded-xl border border-border/60 bg-card/40">
+    {children}
+  </div>
+);
+
+type RowProps = {
+  title: string;
+  description?: string;
+  control: (id: string) => React.ReactNode;
+  disabled?: boolean;
+};
+
+const Row: React.FC<RowProps> = ({ title, description, control, disabled }) => {
+  const id = useId();
+  return (
+    <label
+      htmlFor={id}
+      className={cn(
+        "flex items-center justify-between gap-4 px-4 py-3.5 transition-colors",
+        disabled
+          ? "cursor-not-allowed opacity-55"
+          : "cursor-pointer active:bg-muted/60",
+      )}
+    >
+      <span className="min-w-0 space-y-0.5">
+        <span className="block text-sm font-medium">{title}</span>
+        {description && (
+          <span className="block text-xs leading-snug text-muted-foreground">
+            {description}
+          </span>
+        )}
+      </span>
+      {control(id)}
+    </label>
+  );
 };
 
 const MobileSearchBarSettingsModal: React.FC<Props> = observer(
@@ -33,87 +73,66 @@ const MobileSearchBarSettingsModal: React.FC<Props> = observer(
     const state = useMemo(() => SearchBarState.getInstance(), []);
     const searchAlgorithm = state.algorithm;
 
+    const translationKey = TranslationSearchAlgorithm.getInstance().key;
+    const rootKey = RootSearchAlgorithm.getInstance().key;
+
+    const tc = (key: string) =>
+      t(`SearchAlgorithms.TranslationSearch.Configuration.Methodology.${key}`);
+
     const modalContent = (
-      <main className="fixed inset-0 z-10000 bg-background flex flex-col animate-in slide-in-from-bottom duration-300">
-        <header className="flex items-center gap-4 p-4 border-b bg-card">
+      <main className="fixed inset-0 z-10000 flex flex-col bg-background font-sans text-foreground animate-in slide-in-from-bottom duration-300">
+        <header className="flex h-14 shrink-0 items-center gap-1.5 border-b border-border/60 bg-background/95 px-2 backdrop-blur">
           <Button
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="rounded-full"
+            aria-label="Back"
+            className="h-10 w-10 shrink-0 rounded-full"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h2 className="font-bold text-lg">{t("Header")}</h2>
+          <h2 className="truncate text-base font-semibold">{t("Header")}</h2>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-5 space-y-8">
-          <section className="space-y-4">
-            <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-              {t("Header")}
-            </h4>
+        <div className="min-h-0 flex-1 space-y-7 overflow-y-auto px-4 py-5">
+          <section>
+            <SectionTitle>{t("Header")}</SectionTitle>
             <RadioGroup
               value={searchAlgorithm.key}
-              className="space-y-4"
               onValueChange={(val) => {
-                if (val === TranslationSearchAlgorithm.getInstance().key) {
-                  state.algorithm = TranslationSearchAlgorithm.getInstance();
-                } else {
-                  state.algorithm = RootSearchAlgorithm.getInstance();
-                }
+                state.algorithm =
+                  val === translationKey
+                    ? TranslationSearchAlgorithm.getInstance()
+                    : RootSearchAlgorithm.getInstance();
               }}
+              className="gap-0"
             >
-              <FieldLabel className="cursor-pointer block p-3 rounded-lg border border-transparent bg-accent/30">
-                <Field
-                  orientation="horizontal"
-                  className="flex justify-between items-center w-full"
-                >
-                  <FieldContent className="flex-1 pr-4">
-                    <FieldTitle className="text-sm font-semibold">
-                      {t("SearchAlgorithms.TranslationSearch.Header")}
-                    </FieldTitle>
-                    <FieldDescription className="text-xs text-muted-foreground mt-1">
-                      {t("SearchAlgorithms.TranslationSearch.Description")}
-                    </FieldDescription>
-                  </FieldContent>
-                  <RadioGroupItem
-                    value={TranslationSearchAlgorithm.getInstance().key}
-                  />
-                </Field>
-              </FieldLabel>
-
-              <FieldLabel className="cursor-pointer block p-3 rounded-lg border border-transparent bg-accent/30 opacity-60">
-                <Field
-                  orientation="horizontal"
-                  className="flex justify-between items-center w-full"
-                >
-                  <FieldContent className="flex-1 pr-4">
-                    <FieldTitle className="text-sm font-semibold">
-                      {t("SearchAlgorithms.RootSearch.Header")}
-                    </FieldTitle>
-                    <FieldDescription className="text-xs text-muted-foreground mt-1">
-                      {t("SearchAlgorithms.RootSearch.Description")}
-                    </FieldDescription>
-                  </FieldContent>
-                  <RadioGroupItem
-                    disabled
-                    value={RootSearchAlgorithm.getInstance().key}
-                  />
-                </Field>
-              </FieldLabel>
+              <Group>
+                <Row
+                  title={t("SearchAlgorithms.TranslationSearch.Header")}
+                  description={t(
+                    "SearchAlgorithms.TranslationSearch.Description",
+                  )}
+                  control={(id) => (
+                    <RadioGroupItem id={id} value={translationKey} />
+                  )}
+                />
+                <Row
+                  disabled
+                  title={t("SearchAlgorithms.RootSearch.Header")}
+                  description={t("SearchAlgorithms.RootSearch.Description")}
+                  control={(id) => (
+                    <RadioGroupItem id={id} value={rootKey} disabled />
+                  )}
+                />
+              </Group>
             </RadioGroup>
           </section>
 
           {searchAlgorithm instanceof TranslationSearchAlgorithm && (
             <>
-              <Separator />
-
-              <section className="space-y-4">
-                <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                  {t(
-                    "SearchAlgorithms.TranslationSearch.Configuration.Methodology.Header",
-                  )}
-                </h4>
+              <section>
+                <SectionTitle>{tc("Header")}</SectionTitle>
                 <RadioGroup
                   value={
                     searchAlgorithm.methodology ===
@@ -127,103 +146,64 @@ const MobileSearchBarSettingsModal: React.FC<Props> = observer(
                         ? TranslationSearchMethodology.TextSearch
                         : TranslationSearchMethodology.ContextSearch)
                   }
-                  className="space-y-4"
+                  className="gap-0"
                 >
-                  <FieldLabel className="cursor-pointer block p-3 rounded-lg border border-transparent bg-accent/30">
-                    <Field
-                      orientation="horizontal"
-                      className="flex justify-between items-center w-full"
-                    >
-                      <FieldContent className="flex-1 pr-4">
-                        <FieldTitle className="text-sm font-semibold">
-                          {t(
-                            "SearchAlgorithms.TranslationSearch.Configuration.Methodology.SearchPreference.MatchSearch.Header",
-                          )}
-                        </FieldTitle>
-                      </FieldContent>
-                      <RadioGroupItem value="match" />
-                    </Field>
-                  </FieldLabel>
-                  <FieldLabel className="cursor-pointer block p-3 rounded-lg border border-transparent bg-accent/30">
-                    <Field
-                      orientation="horizontal"
-                      className="flex justify-between items-center w-full"
-                    >
-                      <FieldContent className="flex-1 pr-4">
-                        <FieldTitle className="text-sm font-semibold">
-                          {t(
-                            "SearchAlgorithms.TranslationSearch.Configuration.Methodology.SearchPreference.SemanticSearch.Header",
-                          )}
-                        </FieldTitle>
-                      </FieldContent>
-                      <RadioGroupItem value="semantic" />
-                    </Field>
-                  </FieldLabel>
+                  <Group>
+                    <Row
+                      title={tc("SearchPreference.MatchSearch.Header")}
+                      description={tc("SearchPreference.MatchSearch.Description")}
+                      control={(id) => (
+                        <RadioGroupItem id={id} value="match" />
+                      )}
+                    />
+                    <Row
+                      title={tc("SearchPreference.SemanticSearch.Header")}
+                      description={tc(
+                        "SearchPreference.SemanticSearch.Description",
+                      )}
+                      control={(id) => (
+                        <RadioGroupItem id={id} value="semantic" />
+                      )}
+                    />
+                  </Group>
                 </RadioGroup>
               </section>
 
-              <Separator />
-
-              <section className="space-y-4">
-                <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                  {t(
-                    "SearchAlgorithms.TranslationSearch.Configuration.Methodology.ResultConfigs.Header",
-                  )}
-                </h4>
-                <div className="space-y-2">
-                  <div
-                    className="flex items-center justify-between p-4 bg-accent/30 rounded-lg"
-                    onClick={() =>
-                      (searchAlgorithm.emphasize = !searchAlgorithm.emphasize)
-                    }
-                  >
-                    <div className="flex-1 pr-4">
-                      <label className="text-sm font-semibold block">
-                        {t(
-                          "SearchAlgorithms.TranslationSearch.Configuration.Methodology.ResultConfigs.EmphasizeMatches.Header",
-                        )}
-                      </label>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {t(
-                          "SearchAlgorithms.TranslationSearch.Configuration.Methodology.ResultConfigs.EmphasizeMatches.Description",
-                        )}
-                      </p>
-                    </div>
-                    <Switch checked={searchAlgorithm.emphasize} />
-                  </div>
-
-                  <div
-                    className="flex items-center justify-between p-4 bg-accent/30 rounded-lg"
-                    onClick={() =>
-                      (searchAlgorithm.filterSameVerse =
-                        !searchAlgorithm.filterSameVerse)
-                    }
-                  >
-                    <div className="flex-1 pr-4">
-                      <label className="text-sm font-semibold block">
-                        {t(
-                          "SearchAlgorithms.TranslationSearch.Configuration.Methodology.ResultConfigs.FilterDuplicates.Header",
-                        )}
-                      </label>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {t(
-                          "SearchAlgorithms.TranslationSearch.Configuration.Methodology.ResultConfigs.FilterDuplicates.Description",
-                        )}
-                      </p>
-                    </div>
-                    <Switch checked={searchAlgorithm.filterSameVerse} />
-                  </div>
-                </div>
+              <section>
+                <SectionTitle>{tc("ResultConfigs.Header")}</SectionTitle>
+                <Group>
+                  <Row
+                    title={tc("ResultConfigs.EmphasizeMatches.Header")}
+                    description={tc("ResultConfigs.EmphasizeMatches.Description")}
+                    control={(id) => (
+                      <Switch
+                        id={id}
+                        checked={searchAlgorithm.emphasize}
+                        onCheckedChange={(v) => (searchAlgorithm.emphasize = v)}
+                      />
+                    )}
+                  />
+                  <Row
+                    title={tc("ResultConfigs.FilterDuplicates.Header")}
+                    description={tc("ResultConfigs.FilterDuplicates.Description")}
+                    control={(id) => (
+                      <Switch
+                        id={id}
+                        checked={searchAlgorithm.filterSameVerse}
+                        onCheckedChange={(v) =>
+                          (searchAlgorithm.filterSameVerse = v)
+                        }
+                      />
+                    )}
+                  />
+                </Group>
               </section>
             </>
           )}
         </div>
 
-        <footer className="p-4 border-t bg-card">
-          <Button
-            className="w-full h-12 rounded-xl text-base font-bold"
-            onClick={onClose}
-          >
+        <footer className="shrink-0 border-t border-border/60 bg-background px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <Button className="h-11 w-full rounded-xl text-sm font-semibold" onClick={onClose}>
             {t("Apply")}
           </Button>
         </footer>

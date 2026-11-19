@@ -248,7 +248,9 @@ const SearchResultsList: React.FC<Props> = observer(({ state, onNavigate }) => {
             <CommandItem
               key={idx}
               value={`root-${root.text}-${idx}`}
-              onSelect={() => goTo(`i/q/${root.text}`)}
+              onSelect={() =>
+                goTo(`i/q/root/${encodeURIComponent(root.latin)}`)
+              }
               className="flex gap-3 p-3 items-center cursor-pointer rounded-lg border border-transparent data-[selected=true]:border-border data-[selected=true]:bg-accent/50"
             >
               <div className="flex h-9 w-9 items-center justify-center rounded-md bg-indigo-500/10 text-indigo-500 shrink-0">
@@ -264,7 +266,7 @@ const SearchResultsList: React.FC<Props> = observer(({ state, onNavigate }) => {
                   {root.text}
                 </span>
                 <span className="text-xs text-muted-foreground mt-1">
-                  {root.text}
+                  {root.latin}
                 </span>
               </div>
             </CommandItem>
