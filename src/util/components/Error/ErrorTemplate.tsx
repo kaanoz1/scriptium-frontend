@@ -3,6 +3,8 @@
 import React from "react";
 import { motion, Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { instrumentSerif } from "@/fonts";
+import PageBackdrop from "@/components/Page/PageBackdrop";
 
 export type ErrorTemplateProps = {
   icon: React.ReactNode;
@@ -43,34 +45,36 @@ const ErrorTemplate: React.FC<ErrorTemplateProps> = ({
   return (
     <div
       className={cn(
-        "relative flex flex-col items-center justify-center overflow-hidden px-6 text-center w-full",
-        fullPage ? "h-[calc(100vh_-_150px)]" : "py-12 h-full min-h-100",
+        "relative isolate flex w-full flex-col items-center justify-center overflow-hidden px-6 text-center",
+        fullPage ? "min-h-[calc(100vh-150px)] py-16" : "h-full min-h-100 py-12",
       )}
     >
+      <PageBackdrop className="h-full" />
       <div
-        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-75 w-125 rounded-full blur-[120px] pointer-events-none opacity-50 dark:opacity-30 ${colors.glow}`}
+        className={`pointer-events-none absolute left-1/2 top-1/2 -z-10 h-64 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-30 blur-[110px] dark:opacity-20 ${colors.glow}`}
       />
 
       <motion.div
-        className="flex w-full max-w-2xl flex-col items-center gap-6"
+        className="flex w-full max-w-xl flex-col items-center gap-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.div
-          variants={itemVariants}
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className={`flex h-24 w-24 items-center justify-center rounded-full ${colors.bg} ${colors.text} shadow-xl backdrop-blur-sm`}
-        >
-          {icon}
+        <motion.div variants={itemVariants} className="relative">
+          <span className="absolute inset-0 rotate-45 rounded-3xl border border-border/70" />
+          <div
+            className={`relative flex h-24 w-24 items-center justify-center rounded-3xl border border-border/70 bg-background/80 backdrop-blur ${colors.text}`}
+          >
+            {icon}
+          </div>
         </motion.div>
 
         <motion.h1
           variants={itemVariants}
           className={cn(
-            "font-extrabold tracking-tight",
-            fullPage ? "text-4xl sm:text-5xl" : "text-2xl sm:text-3xl",
+            instrumentSerif.className,
+            "tracking-tight",
+            fullPage ? "text-5xl sm:text-6xl" : "text-3xl sm:text-4xl",
           )}
         >
           {title}
@@ -78,7 +82,7 @@ const ErrorTemplate: React.FC<ErrorTemplateProps> = ({
 
         <motion.div
           variants={itemVariants}
-          className="space-y-6 flex flex-col items-center"
+          className="flex flex-col items-center space-y-6"
         >
           {children}
         </motion.div>
