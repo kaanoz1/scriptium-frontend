@@ -40,15 +40,15 @@ const VerseWordTable: React.FC<Props> = observer(({ words }) => {
 
   return (
     <div
-      className={`group rounded-xl border bg-card text-card-foreground shadow-sm flex flex-col transition-all duration-300 ${
+      className={`group rounded-2xl border border-border/60 bg-card/70 text-card-foreground backdrop-blur-sm flex flex-col transition-all duration-300 ${
         isSticky
-          ? "xl:sticky xl:top-8 xl:max-h-[calc(100vh-4rem)] overflow-hidden"
+          ? "xl:sticky xl:top-44 xl:max-h-[calc(100vh-12rem)] overflow-hidden"
           : ""
       }`}
     >
-      <div className="flex shrink-0 items-center justify-between border-b bg-muted/40 px-4 py-3 text-sm font-medium text-muted-foreground z-20 relative">
+      <div className="flex shrink-0 items-center justify-between border-b border-border/60 bg-muted/30 px-5 py-3.5 text-sm font-medium text-muted-foreground z-20 relative">
         <div className="flex items-center gap-2">
-          <BookOpen size={16} className="text-primary" />
+          <BookOpen size={16} className="text-emerald-600 dark:text-emerald-400" />
           <span>
             {count} {t("Words") || "Words"}
           </span>
@@ -109,7 +109,7 @@ const VerseWordTable: React.FC<Props> = observer(({ words }) => {
                       <LoadingLink
                         key={r.latin}
                         href={`/${locale}/i/q/root/${r.latin}`}
-                        className={`cursor-pointer text-xl transition-colors hover:text-blue-500 ${arabicFont.className}`}
+                        className={`cursor-pointer text-xl transition-colors hover:text-emerald-600 dark:hover:text-emerald-400 ${arabicFont.className}`}
                         dir="rtl"
                       >
                         {r.text}

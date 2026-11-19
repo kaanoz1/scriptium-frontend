@@ -1,16 +1,22 @@
 import { Metadata, NextPage } from "next";
 import { cache } from "react";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ResponseCodes } from "@/util/types/ResponseCodes";
 import { BackendApi } from "@/tool/Fetchers/BackendApi";
-import { SUPPORTED_LOCALES } from "@/locale/SupportedLocales/_index";
 import UnknownError from "@/util/components/Error/UnknownError";
 import ServerError from "@/util/components/Error/ServerError";
 import RateLimitError from "@/util/components/Error/RateLimitError";
-import NotFoundError from "@/util/components/Error/NotFoundError";
-import { ServerUtils } from "@/util/ServerUtils";
-import { ClientUtils } from "@/util/ClientUtils";
 import Client from "@/app/[locale]/i/q/[chapterNumber]/[verseNumber]/client";
-import { SITE_URL } from "@/configuration";
+import { VerseCountIndicator } from "@/util/Islam/Quran/Chapter/VerseCountIndicator";
+import { TVerseBoth } from "@/dto/Islam/Quran/Verse/Both";
+import {
+  breadcrumbJsonLd,
+  buildMetadata,
+  crumbs,
+  errorMetadata,
+  JsonLd,
+  truncate,
+} from "@/lib/seo";
 
 type Props = {
   params: Promise<{
@@ -20,35 +26,100 @@ type Props = {
   }>;
 };
 
-const getVerseData = cache(async (chapter: number, verse: number) => {
-  return await BackendApi.VerseController.get(chapter, verse);
-});
+const DEFAULT_TRANSLATION_ID = 1;
+
+const getVerseData = cache(async (chapter: number, verse: number) =>
+  BackendApi.VerseController.get(chapter, verse),
+);
+
+const parseReference = (
+  rawChapter: string,
+  rawVerse: string,
+): [number, number] | null => {
+  const c = Number.parseInt(rawChapter, 10);
+  const v = Number.parseInt(rawVerse, 10);
+  // Note: the old check used `c < 114`, so every verse of surah 114 was reported as "not found".
+  if (!Number.isInteger(c) || c < 1 || c > 114) return null;
+  if (!Number.isInteger(v) || v < 1 || v > VerseCountIndicator[c - 1])
+    return null;
+  return [c, v];
+};
+
+const chapterMeaning = (verse: TVerseBoth, locale: string) =>
+  verse.chapter.meanings.find((m) => m.language.code === locale)?.text ??
+  verse.chapter.meanings.find((m) => m.language.code === "en")?.text ??
+  verse.chapter.name;
+
+/** Prefer the default translation, then any translation in the page's language. */
+const pickTranslation = (verse: TVerseBoth, locale: string) =>
+  verse.translations.find(
+    (t) => t.translation.id === DEFAULT_TRANSLATION_ID && t.text,
+  ) ??
+  verse.translations.find(
+    (t) => t.translation.language?.code === locale && t.text,
+  ) ??
+  verse.translations.find((t) => t.text);
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { chapterNumber, verseNumber, locale } = await params;
+  const ref = parseReference(chapterNumber, verseNumber);
+  if (!ref) return errorMetadata("Verse not found");
+
+  const [c, v] = ref;
+  const response = await getVerseData(c, v);
+  if (response.status !== ResponseCodes.OK || !response.data)
+    return errorMetadata("Error");
+
+  const meaning = chapterMeaning(response.data, locale);
+  const translation = pickTranslation(response.data, locale);
+
+  const description = translation
+    ? truncate(`${c}:${v} — ${translation.text}`)
+    : `Read verse ${v} of Surah ${meaning} (Qur'an ${c}:${v}) in Arabic with translations, transliteration and word-by-word root analysis.`;
+
+  return buildMetadata({
+    title: `Qur'an ${c}:${v} — Surah ${meaning}, Verse ${v}`,
+    description,
+    path: `/${locale}/i/q/${c}/${v}`,
+    locale,
+    type: "article",
+  });
+}
 
 const Page: NextPage<Props> = async ({ params }) => {
   const { chapterNumber, verseNumber, locale } = await params;
-  const lang = (locale as keyof typeof SUPPORTED_LOCALES) || "en";
+  const ref = parseReference(chapterNumber, verseNumber);
 
-  const cNum = parseInt(chapterNumber);
-  const vNum = parseInt(verseNumber);
+  if (!ref) notFound();
 
-  const errorMsgs = {
-    en: `Verse ${chapterNumber}:${verseNumber} could not be found in our database.`,
-    tr: `Veritabanımızda ${chapterNumber}:${verseNumber} numaralı ayet bulunamadı.`,
-  };
+  const [c, v] = ref;
 
-  if (isNaN(cNum) || isNaN(vNum))
-    return <NotFoundError>{errorMsgs[lang] || errorMsgs.en}</NotFoundError>;
+  // "/i/q/02/255" would otherwise be a duplicate of "/i/q/2/255".
+  if (chapterNumber !== String(c) || verseNumber !== String(v))
+    permanentRedirect(`/${locale}/i/q/${c}/${v}`);
 
-  const response = await getVerseData(cNum, vNum);
+  const response = await getVerseData(c, v);
 
   switch (response.status) {
-    case ResponseCodes.OK:
-      const currentUrl = `${SITE_URL}/${locale}/i/q/${chapterNumber}/${verseNumber}`;
-      await ServerUtils.General.Pages.upsertUrlToSitemap(currentUrl);
-
-      return <Client verse={response.data} />;
+    case ResponseCodes.OK: {
+      const meaning = chapterMeaning(response.data, locale);
+      return (
+        <>
+          <JsonLd
+            data={breadcrumbJsonLd([
+              crumbs.home(locale),
+              crumbs.islam(locale),
+              crumbs.quran(locale),
+              { name: `${c}. ${meaning}`, path: `/${locale}/i/q/${c}` },
+              { name: `Verse ${v}`, path: `/${locale}/i/q/${c}/${v}` },
+            ])}
+          />
+          <Client verse={response.data} />
+        </>
+      );
+    }
     case ResponseCodes.NOT_FOUND:
-      return <NotFoundError>{errorMsgs[lang] || errorMsgs.en}</NotFoundError>;
+      notFound();
     case ResponseCodes.TOO_MANY_REQUESTS:
       return <RateLimitError />;
     case ResponseCodes.INTERNAL_SERVER_ERROR:
@@ -59,70 +130,3 @@ const Page: NextPage<Props> = async ({ params }) => {
 };
 
 export default Page;
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { chapterNumber, verseNumber, locale } = await params;
-  const lang = (locale as keyof typeof SUPPORTED_LOCALES) || "en";
-
-  const cNum = parseInt(chapterNumber);
-  const vNum = parseInt(verseNumber);
-
-  const titles = {
-    notFound: {
-      en: "Verse Not Found - Scriptium",
-      tr: "Ayet Bulunamadı - Scriptium",
-    },
-    error: { en: "Error - Scriptium", tr: "Hata - Scriptium" },
-  };
-
-  const isChapterValid =
-    !isNaN(cNum) && Number.isInteger(cNum) && cNum > 0 && cNum < 114;
-
-  const chapterVerseLimit =
-    ClientUtils.Islam.Quran.Verse.CountIndicator[cNum - 1];
-
-  const isVerseValid =
-    !isNaN(vNum) &&
-    Number.isInteger(vNum) &&
-    vNum > 0 &&
-    vNum <= chapterVerseLimit;
-
-  if (!(isChapterValid && isVerseValid)) {
-    return { title: { absolute: titles.notFound[lang] || titles.notFound.en } };
-  }
-
-  const response = await getVerseData(cNum, vNum);
-
-  if (response.status !== ResponseCodes.OK || !response.data) {
-    return { title: { absolute: titles.error[lang] || titles.error.en } };
-  }
-
-  const { chapter } = response.data;
-
-  const possibleChapterMeanings = response.data.chapter.meanings;
-
-  const meaning =
-    possibleChapterMeanings.find((m) => m.language.code === locale)?.text ||
-    possibleChapterMeanings.find((m) => m.language.code == "en")?.text ||
-    chapter.name;
-
-  const titleLabel = `${cNum}:${vNum}`;
-  const pageTitle = `Scriptium - ${titleLabel}`;
-  const description = meaning || "Read Quranic verses with translations.";
-  const path = `/${locale}/i/q/${chapterNumber}/${verseNumber}`;
-
-  return {
-    title: {
-      absolute: pageTitle,
-    },
-    description,
-    alternates: {
-      canonical: path,
-    },
-    openGraph: {
-      title: pageTitle,
-      description,
-      url: path,
-    },
-  };
-}

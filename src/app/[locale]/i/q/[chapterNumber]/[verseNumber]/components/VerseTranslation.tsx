@@ -28,7 +28,7 @@ const VerseTranslation: React.FC<Props> = observer(({ verse }) => {
   const isSingleTranslation = preferredTranslations.length === 1;
 
   return (
-    <main className="flex flex-col gap-6 w-full">
+    <div className="flex w-full flex-col gap-6">
       {translationShown.map((transl, index) => {
         const translationName = transl.name;
         const authorNamesConcatenated = transl.authors
@@ -47,7 +47,7 @@ const VerseTranslation: React.FC<Props> = observer(({ verse }) => {
             className={`flex flex-col gap-2 ${!isSingleTranslation && index !== 0 ? "pt-4 border-t border-border/30" : ""}`}
           >
             <header className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">
+              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-emerald-700 dark:text-emerald-300">
                 {translationName}
               </span>
               <span className="text-[10px] font-medium text-muted-foreground italic">
@@ -56,14 +56,14 @@ const VerseTranslation: React.FC<Props> = observer(({ verse }) => {
             </header>
 
             <p
-              className={`text-base leading-relaxed text-foreground/90 ${!isSingleTranslation ? "pl-3 border-l-2 border-primary/20" : ""}`}
+              className={`text-lg leading-8 text-foreground/90 ${!isSingleTranslation ? "border-l-2 border-emerald-500/25 pl-3" : ""}`}
             >
               {translationText}
             </p>
           </div>
         );
       })}
-    </main>
+    </div>
   );
 });
 

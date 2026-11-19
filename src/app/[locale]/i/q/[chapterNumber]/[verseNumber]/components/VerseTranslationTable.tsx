@@ -62,15 +62,15 @@ const VerseTranslationTable: React.FC<Props> = observer(
 
     return (
       <div
-        className={`group rounded-xl border bg-card text-card-foreground shadow-sm flex flex-col transition-all duration-300 ${
+        className={`group rounded-2xl border border-border/60 bg-card/70 text-card-foreground backdrop-blur-sm flex flex-col transition-all duration-300 ${
           isSticky
-            ? "xl:sticky xl:top-8 xl:max-h-[calc(100vh-4rem)] overflow-hidden"
+            ? "xl:sticky xl:top-44 xl:max-h-[calc(100vh-12rem)] overflow-hidden"
             : ""
         }`}
       >
-        <div className="flex shrink-0 items-center justify-between border-b bg-muted/40 px-4 py-3 text-sm font-medium text-muted-foreground z-20 relative">
+        <div className="flex shrink-0 items-center justify-between border-b border-border/60 bg-muted/30 px-5 py-3.5 text-sm font-medium text-muted-foreground z-20 relative">
           <div className="flex items-center gap-2">
-            <Languages size={16} className="text-primary" />
+            <Languages size={16} className="text-emerald-600 dark:text-emerald-400" />
             <span>
               {translationsShown.length} {t("Translations") || "Translations"}
             </span>
@@ -113,9 +113,9 @@ const VerseTranslationTable: React.FC<Props> = observer(
               >
                 <header className="mb-3 flex flex-wrap items-center gap-2">
                   <span
-                    className={`rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                    className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
                       isPreferred
-                        ? "bg-primary/10 text-primary"
+                        ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
                         : "bg-secondary text-secondary-foreground"
                     }`}
                   >

@@ -37,7 +37,7 @@ const UtilToolButtons: React.FC<Props> = observer(({verse}) => {
 
     return (
         <aside
-            className="flex w-full sm:w-auto items-center justify-between sm:justify-end gap-1 sm:gap-2 rounded-full px-2 py-1">
+            className="flex w-full items-center justify-between gap-1 px-1 sm:w-auto sm:justify-end">
             <AudioPlayButton/>
             <ShareButton shareText={shareText}/>
 

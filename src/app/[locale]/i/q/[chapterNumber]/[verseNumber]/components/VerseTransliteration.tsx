@@ -29,9 +29,9 @@ const VerseTransliteration: React.FC<Props> = observer(({ verse }) => {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="mt-4 overflow-hidden"
+                    className="overflow-hidden"
                 >
-                    <div className="rounded-lg bg-muted/40 p-3.5 border border-border/50">
+                    <div className="rounded-xl border border-border/40 bg-muted/40 px-4 py-3 text-center">
                         {transliteration ? (
                             <p className="text-[13px] leading-relaxed italic text-muted-foreground">
                                 {stripHtml(transliteration.text)}

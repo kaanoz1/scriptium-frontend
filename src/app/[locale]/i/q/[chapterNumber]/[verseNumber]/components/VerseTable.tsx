@@ -16,7 +16,7 @@ const VerseTable: React.FC<Props> = ({verse}) => {
         <motion.div
             initial={{opacity: 0, y: 10}}
             animate={{opacity: 1, y: 0}}
-            className="w-full flex flex-col-reverse xl:flex-row items-start gap-8 mt-8"
+            className="flex w-full flex-col-reverse items-start gap-6 xl:flex-row"
         >
             <section className="w-full xl:w-5/12 shrink-0">
                 <VerseWordTable words={verse.words}/>
