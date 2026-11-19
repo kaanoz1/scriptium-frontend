@@ -20,6 +20,11 @@ export const en: SystemLanguage = {
         Language: "Language",
         Resources: "Resources",
         Appearance: "Appearance",
+        Explore: "Explore",
+        Home: "Home",
+        Light: "Light",
+        Dark: "Dark",
+        Soon: "Soon",
       },
       MobileSearchModal: {
         SearchInputPlaceholder: "Search...",
@@ -102,23 +107,38 @@ export const en: SystemLanguage = {
   Pages: {
     Home: {
       HeroSubtitle: "Theology library.",
-      QuranCard: {
-        Title: "Qur'an",
-        ArabicTitle: "القرآن الكريم",
-        Description:
-          "Access the complete Arabic text, translations, and advanced root-word methodology search.",
+      Eyebrow: "Open theology library",
+      HeroTagline:
+        "Read, search and study the world's sacred texts, word by word, root by root.",
+      CollectionTitle: "Traditions",
+      CollectionDescription:
+        "Choose a tradition to explore its sacred texts and scholarship.",
+      Explore: "Explore",
+      ComingSoon: "Coming soon",
+      QuickAccess: "Jump in",
+      QuickLinks: {
+        Fatiha: "Al-Fatiha",
+        AyatAlKursi: "Ayat al-Kursi",
+        Ikhlas: "Al-Ikhlas",
+        Roots: "Word roots",
       },
-      TorahCard: {
-        Title: "Torah",
-        HebrewTitle: "תּוֹרָה",
+      IslamCard: {
+        Title: "Islam",
+        NativeTitle: "الإسلام",
         Description:
-          "Explore the foundational Hebrew scriptures with cross-linguistic tools and historical analysis.",
+          "The Qur'an and the classical Islamic sciences: tafsir, hadith, fiqh, kalam and more.",
       },
-      BibleCard: {
-        Title: "Bible",
-        GreekTitle: "Biblion",
+      ChristianityCard: {
+        Title: "Christianity",
+        NativeTitle: "Χριστιανισμός",
         Description:
-          "Comprehensive study of the Old and New Testaments with comparative translation analysis.",
+          "The Old and New Testaments with comparative translation analysis.",
+      },
+      JudaismCard: {
+        Title: "Judaism",
+        NativeTitle: "יהדות",
+        Description:
+          "The Torah and the Hebrew scriptures with cross-linguistic tools.",
       },
       HinduismCard: {
         Title: "Hinduism",
@@ -138,9 +158,70 @@ export const en: SystemLanguage = {
       },
     },
     Islam: {
+      Index: {
+        Eyebrow: "Islamic sciences",
+        Title: "Islam",
+        Description:
+          "The Qur'an and the classical disciplines built around it, from exegesis and hadith criticism to law and theology.",
+        Available: "Available",
+        ComingSoon: "Coming soon",
+        Open: "Open",
+        Sciences: {
+          Quran: {
+            Title: "Qur'an",
+            NativeTitle: "القرآن الكريم",
+            Description:
+              "Arabic text, translations, word-by-word analysis and root search.",
+          },
+          Tafsir: {
+            Title: "Tafsir",
+            NativeTitle: "التفسير",
+            Description: "Classical and modern exegesis of the Qur'an.",
+          },
+          Hadith: {
+            Title: "Hadith",
+            NativeTitle: "الحديث",
+            Description:
+              "Prophetic traditions together with their chains of narration.",
+          },
+          JarhTadil: {
+            Title: "Jarh wa Ta'dil",
+            NativeTitle: "الجرح والتعديل",
+            Description:
+              "Narrator criticism: assessing the reliability of hadith transmitters.",
+          },
+          Fiqh: {
+            Title: "Fiqh",
+            NativeTitle: "الفقه",
+            Description: "Islamic jurisprudence across the schools of law.",
+          },
+          Usul: {
+            Title: "Usul al-Fiqh",
+            NativeTitle: "أصول الفقه",
+            Description:
+              "The principles and methodology behind legal reasoning.",
+          },
+          Kalam: {
+            Title: "Kalam",
+            NativeTitle: "علم الكلام",
+            Description: "Systematic theology and its schools of thought.",
+          },
+          Sirah: {
+            Title: "Sirah",
+            NativeTitle: "السيرة النبوية",
+            Description: "The life of the Prophet Muhammad.",
+          },
+          Tasawwuf: {
+            Title: "Tasawwuf",
+            NativeTitle: "التصوف",
+            Description: "Islamic spirituality and its classical literature.",
+          },
+        },
+      },
       Quran: {
         Components: {
           Header: {
+            FilterPlaceholder: "Filter by name, meaning or number…",
             Header: "Al-Qur'an Chapters",
             Description: "Select a Surah below to read.",
           },
@@ -315,6 +396,7 @@ export const en: SystemLanguage = {
           Components: {
             Header: {
               Occurrences: "Occurrences",
+              SearchPlaceholder: "Search roots…",
               Header: "Roots of Qur'an",
               Description: "",
             },
@@ -323,6 +405,124 @@ export const en: SystemLanguage = {
             HighOccurrencesWarningTitle: "High number of occurrences",
             HighOccurrencesWarningDesc:
               "We are showing all results. This may cause freezes depending on your device power. We are actively working to optimize this.",
+          },
+        },
+      },
+    },
+    Christianity: {
+      Index: {
+        Eyebrow: "Christian scholarship",
+        Title: "Christianity",
+        Description:
+          "Scripture and the theological traditions built around it, from the Church Fathers to the councils.",
+        Available: "Available",
+        ComingSoon: "Coming soon",
+        Open: "Open",
+        Sciences: {
+          Bible: {
+            Title: "Bible",
+            NativeTitle: "Βίβλος",
+            Description:
+              "The Old and New Testaments in their original languages, with translations.",
+          },
+          Apocrypha: {
+            Title: "Apocrypha",
+            NativeTitle: "Ἀπόκρυφα",
+            Description: "Deuterocanonical and apocryphal writings.",
+          },
+          Exegesis: {
+            Title: "Exegesis",
+            NativeTitle: "Ἐξήγησις",
+            Description: "Biblical interpretation and hermeneutics.",
+          },
+          Patristics: {
+            Title: "Patristics",
+            NativeTitle: "Patres Ecclesiae",
+            Description: "The writings of the Church Fathers.",
+          },
+          Councils: {
+            Title: "Councils & Creeds",
+            NativeTitle: "Σύνοδοι",
+            Description: "Ecumenical councils, creeds and confessions.",
+          },
+          Dogmatics: {
+            Title: "Dogmatics",
+            NativeTitle: "Θεολογία",
+            Description: "Systematic theology and doctrine.",
+          },
+          CanonLaw: {
+            Title: "Canon Law",
+            NativeTitle: "Ius Canonicum",
+            Description: "Church law and its sources.",
+          },
+          Liturgy: {
+            Title: "Liturgy",
+            NativeTitle: "Λειτουργία",
+            Description: "Worship, rites and liturgical texts.",
+          },
+          History: {
+            Title: "Church History",
+            NativeTitle: "Historia Ecclesiastica",
+            Description: "The history of the Church.",
+          },
+        },
+      },
+    },
+    Judaism: {
+      Index: {
+        Eyebrow: "Jewish scholarship",
+        Title: "Judaism",
+        Description:
+          "The Hebrew Bible and the rabbinic literature that interprets it, from the Mishnah to the responsa.",
+        Available: "Available",
+        ComingSoon: "Coming soon",
+        Open: "Open",
+        Sciences: {
+          Tanakh: {
+            Title: "Tanakh",
+            NativeTitle: "תנ״ך",
+            Description: "The Hebrew Bible: Torah, Nevi'im and Ketuvim.",
+          },
+          Mishnah: {
+            Title: "Mishnah",
+            NativeTitle: "מִשְׁנָה",
+            Description: "The first written compilation of the Oral Torah.",
+          },
+          Talmud: {
+            Title: "Talmud",
+            NativeTitle: "תַּלְמוּד",
+            Description: "The Babylonian and Jerusalem Talmuds.",
+          },
+          Midrash: {
+            Title: "Midrash",
+            NativeTitle: "מִדְרָשׁ",
+            Description: "Rabbinic interpretation of the biblical text.",
+          },
+          Targum: {
+            Title: "Targum",
+            NativeTitle: "תַּרְגּוּם",
+            Description: "Aramaic translations of the Hebrew Bible.",
+          },
+          Halakha: {
+            Title: "Halakha",
+            NativeTitle: "הֲלָכָה",
+            Description: "Jewish law and its codifications.",
+          },
+          Responsa: {
+            Title: "Responsa",
+            NativeTitle: "שו״ת",
+            Description:
+              "Rabbinic answers to legal questions across the centuries.",
+          },
+          Philosophy: {
+            Title: "Jewish Philosophy",
+            NativeTitle: "הגות",
+            Description: "Medieval and modern Jewish philosophy.",
+          },
+          Kabbalah: {
+            Title: "Kabbalah",
+            NativeTitle: "קַבָּלָה",
+            Description: "Jewish mysticism and its classical texts.",
           },
         },
       },

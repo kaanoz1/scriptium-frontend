@@ -23,6 +23,11 @@ export const tr: SystemLanguage = {
         Language: "Sistem Dili",
         Resources: "Kaynaklar",
         Appearance: "Görünüm",
+        Explore: "Keşfet",
+        Home: "Ana sayfa",
+        Light: "Açık",
+        Dark: "Koyu",
+        Soon: "Yakında",
       },
       MobileSearchModal: {
         SearchInputPlaceholder: "Ara...",
@@ -107,21 +112,37 @@ export const tr: SystemLanguage = {
   Pages: {
     Home: {
       HeroSubtitle: "Evrensel teoloji kütüphanesi.",
-      QuranCard: {
-        Title: "Kur'an-ı Kerim",
-        ArabicTitle: "القرآن الكريم",
+      Eyebrow: "Açık teoloji kütüphanesi",
+      HeroTagline:
+        "Dünyanın kutsal metinlerini kelime kelime, kök kök okuyun, arayın ve inceleyin.",
+      CollectionTitle: "Gelenekler",
+      CollectionDescription:
+        "Kutsal metinlerini ve ilmi mirasını keşfetmek için bir gelenek seçin.",
+      Explore: "Keşfet",
+      ComingSoon: "Yakında",
+      QuickAccess: "Hızlı erişim",
+      QuickLinks: {
+        Fatiha: "Fâtiha",
+        AyatAlKursi: "Âyete'l-Kürsî",
+        Ikhlas: "İhlâs",
+        Roots: "Kelime kökleri",
+      },
+      IslamCard: {
+        Title: "İslam",
+        NativeTitle: "الإسلام",
         Description:
-          "Tam Arapça metne, çevirilere ve gelişmiş kök kelime metodolojisi aramasına erişin.",
+          "Kur'an-ı Kerim ve klasik İslami ilimler: tefsir, hadis, fıkıh, kelam ve dahası.",
       },
-      TorahCard: {
-        Title: "Tevrat",
-        HebrewTitle: "תּוֹרָה",
-        Description: "İbranice metinlerin dilbilimsel analizi.",
+      ChristianityCard: {
+        Title: "Hristiyanlık",
+        NativeTitle: "Χριστιανισμός",
+        Description: "Eski ve Yeni Ahit, karşılaştırmalı çeviri analiziyle.",
       },
-      BibleCard: {
-        Title: "İncil",
-        GreekTitle: "Biblion",
-        Description: "Yeni Ahit metinleri, çeviriler ve inceleme.",
+      JudaismCard: {
+        Title: "Yahudilik",
+        NativeTitle: "יהדות",
+        Description:
+          "Tevrat ve İbranice kutsal metinler, dillerarası araçlarla.",
       },
       HinduismCard: {
         Title: "Hinduizm",
@@ -141,9 +162,68 @@ export const tr: SystemLanguage = {
       },
     },
     Islam: {
+      Index: {
+        Eyebrow: "İslami ilimler",
+        Title: "İslam",
+        Description:
+          "Kur'an-ı Kerim ve onun etrafında gelişen klasik ilimler: tefsirden hadis tenkidine, fıkıhtan kelama.",
+        Available: "Erişilebilir",
+        ComingSoon: "Yakında",
+        Open: "Aç",
+        Sciences: {
+          Quran: {
+            Title: "Kur'an-ı Kerim",
+            NativeTitle: "القرآن الكريم",
+            Description:
+              "Arapça metin, mealler, kelime kelime analiz ve kök araması.",
+          },
+          Tafsir: {
+            Title: "Tefsir",
+            NativeTitle: "التفسير",
+            Description: "Kur'an'ın klasik ve modern tefsirleri.",
+          },
+          Hadith: {
+            Title: "Hadis",
+            NativeTitle: "الحديث",
+            Description: "Rivayet zincirleriyle birlikte nebevi rivayetler.",
+          },
+          JarhTadil: {
+            Title: "Cerh ve Ta'dil",
+            NativeTitle: "الجرح والتعديل",
+            Description:
+              "Ravi tenkidi: hadis ravilerinin güvenilirliğinin değerlendirilmesi.",
+          },
+          Fiqh: {
+            Title: "Fıkıh",
+            NativeTitle: "الفقه",
+            Description: "Mezhepler boyunca İslam hukuku.",
+          },
+          Usul: {
+            Title: "Fıkıh Usulü",
+            NativeTitle: "أصول الفقه",
+            Description: "Hukuki çıkarımın ilke ve yöntemleri.",
+          },
+          Kalam: {
+            Title: "Kelam",
+            NativeTitle: "علم الكلام",
+            Description: "Sistematik teoloji ve ekolleri.",
+          },
+          Sirah: {
+            Title: "Siyer",
+            NativeTitle: "السيرة النبوية",
+            Description: "Hz. Muhammed'in hayatı.",
+          },
+          Tasawwuf: {
+            Title: "Tasavvuf",
+            NativeTitle: "التصوف",
+            Description: "İslam maneviyatı ve klasik literatürü.",
+          },
+        },
+      },
       Quran: {
         Components: {
           Header: {
+            FilterPlaceholder: "İsim, anlam veya numaraya göre filtrele…",
             Header: "Sureler",
             Description: "Bir sure seçin.",
           },
@@ -314,6 +394,7 @@ export const tr: SystemLanguage = {
           Components: {
             Header: {
               Occurrences: "Tekrar",
+              SearchPlaceholder: "Kök ara…",
               Header: "Kökler",
               Description: "",
             },
@@ -322,6 +403,124 @@ export const tr: SystemLanguage = {
             HighOccurrencesWarningTitle: "Çok fazla tekrar",
             HighOccurrencesWarningDesc:
               "Tüm sonuçları gösteriyoruz. Bu, cihazınızın güçünden bağımlı olarak yavaşlamanıza neden olabilir. Bu sorunu optimize etmek için uğraşıyoruz.",
+          },
+        },
+      },
+    },
+    Christianity: {
+      Index: {
+        Eyebrow: "Hristiyan ilahiyatı",
+        Title: "Hristiyanlık",
+        Description:
+          "Kutsal metin ve onun etrafında gelişen teolojik gelenekler: Kilise Babalarından konsillere.",
+        Available: "Erişilebilir",
+        ComingSoon: "Yakında",
+        Open: "Aç",
+        Sciences: {
+          Bible: {
+            Title: "Kitab-ı Mukaddes",
+            NativeTitle: "Βίβλος",
+            Description: "Asıl dillerinde Eski ve Yeni Ahit, çevirileriyle.",
+          },
+          Apocrypha: {
+            Title: "Apokrif",
+            NativeTitle: "Ἀπόκρυφα",
+            Description: "Deuterokanonik ve apokrif yazılar.",
+          },
+          Exegesis: {
+            Title: "Egzegez",
+            NativeTitle: "Ἐξήγησις",
+            Description: "Kitab-ı Mukaddes yorumu ve hermenötik.",
+          },
+          Patristics: {
+            Title: "Patristik",
+            NativeTitle: "Patres Ecclesiae",
+            Description: "Kilise Babalarının yazıları.",
+          },
+          Councils: {
+            Title: "Konsiller ve İnanç Bildirgeleri",
+            NativeTitle: "Σύνοδοι",
+            Description:
+              "Ekümenik konsiller, inanç bildirgeleri ve itikatnameler.",
+          },
+          Dogmatics: {
+            Title: "Dogmatik",
+            NativeTitle: "Θεολογία",
+            Description: "Sistematik teoloji ve doktrin.",
+          },
+          CanonLaw: {
+            Title: "Kanon Hukuku",
+            NativeTitle: "Ius Canonicum",
+            Description: "Kilise hukuku ve kaynakları.",
+          },
+          Liturgy: {
+            Title: "Litürji",
+            NativeTitle: "Λειτουργία",
+            Description: "İbadet, ayinler ve litürjik metinler.",
+          },
+          History: {
+            Title: "Kilise Tarihi",
+            NativeTitle: "Historia Ecclesiastica",
+            Description: "Kilisenin tarihi.",
+          },
+        },
+      },
+    },
+    Judaism: {
+      Index: {
+        Eyebrow: "Yahudi ilmi mirası",
+        Title: "Yahudilik",
+        Description:
+          "İbranice Kitab-ı Mukaddes ve onu yorumlayan rabbani literatür: Mişna'dan responsa'ya.",
+        Available: "Erişilebilir",
+        ComingSoon: "Yakında",
+        Open: "Aç",
+        Sciences: {
+          Tanakh: {
+            Title: "Tanah",
+            NativeTitle: "תנ״ך",
+            Description: "İbranice Kitab-ı Mukaddes: Tora, Neviim ve Ketuvim.",
+          },
+          Mishnah: {
+            Title: "Mişna",
+            NativeTitle: "מִשְׁנָה",
+            Description: "Sözlü Tora'nın ilk yazılı derlemesi.",
+          },
+          Talmud: {
+            Title: "Talmud",
+            NativeTitle: "תַּלְמוּד",
+            Description: "Babil ve Kudüs Talmudları.",
+          },
+          Midrash: {
+            Title: "Midraş",
+            NativeTitle: "מִדְרָשׁ",
+            Description: "Kutsal metnin rabbani yorumu.",
+          },
+          Targum: {
+            Title: "Targum",
+            NativeTitle: "תַּרְגּוּם",
+            Description: "İbranice Kitab-ı Mukaddes'in Aramice çevirileri.",
+          },
+          Halakha: {
+            Title: "Halaha",
+            NativeTitle: "הֲלָכָה",
+            Description: "Yahudi hukuku ve kodifikasyonları.",
+          },
+          Responsa: {
+            Title: "Responsa",
+            NativeTitle: "שו״ת",
+            Description:
+              "Yüzyıllar boyunca hukuki sorulara verilen rabbani cevaplar.",
+          },
+          Philosophy: {
+            Title: "Yahudi Felsefesi",
+            NativeTitle: "הגות",
+            Description: "Orta Çağ ve modern Yahudi felsefesi.",
+          },
+          Kabbalah: {
+            Title: "Kabala",
+            NativeTitle: "קַבָּלָה",
+            Description: "Yahudi mistisizmi ve klasik metinleri.",
           },
         },
       },
