@@ -36,6 +36,7 @@ export const en: SystemLanguage = {
     },
     Configuration: {
       Header: "Search Configuration",
+      Apply: "Apply",
       SearchAlgorithms: {
         TranslationSearch: {
           Header: "Translation Search",

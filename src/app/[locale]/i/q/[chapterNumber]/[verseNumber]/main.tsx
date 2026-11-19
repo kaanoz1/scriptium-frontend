@@ -26,7 +26,9 @@ const Main: React.FC<Props> = observer(({ verse }) => {
   const t = useTranslations("Terms.Islam.Quran");
   const preferences = QuranViewPreferences.getInstance();
   const chapter = verse.chapter;
-  const meaning = chapter.meanings.find((m) => m.language.code === locale)?.text;
+  const meaning = chapter.meanings.find(
+    (m) => m.language.code === locale,
+  )?.text;
 
   return (
     <PageShell size="xl" className="gap-8">
@@ -48,12 +50,14 @@ const Main: React.FC<Props> = observer(({ verse }) => {
             href={`/${locale}/i/q/${chapter.sequence}#verse-${verse.sequence}`}
             className="group flex items-baseline gap-3"
           >
-            <span className={cn(instrumentSerif.className, "text-3xl md:text-4xl")}>
+            <span
+              className={cn(instrumentSerif.className, "text-3xl md:text-4xl")}
+            >
               {meaning ?? chapter.name}
             </span>
-            <span className="text-sm text-muted-foreground transition-colors group-hover:text-foreground">
+            {/* <span className="text-sm text-muted-foreground transition-colors group-hover:text-foreground">
               {t("Verse.this")} {verse.sequence}
-            </span>
+            </span> TODO: This section might be removed. Consider. */}
           </LoadingLink>
           <span className="rounded-full border border-border/60 bg-background/60 px-3 py-1 font-mono text-xs tabular-nums text-muted-foreground">
             {chapter.sequence}:{verse.sequence}
@@ -63,7 +67,9 @@ const Main: React.FC<Props> = observer(({ verse }) => {
         <div
           className={cn(
             "grid gap-10 px-6 py-10 md:px-10 md:py-14",
-            preferences.shouldTranslationShown && preferences.shouldVerseTextShown && "lg:grid-cols-2 lg:gap-16",
+            preferences.shouldTranslationShown &&
+              preferences.shouldVerseTextShown &&
+              "lg:grid-cols-2 lg:gap-16",
           )}
         >
           {preferences.shouldVerseTextShown && (

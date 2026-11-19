@@ -277,7 +277,7 @@ const SearchCommandSettings: React.FC<Props> = observer(
 
         <div className="flex items-center justify-end gap-2 border-t border-border px-4 py-3 sm:px-6">
           <Button size="sm" onClick={handleApply}>
-            Uygula
+            {t("Apply")}
           </Button>
         </div>
       </div>

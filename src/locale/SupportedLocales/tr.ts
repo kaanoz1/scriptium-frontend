@@ -39,6 +39,7 @@ export const tr: SystemLanguage = {
     },
     Configuration: {
       Header: "Arama Ayarları",
+      Apply: "Uygula",
       SearchAlgorithms: {
         TranslationSearch: {
           Header: "Meal Araması",

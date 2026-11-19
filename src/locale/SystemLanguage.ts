@@ -38,6 +38,7 @@ export type SystemLanguage = {
     };
     Configuration: {
       Header: string;
+      Apply: string;
       SearchAlgorithms: {
         TranslationSearch: {
           Header: string;
