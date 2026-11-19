@@ -27,7 +27,7 @@ import {
   MaintenanceError,
   OfflineError,
   TimeoutError,
-} from "@/app/[locale]/test/errors/drafts/DraftErrors";
+} from "./drafts/DraftErrors";
 import {
   ContentDisabledError,
   ContentLicensingError,
@@ -35,7 +35,7 @@ import {
   ContentUnderReviewError,
   InlineNoticesPreview,
   UnverifiedContentPreview,
-} from "@/app/[locale]/test/errors/drafts/ContentStates";
+} from "./drafts/ContentStates";
 import { instrumentSerif } from "@/fonts";
 import { cn } from "@/lib/utils";
 
@@ -57,7 +57,8 @@ type Entry = {
   render?: (fullPage: boolean) => React.ReactNode;
 };
 
-const QURAN_ROUTES = "/i/q, /i/q/[chapter], /i/q/[chapter]/[verse], /i/q/root, /i/q/root/[latin]";
+const QURAN_ROUTES =
+  "/i/q, /i/q/[chapter], /i/q/[chapter]/[verse], /i/q/root, /i/q/root/[latin]";
 
 const ENTRIES: Entry[] = [
   {
@@ -120,7 +121,8 @@ const ENTRIES: Entry[] = [
     label: "Invalid request",
     code: "400",
     file: "src/app/[locale]/test/errors/drafts/DraftErrors.tsx",
-    usage: "Malformed parameters, such as a non-numeric chapter or verse. These currently fall through to Unknown error.",
+    usage:
+      "Malformed parameters, such as a non-numeric chapter or verse. These currently fall through to Unknown error.",
     url: "/en/i/q/abc/12",
     embeddable: true,
     render: (fp) => <BadRequestError fullPage={fp} />,
@@ -142,7 +144,8 @@ const ENTRIES: Entry[] = [
     label: "Maintenance",
     code: "503",
     file: "src/app/[locale]/test/errors/drafts/DraftErrors.tsx",
-    usage: "The backend reports SERVICE_UNAVAILABLE during deployments or database migrations.",
+    usage:
+      "The backend reports SERVICE_UNAVAILABLE during deployments or database migrations.",
     url: "/en/i/q",
     embeddable: true,
     render: (fp) => <MaintenanceError fullPage={fp} />,
@@ -175,7 +178,8 @@ const ENTRIES: Entry[] = [
     label: "Render crash",
     code: "JS",
     file: "src/app/[locale]/test/errors/drafts/DraftErrors.tsx",
-    usage: "Would power an `error.tsx` boundary. The app has none yet, so a crash currently shows Next.js's default screen.",
+    usage:
+      "Would power an `error.tsx` boundary. The app has none yet, so a crash currently shows Next.js's default screen.",
     url: "/en/i/q/1/1",
     embeddable: true,
     render: (fp) => <CrashError fullPage={fp} />,
@@ -186,7 +190,8 @@ const ENTRIES: Entry[] = [
     label: "Section failed",
     code: "PART",
     file: "src/app/[locale]/test/errors/drafts/DraftErrors.tsx",
-    usage: "One part of a page (translations, word table) fails to load while the rest renders.",
+    usage:
+      "One part of a page (translations, word table) fails to load while the rest renders.",
     url: "/en/i/q/2/255",
     render: () => (
       <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -202,7 +207,8 @@ const ENTRIES: Entry[] = [
     label: "Disabled",
     code: "410",
     file: "src/app/[locale]/test/errors/drafts/ContentStates.tsx",
-    usage: "Content that has been permanently withdrawn, such as a retired translation.",
+    usage:
+      "Content that has been permanently withdrawn, such as a retired translation.",
     url: "/en/i/q/2/255",
     embeddable: true,
     render: (fp) => <ContentDisabledError fullPage={fp} />,
@@ -213,7 +219,8 @@ const ENTRIES: Entry[] = [
     label: "Temporarily disabled",
     code: "PAUSE",
     file: "src/app/[locale]/test/errors/drafts/ContentStates.tsx",
-    usage: "Content paused while a known problem (bad import, broken encoding) is fixed.",
+    usage:
+      "Content paused while a known problem (bad import, broken encoding) is fixed.",
     url: "/en/i/q/24",
     embeddable: true,
     render: (fp) => <ContentTemporarilyDisabledError fullPage={fp} />,
@@ -224,7 +231,8 @@ const ENTRIES: Entry[] = [
     label: "Under review",
     code: "REVIEW",
     file: "src/app/[locale]/test/errors/drafts/ContentStates.tsx",
-    usage: "Content withheld until its accuracy has been verified, e.g. after a user report.",
+    usage:
+      "Content withheld until its accuracy has been verified, e.g. after a user report.",
     url: "/en/i/q/4/34",
     embeddable: true,
     render: (fp) => <ContentUnderReviewError fullPage={fp} />,
@@ -246,7 +254,8 @@ const ENTRIES: Entry[] = [
     label: "Unverified (shown)",
     code: "WARN",
     file: "src/app/[locale]/test/errors/drafts/ContentStates.tsx",
-    usage: "Content that is shown, but flagged as not yet checked against its source.",
+    usage:
+      "Content that is shown, but flagged as not yet checked against its source.",
     url: "/en/i/q/1/2",
     render: () => <UnverifiedContentPreview />,
   },
@@ -256,7 +265,8 @@ const ENTRIES: Entry[] = [
     label: "Inline notices",
     code: "PART",
     file: "src/app/[locale]/test/errors/drafts/ContentStates.tsx",
-    usage: "One translation of a verse is unavailable while the others still show.",
+    usage:
+      "One translation of a verse is unavailable while the others still show.",
     url: "/en/i/q/1/5",
     render: () => <InlineNoticesPreview />,
   },
@@ -266,7 +276,8 @@ const ENTRIES: Entry[] = [
     label: "Toast messages",
     code: "UI",
     file: "sonner — ShareButton.tsx, root/[latin]/main.tsx",
-    usage: "Copy-to-clipboard result and the high-occurrence warning on root pages.",
+    usage:
+      "Copy-to-clipboard result and the high-occurrence warning on root pages.",
     url: "/en/i/q/root/ktb",
   },
 ];
@@ -284,9 +295,22 @@ const ToastPanel: React.FC = () => {
   );
   const rt = useTranslations("Pages.Islam.Quran.Root.Messages");
 
-  const items: { label: string; tag: string; fire: () => void; draft?: boolean }[] = [
-    { label: "Copy succeeded", tag: "success", fire: () => toast.success(st("CopySuccessful")) },
-    { label: "Copy failed", tag: "error", fire: () => toast.error(st("CopyFailed")) },
+  const items: {
+    label: string;
+    tag: string;
+    fire: () => void;
+    draft?: boolean;
+  }[] = [
+    {
+      label: "Copy succeeded",
+      tag: "success",
+      fire: () => toast.success(st("CopySuccessful")),
+    },
+    {
+      label: "Copy failed",
+      tag: "error",
+      fire: () => toast.error(st("CopyFailed")),
+    },
     {
       label: "High occurrences",
       tag: "warning",
@@ -310,7 +334,11 @@ const ToastPanel: React.FC = () => {
       label: "Rate limited",
       tag: "warning · draft",
       draft: true,
-      fire: () => toast.warning("Slow down a little", { description: "You’re sending requests too quickly. Please wait a few seconds." }),
+      fire: () =>
+        toast.warning("Slow down a little", {
+          description:
+            "You’re sending requests too quickly. Please wait a few seconds.",
+        }),
     },
   ];
 
@@ -331,7 +359,9 @@ const ToastPanel: React.FC = () => {
             <span
               className={cn(
                 "rounded-full px-2 py-0.5 font-mono text-[10px]",
-                item.draft ? "border border-dashed border-border text-muted-foreground" : "bg-muted text-muted-foreground",
+                item.draft
+                  ? "border border-dashed border-border text-muted-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               {item.tag}
@@ -350,7 +380,12 @@ const Segmented = <T extends string>({
 }: {
   value: T;
   onChange: (v: T) => void;
-  options: { value: T; label: string; icon: React.ReactNode; disabled?: boolean }[];
+  options: {
+    value: T;
+    label: string;
+    icon: React.ReactNode;
+    disabled?: boolean;
+  }[];
 }) => (
   <div className="inline-flex rounded-xl border border-border/60 bg-muted/40 p-0.5">
     {options.map((o) => (
@@ -362,7 +397,9 @@ const Segmented = <T extends string>({
         aria-pressed={value === o.value}
         className={cn(
           "inline-flex items-center gap-1.5 rounded-[10px] px-2.5 py-1.5 text-xs font-medium transition-all disabled:cursor-not-allowed disabled:opacity-40",
-          value === o.value ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+          value === o.value
+            ? "bg-background text-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground",
         )}
       >
         {o.icon}
@@ -375,7 +412,8 @@ const Segmented = <T extends string>({
 const Client: React.FC = () => {
   // Restore the selection from the URL hash (e.g. /en/test/errors#rate-limit).
   const [selectedId, setSelectedId] = useState<string>(() => {
-    const fromHash = typeof window === "undefined" ? "" : window.location.hash.slice(1);
+    const fromHash =
+      typeof window === "undefined" ? "" : window.location.hash.slice(1);
     return ENTRIES.some((e) => e.id === fromHash) ? fromHash : ENTRIES[0].id;
   });
   const [layout, setLayout] = useState<"full" | "embedded">("full");
@@ -390,7 +428,8 @@ const Client: React.FC = () => {
   const entry = ENTRIES[index];
 
   const move = useCallback(
-    (delta: number) => select(ENTRIES[(index + delta + ENTRIES.length) % ENTRIES.length].id),
+    (delta: number) =>
+      select(ENTRIES[(index + delta + ENTRIES.length) % ENTRIES.length].id),
     [index, select],
   );
 
@@ -398,7 +437,12 @@ const Client: React.FC = () => {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
-      if (target.closest("input, textarea, [contenteditable]") || e.metaKey || e.ctrlKey) return;
+      if (
+        target.closest("input, textarea, [contenteditable]") ||
+        e.metaKey ||
+        e.ctrlKey
+      )
+        return;
       if (e.key === "ArrowDown" || e.key === "j") {
         e.preventDefault();
         move(1);
@@ -431,9 +475,17 @@ const Client: React.FC = () => {
             <span className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">
               Development only
             </span>
-            <h1 className={cn(instrumentSerif.className, "mt-2 text-5xl tracking-tight")}>Error gallery</h1>
+            <h1
+              className={cn(
+                instrumentSerif.className,
+                "mt-2 text-5xl tracking-tight",
+              )}
+            >
+              Error gallery
+            </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Every error state is rendered directly, so nothing has to go wrong to see it. Use ↑/↓ to move between them.
+              Every error state is rendered directly, so nothing has to go wrong
+              to see it. Use ↑/↓ to move between them.
             </p>
           </div>
         </header>
@@ -458,15 +510,22 @@ const Client: React.FC = () => {
                             aria-current={active ? "true" : undefined}
                             className={cn(
                               "flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
-                              active ? "bg-foreground text-background" : "hover:bg-muted",
+                              active
+                                ? "bg-foreground text-background"
+                                : "hover:bg-muted",
                             )}
                           >
                             <span className="truncate">{e.label}</span>
                             <span
                               className={cn(
                                 "shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10px] tabular-nums",
-                                active ? "bg-background/20" : "bg-muted text-muted-foreground",
-                                (e.group === "draft" || e.group === "content") && !active && "border border-dashed border-border bg-transparent",
+                                active
+                                  ? "bg-background/20"
+                                  : "bg-muted text-muted-foreground",
+                                (e.group === "draft" ||
+                                  e.group === "content") &&
+                                  !active &&
+                                  "border border-dashed border-border bg-transparent",
                               )}
                             >
                               {e.code}
@@ -487,7 +546,9 @@ const Client: React.FC = () => {
               <div className="min-w-0 space-y-1.5">
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-semibold">{entry.label}</h2>
-                  <span className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs">{entry.code}</span>
+                  <span className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs">
+                    {entry.code}
+                  </span>
                   {(entry.group === "draft" || entry.group === "content") && (
                     <span className="rounded-full border border-dashed border-border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                       Draft
@@ -509,23 +570,50 @@ const Client: React.FC = () => {
                   value={fullPage ? "full" : "embedded"}
                   onChange={setLayout}
                   options={[
-                    { value: "full", label: "Full page", icon: <LuMaximize size={13} /> },
-                    { value: "embedded", label: "Embedded", icon: <LuPanelTop size={13} />, disabled: !embeddable },
+                    {
+                      value: "full",
+                      label: "Full page",
+                      icon: <LuMaximize size={13} />,
+                    },
+                    {
+                      value: "embedded",
+                      label: "Embedded",
+                      icon: <LuPanelTop size={13} />,
+                      disabled: !embeddable,
+                    },
                   ]}
                 />
                 <Segmented
                   value={viewport}
                   onChange={setViewport}
                   options={[
-                    { value: "desktop", label: "Desktop", icon: <LuMonitor size={13} /> },
-                    { value: "mobile", label: "Mobile", icon: <LuSmartphone size={13} /> },
+                    {
+                      value: "desktop",
+                      label: "Desktop",
+                      icon: <LuMonitor size={13} />,
+                    },
+                    {
+                      value: "mobile",
+                      label: "Mobile",
+                      icon: <LuSmartphone size={13} />,
+                    },
                   ]}
                 />
                 <div className="inline-flex rounded-xl border border-border/60 bg-muted/40 p-0.5">
-                  <button type="button" onClick={() => move(-1)} aria-label="Previous" className="rounded-[10px] p-1.5 text-muted-foreground hover:bg-background hover:text-foreground">
+                  <button
+                    type="button"
+                    onClick={() => move(-1)}
+                    aria-label="Previous"
+                    className="rounded-[10px] p-1.5 text-muted-foreground hover:bg-background hover:text-foreground"
+                  >
                     <LuChevronUp size={14} />
                   </button>
-                  <button type="button" onClick={() => move(1)} aria-label="Next" className="rounded-[10px] p-1.5 text-muted-foreground hover:bg-background hover:text-foreground">
+                  <button
+                    type="button"
+                    onClick={() => move(1)}
+                    aria-label="Next"
+                    className="rounded-[10px] p-1.5 text-muted-foreground hover:bg-background hover:text-foreground"
+                  >
                     <LuChevronDown size={14} />
                   </button>
                 </div>
@@ -548,10 +636,15 @@ const Client: React.FC = () => {
                 <div className="min-w-0 flex-1 truncate rounded-md bg-background/80 px-2.5 py-1 font-mono text-[11px] text-muted-foreground">
                   scriptium.net{entry.url}
                 </div>
-                {entry.group === "toast" && <LuBell size={14} className="text-muted-foreground" />}
+                {entry.group === "toast" && (
+                  <LuBell size={14} className="text-muted-foreground" />
+                )}
               </div>
 
-              <div key={`${entry.id}-${fullPage}-${viewport}`} className="relative">
+              <div
+                key={`${entry.id}-${fullPage}-${viewport}`}
+                className="relative"
+              >
                 {entry.group === "toast" ? (
                   <ToastPanel />
                 ) : fullPage ? (
@@ -560,7 +653,9 @@ const Client: React.FC = () => {
                   // Embedded: how it looks inside an existing page section.
                   <div className="p-6 md:p-10">
                     <div className="mb-4 h-10 w-2/3 rounded-xl bg-muted/60" />
-                    <div className="rounded-2xl border border-border/60 bg-card/40">{entry.render?.(false)}</div>
+                    <div className="rounded-2xl border border-border/60 bg-card/40">
+                      {entry.render?.(false)}
+                    </div>
                   </div>
                 )}
               </div>

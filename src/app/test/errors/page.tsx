@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EnvGuard } from "@/util/EnvGuard";
-import Client from "@/app/[locale]/test/errors/client";
+import Client from "./client";
 
 export const metadata: Metadata = {
   title: "Error Gallery",
