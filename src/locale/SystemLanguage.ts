@@ -1,3 +1,6 @@
+import { HadithMessages } from "@/locale/SupportedLocales/Hadith/types";
+import { JarhTadilMessages } from "@/locale/SupportedLocales/JarhTadil/types";
+
 // TODO: Will be extended.
 
 export type SystemLanguage = {
@@ -180,6 +183,8 @@ export type SystemLanguage = {
           Tasawwuf: { Title: string; NativeTitle: string; Description: string };
         };
       };
+      Hadith: HadithMessages;
+      JarhTadil: JarhTadilMessages;
       Quran: {
         Components: {
           Header: {

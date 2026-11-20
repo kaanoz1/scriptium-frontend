@@ -1,3 +1,5 @@
+import { trHadith } from "@/locale/SupportedLocales/Hadith/tr";
+import { trJarhTadil } from "@/locale/SupportedLocales/JarhTadil/tr";
 // noinspection GrazieInspectionRunner
 
 import { SystemLanguage } from "@/locale/SystemLanguage";
@@ -186,7 +188,7 @@ export const tr: SystemLanguage = {
           Hadith: {
             Title: "Hadis",
             NativeTitle: "الحديث",
-            Description: "Rivayet zincirleriyle birlikte nebevi rivayetler.",
+            Description: "Hz. Muhammed'e ve sahabeye nispet edilen rivayetler, ravi zincirleriyle birlikte.",
           },
           JarhTadil: {
             Title: "Cerh ve Ta'dil",
@@ -221,6 +223,8 @@ export const tr: SystemLanguage = {
           },
         },
       },
+      Hadith: trHadith,
+      JarhTadil: trJarhTadil,
       Quran: {
         Components: {
           Header: {

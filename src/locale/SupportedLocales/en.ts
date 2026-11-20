@@ -1,3 +1,5 @@
+import { enHadith } from "@/locale/SupportedLocales/Hadith/en";
+import { enJarhTadil } from "@/locale/SupportedLocales/JarhTadil/en";
 import { SystemLanguage } from "@/locale/SystemLanguage";
 
 export const en: SystemLanguage = {
@@ -183,7 +185,7 @@ export const en: SystemLanguage = {
             Title: "Hadith",
             NativeTitle: "الحديث",
             Description:
-              "Prophetic traditions together with their chains of narration.",
+              "Reports attributed to Muhammad and his companions, with their chains of narration.",
           },
           JarhTadil: {
             Title: "Jarh wa Ta'dil",
@@ -219,6 +221,8 @@ export const en: SystemLanguage = {
           },
         },
       },
+      Hadith: enHadith,
+      JarhTadil: enJarhTadil,
       Quran: {
         Components: {
           Header: {
