@@ -5,6 +5,9 @@ const withNextIntl = createNextIntlPlugin('./src/i18n.ts');
 const nextConfig: NextConfig = {
     serverExternalPackages: ['@prisma/client', 'prisma'],
     output: "standalone",
+       async redirects() {
+        return [{ source: "/", destination: "/en", permanent: false }];
+    },
 };
 
 export default withNextIntl(nextConfig);
