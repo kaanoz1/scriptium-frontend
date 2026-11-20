@@ -3,6 +3,8 @@ import {VerseController} from "@/tool/Fetchers/Controllers/Verse";
 import {RootController} from "@/tool/Fetchers/Controllers/Root";
 import {SearchController} from "@/tool/Fetchers/Controllers/Search";
 import {TranslationController} from "@/tool/Fetchers/Controllers/Translation";
+import {HadithArabicOnlyController} from "@/tool/Fetchers/Controllers/HadithArabicOnly";
+import {JarhTadilArabicOnlyController} from "@/tool/Fetchers/Controllers/JarhTadilArabicOnly";
 
 export class BackendApi {
     public static ChapterController = ChapterController.getInstance();
@@ -10,6 +12,8 @@ export class BackendApi {
     public static RootController = RootController.getInstance();
     public static SearchController = SearchController.getInstance();
     public static TranslationController = TranslationController.getInstance();
+    public static HadithArabicOnlyController = HadithArabicOnlyController.getInstance();
+    public static JarhTadilArabicOnlyController = JarhTadilArabicOnlyController.getInstance();
 
     // noinspection JSUnusedLocalSymbols
     private constructor() {
