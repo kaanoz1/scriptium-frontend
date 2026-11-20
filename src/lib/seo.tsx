@@ -151,4 +151,27 @@ export const crumbs = {
   islam: (locale: string) => ({ name: "Islam", path: `/${locale}/i` }),
   quran: (locale: string) => ({ name: "Qur'an", path: `/${locale}/i/q` }),
   roots: (locale: string) => ({ name: "Roots", path: `/${locale}/i/q/root` }),
+  hadith: (locale: string) => ({ name: "Hadith", path: `/${locale}/i/h` }),
+  hadithAo: (locale: string) => ({ name: "Arabic Hadith Corpus", path: `/${locale}/i/h/ao` }),
+  hadithTopics: (locale: string) => ({ name: "Subjects", path: `/${locale}/i/h/ao/topic` }),
+  jarhTadil: (locale: string) => ({ name: "Jarh wa Ta'dil", path: `/${locale}/i/jt` }),
+  jarhTadilAo: (locale: string) => ({ name: "Arabic Jarh wa Ta'dil Corpus", path: `/${locale}/i/jt/ao` }),
+  narrators: (locale: string) => ({ name: "Narrators", path: `/${locale}/i/jt/ao/narrator` }),
+  scholars: (locale: string) => ({ name: "Critics", path: `/${locale}/i/jt/ao/scholar` }),
 };
+
+/** Breadcrumb prefix Home › Islam › Hadith › Arabic corpus. */
+export const hadithCrumbs = (locale: string) => [
+  crumbs.home(locale),
+  crumbs.islam(locale),
+  crumbs.hadith(locale),
+  crumbs.hadithAo(locale),
+];
+
+/** Breadcrumb prefix Home › Islam › Jarh wa Ta'dil › Arabic corpus. */
+export const jarhTadilCrumbs = (locale: string) => [
+  crumbs.home(locale),
+  crumbs.islam(locale),
+  crumbs.jarhTadil(locale),
+  crumbs.jarhTadilAo(locale),
+];
