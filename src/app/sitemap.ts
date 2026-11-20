@@ -48,6 +48,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       entry(`${base}/i/q`, 0.9, "monthly"),
       entry(`${base}/i/q/root`, 0.7, "monthly"),
       entry(`${base}/about`, 0.4, "yearly"),
+      // Hadith pages are listed in their own sitemaps (/sitemaps/hadith/...).
+      entry(`${base}/i/h`, 0.8, "monthly"),
     );
 
     // Chapters and verses. For Islam, Quran.
