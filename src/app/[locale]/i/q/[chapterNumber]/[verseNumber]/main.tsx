@@ -11,6 +11,7 @@ import VerseTransliteration from "@/app/[locale]/i/q/[chapterNumber]/[verseNumbe
 import VerseTable from "@/app/[locale]/i/q/[chapterNumber]/[verseNumber]/components/VerseTable";
 import UtilToolButtons from "@/app/[locale]/i/q/[chapterNumber]/[verseNumber]/components/UtilToolButtons";
 import VerseText from "@/app/[locale]/i/q/[chapterNumber]/components/VerseText";
+import VerseHadiths from "@/app/[locale]/i/q/[chapterNumber]/[verseNumber]/components/VerseHadiths";
 import { QuranViewPreferences } from "@/configuration/UserPreferences/Islam/Quran/QuranViewPreferences";
 import PageShell from "@/components/Page/PageShell";
 import LoadingLink from "@/components/LoadingLink";
@@ -90,6 +91,8 @@ const Main: React.FC<Props> = observer(({ verse }) => {
       </motion.section>
 
       <VerseTable verse={verse} />
+
+      <VerseHadiths chapter={chapter.sequence} verse={verse.sequence} />
     </PageShell>
   );
 });
