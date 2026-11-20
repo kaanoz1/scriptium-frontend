@@ -5,7 +5,7 @@ import { motion, Variants } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import PageShell from "@/components/Page/PageShell";
 import PageHeader from "@/components/Page/PageHeader";
-import PageBreadcrumbs from "@/components/Page/PageBreadcrumbs";
+import PageBreadcrumbs, { Crumb } from "@/components/Page/PageBreadcrumbs";
 import ScriptureCard from "@/app/[locale]/components/ScriptureCard";
 
 export type TraditionSection = {
@@ -30,6 +30,8 @@ type Props = {
   /** Font class for card watermarks. */
   watermarkClassName?: string;
   sections: TraditionSection[];
+  /** Crumbs between "Home" and this page, e.g. "Islam" for a discipline index. */
+  parentCrumbs?: Crumb[];
 };
 
 const containerVariants: Variants = {
@@ -48,6 +50,7 @@ const TraditionIndex: React.FC<Props> = ({
   nativeClassName,
   watermarkClassName,
   sections,
+  parentCrumbs = [],
 }) => {
   const locale = useLocale();
   const t = useTranslations(namespace);
@@ -57,7 +60,7 @@ const TraditionIndex: React.FC<Props> = ({
 
   return (
     <PageShell size="lg">
-      <PageBreadcrumbs items={[{ label: t("Title") }]} />
+      <PageBreadcrumbs items={[...parentCrumbs, { label: t("Title") }]} />
 
       <PageHeader
         eyebrow={t("Eyebrow")}
