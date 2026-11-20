@@ -10,10 +10,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
 
   return buildMetadata({
-    title:
-      "Scriptium — Read the Qur'an with Translations, Word Roots & Analysis",
+    title: "Scriptium — Theology Library of Sacred Texts & Scholarship",
     description:
-      "Read the Qur'an in Arabic with translations, transliteration and word-by-word analysis, and search every Arabic root. An open theology library of sacred texts and scholarship.",
+      "An open theology library that collects and presents the world's sacred texts, theological and philosophical sources in a modern, accessible format.",
     path: `/${locale}`,
     locale,
     absoluteTitle: true,
