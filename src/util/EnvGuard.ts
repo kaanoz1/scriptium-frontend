@@ -7,11 +7,10 @@ export class EnvGuard {
 
   private static readonly envMap: Record<string, string | undefined> = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    DATABASE_URL: process.env.DATABASE_URL,
   };
 
   private static readonly publicKeys = ["NEXT_PUBLIC_API_URL"];
-  private static readonly privateKeys = ["DATABASE_URL"];
+  private static readonly privateKeys: string[] = [];
 
   public static checkEnv(): void {
     if (this._isChecked) return;
@@ -67,10 +66,6 @@ export class EnvGuard {
 
   public static get ApiUrl(): string {
     return this.getValue("NEXT_PUBLIC_API_URL");
-  }
-
-  public static get DatabaseUrl(): string {
-    return this.getValue("DATABASE_URL");
   }
 
   public static get isProduction(): boolean {

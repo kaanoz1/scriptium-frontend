@@ -14,7 +14,7 @@ cd scriptium-frontend
 To initialize the project, ensure you have Node.js v24+ installed, then run:
 
 ```bash
-cp .env.example .env && npm install && npx prisma generate && npx prisma db push
+cp .env.example .env && npm install
 ```
 
 Do not forget to pass necessary environment variables. Check the [.env.example](./.env.example) file.
