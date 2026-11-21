@@ -48,7 +48,7 @@ const HeroBackground = () => {
       <div className="absolute left-1/2 top-[18%] h-72 w-[min(90vw,48rem)] -translate-x-1/2 rounded-full bg-linear-to-r from-amber-300/25 via-emerald-300/20 to-sky-300/25 blur-[100px] dark:from-amber-500/15 dark:via-emerald-500/10 dark:to-sky-500/15" />
 
       <motion.div
-        className="absolute left-1/2 top-[38%] h-[36rem] w-[36rem] -translate-x-1/2 -translate-y-1/2 md:h-[46rem] md:w-[46rem]"
+        className="absolute left-1/2 top-[38%] h-144 w-xl -translate-x-1/2 -translate-y-1/2 md:h-184 md:w-184"
         animate={reduceMotion ? undefined : { rotate: 360 }}
         transition={{ duration: 180, repeat: Infinity, ease: "linear" }}
       >
@@ -58,7 +58,7 @@ const HeroBackground = () => {
           return (
             <span
               key={i}
-              className={`absolute select-none text-2xl text-foreground/[0.12] md:text-3xl ${glyph.font}`}
+              className={`absolute select-none text-2xl text-foreground/12 md:text-3xl ${glyph.font}`}
               style={{
                 left: `${50 + 50 * Math.cos(angle)}%`,
                 top: `${50 + 50 * Math.sin(angle)}%`,

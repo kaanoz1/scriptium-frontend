@@ -3,13 +3,19 @@
 import React from "react";
 import { motion, Variants } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
-import { FaCross, FaStarAndCrescent, FaStarOfDavid } from "react-icons/fa6";
+import {
+  FaCross,
+  FaOm,
+  FaStarAndCrescent,
+  FaStarOfDavid,
+} from "react-icons/fa6";
 import HeroSection, { itemVariants } from "./components/HeroSection";
 import HeroBackground from "./components/HeroBackground";
 import ScriptureCard from "./components/ScriptureCard";
+import { BuddhismIcon } from "./components/DisabledBuddhismCard";
 import { Amiri } from "@/fonts/Arabic/Amiri";
 import { instrumentSerif } from "@/fonts";
-import { greekSerif, hebrewSerif } from "@/fonts/Watermark";
+import { devanagariSerif, greekSerif, hebrewSerif } from "@/fonts/Watermark";
 import { cn } from "@/lib/utils";
 
 const containerVariants: Variants = {
@@ -25,6 +31,8 @@ const Client: React.FC = () => {
   const st = useTranslations("Pages.Islam.Index.Sciences");
   const ct = useTranslations("Pages.Christianity.Index.Sciences");
   const jt = useTranslations("Pages.Judaism.Index.Sciences");
+  const nt = useTranslations("Pages.About.Support");
+  const mt = useTranslations("Pages.Home.Messages");
   const locale = useLocale();
 
   return (
@@ -120,6 +128,31 @@ const Client: React.FC = () => {
                 jt("Midrash.Title"),
                 jt("Halakha.Title"),
               ]}
+            />
+          </div>
+
+          <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+            <ScriptureCard
+              title={t("HinduismCard.Title")}
+              nativeTitle={t("HinduismCard.SanskritTitle")}
+              description={t("HinduismCard.Description")}
+              icon={<FaOm size={20} />}
+              watermark="ॐ"
+              watermarkClassName={devanagariSerif.className}
+              accent="249 115 22"
+              disabledLabel={nt("NotActiveYet")}
+              disabledTooltip={mt("DatabaseIncapability")}
+            />
+            <ScriptureCard
+              title={t("BuddhismCard.Title")}
+              nativeTitle={t("BuddhismCard.PaliTitle")}
+              description={t("BuddhismCard.Description")}
+              icon={<BuddhismIcon width={20} height={20} />}
+              watermark="धम्म"
+              watermarkClassName={devanagariSerif.className}
+              accent="234 179 8"
+              disabledLabel={nt("NotActiveYet")}
+              disabledTooltip={mt("DatabaseIncapability")}
             />
           </div>
         </section>

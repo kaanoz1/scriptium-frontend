@@ -72,7 +72,7 @@ const ScriptureCard: React.FC<Props> = ({
         enabled
           ? "border-border/60 bg-card/70 backdrop-blur-sm hover:-translate-y-1 hover:border-[rgb(var(--accent)/0.45)] hover:shadow-xl hover:shadow-[rgb(var(--accent)/0.08)]"
           : "border-dashed border-border/70 bg-muted/20 cursor-help",
-        featured ? "min-h-80 md:min-h-[26rem]" : "min-h-56",
+        featured ? "min-h-80 md:min-h-104" : "min-h-56",
       )}
     >
       <div
@@ -86,7 +86,7 @@ const ScriptureCard: React.FC<Props> = ({
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute -z-10 select-none leading-none text-foreground/[0.05] transition-all duration-700 group-hover/card:text-[rgb(var(--accent)/0.14)]",
+          "pointer-events-none absolute -z-10 select-none leading-none text-foreground/5 transition-all duration-700 group-hover/card:text-[rgb(var(--accent)/0.14)]",
           featured
             ? "-bottom-6 -right-2 text-[9rem] md:text-[13rem]"
             : "-bottom-4 -right-1 text-[6rem]",

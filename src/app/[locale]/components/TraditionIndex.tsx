@@ -36,13 +36,12 @@ type Props = {
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
+  },
 };
 
-/**
- * Landing page of a tradition (Islam, Christianity, Judaism…): a header and a
- * grid of its disciplines / bodies of literature. The first section is featured.
- */
 const TraditionIndex: React.FC<Props> = ({
   namespace,
   basePath,
@@ -106,10 +105,16 @@ const TraditionIndex: React.FC<Props> = ({
               nativeTitle={nativeTitle}
               description={t(`Sciences.${section.key}.Description`)}
               icon={section.icon}
-              watermark={section.watermark ?? nativeTitle.split(" ").pop() ?? ""}
+              watermark={
+                section.watermark ?? nativeTitle.split(" ").pop() ?? ""
+              }
               watermarkClassName={`${watermarkClassName ?? ""} ${featured ? "" : "text-[4.5rem]!"}`}
               accent={section.accent}
-              href={section.path ? `/${locale}/${basePath}/${section.path}` : undefined}
+              href={
+                section.path
+                  ? `/${locale}/${basePath}/${section.path}`
+                  : undefined
+              }
               ctaLabel={t("Open")}
               disabledLabel={t("ComingSoon")}
               disabledTooltip={mt("DatabaseIncapability")}
