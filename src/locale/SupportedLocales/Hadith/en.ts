@@ -27,7 +27,7 @@ export const enHadith = {
     },
   },
   Common: {
-    CorpusShort: "Arabic corpus",
+    CorpusShort: "Arabic Corpus",
     AH: "AH",
     DiedIn: "d. {year}",
     Hadiths: "Hadiths",

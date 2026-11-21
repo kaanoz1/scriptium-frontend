@@ -29,7 +29,7 @@ export const enJarhTadil = {
     },
   },
   Common: {
-    CorpusShort: "Arabic corpus",
+    CorpusShort: "Arabic Corpus",
   },
   Corpus: {
     Eyebrow: "Arabic only",
