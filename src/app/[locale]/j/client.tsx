@@ -15,20 +15,6 @@ import {
 import TraditionIndex, {
   TraditionSection,
 } from "@/app/[locale]/components/TraditionIndex";
-import { useTranslations } from "next-intl";
-import UnknownError from "@/util/components/Error/UnknownError";
-
-const sectionKeys: Array<string> = [
-  "Tanakh",
-  "Mishnah",
-  "Talmud",
-  "Midrash",
-  "Targum",
-  "Halakha",
-  "Responsa",
-  "Philosophy",
-  "Kabbalah",
-];
 
 const SECTIONS: TraditionSection[] = [
   {
@@ -51,28 +37,13 @@ const SECTIONS: TraditionSection[] = [
   { key: "Kabbalah", icon: <Sparkles size={20} />, accent: "236 72 153" },
 ];
 
-const Client: React.FC = () => {
-  const t = useTranslations("Pages.Judaism.Index");
-
-  if (SECTIONS.length !== sectionKeys.length)
-    return (
-      <UnknownError title="Something went wrong. Our team gonna investigate this issue soon." />
-    );
-
-  for (let i = 0; i < sectionKeys.length; i++) {
-    const translatedKey: string = t(sectionKeys[i]);
-
-    SECTIONS[i].key = translatedKey;
-  }
-
-  return (
-    <TraditionIndex
-      namespace="Pages.Judaism.Index"
-      basePath="j"
-      native="יהדות"
-      sections={SECTIONS}
-    />
-  );
-};
+const Client: React.FC = () => (
+  <TraditionIndex
+    namespace="Pages.Judaism.Index"
+    basePath="j"
+    native="יהדות"
+    sections={SECTIONS}
+  />
+);
 
 export default Client;
