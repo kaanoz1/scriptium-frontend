@@ -2,9 +2,15 @@
 
 import { motion, Variants } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
-import { LuArrowUpRight, LuSparkles } from "react-icons/lu";
+import { LuArrowUpRight, LuLock, LuSparkles } from "react-icons/lu";
 import SearchBar from "@/components/Navbar/SearchBar";
 import LoadingLink from "@/components/LoadingLink";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { instrumentSerif } from "@/fonts";
 import { cn } from "@/lib/utils";
 
@@ -18,15 +24,37 @@ export const itemVariants: Variants = {
   },
 };
 
+type QuickLink = {
+  label: string;
+  ref: string;
+  href: string;
+  isActive: boolean;
+};
+
 const HeroSection = () => {
   const t = useTranslations("Pages.Home");
+  const mt = useTranslations("Pages.Home.Messages");
   const locale = useLocale();
 
-  const quickLinks = [
-    { label: t("QuickLinks.Fatiha"), ref: "1", href: `/${locale}/i/q/1` },
-    { label: t("QuickLinks.AyatAlKursi"), ref: "2:255", href: `/${locale}/i/q/2/255` },
-    { label: t("QuickLinks.Ikhlas"), ref: "112", href: `/${locale}/i/q/112` },
-    { label: t("QuickLinks.Roots"), ref: "ك ت ب", href: `/${locale}/i/q/root` },
+  const quickLinks: QuickLink[] = [
+    {
+      label: t("QuickLinks.Quran"),
+      ref: "القرآن",
+      href: `/${locale}/i/q`,
+      isActive: true,
+    },
+    {
+      label: t("QuickLinks.Bible"),
+      ref: "Βίβλος",
+      href: `/${locale}/c`,
+      isActive: false,
+    },
+    {
+      label: t("QuickLinks.Tanakh"),
+      ref: "תנ״ך",
+      href: `/${locale}/j`,
+      isActive: false,
+    },
   ];
 
   return (
@@ -69,22 +97,47 @@ const HeroSection = () => {
         <span className="mr-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/70">
           {t("QuickAccess")}
         </span>
-        {quickLinks.map((link) => (
-          <LoadingLink
-            key={link.href}
-            href={link.href}
-            className="group inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/70 py-1 pl-3 pr-2 text-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:border-foreground/30 hover:shadow-sm"
-          >
-            <span>{link.label}</span>
-            <span className="rounded-full bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-              {link.ref}
-            </span>
-            <LuArrowUpRight
-              size={14}
-              className="text-muted-foreground transition-transform group-hover:-translate-y-px group-hover:translate-x-px group-hover:text-foreground"
-            />
-          </LoadingLink>
-        ))}
+        <TooltipProvider>
+          {quickLinks.map((link) =>
+            link.isActive ? (
+              <LoadingLink
+                key={link.href}
+                href={link.href}
+                className="group inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/70 py-1 pl-3 pr-2 text-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:border-foreground/30 hover:shadow-sm"
+              >
+                <span>{link.label}</span>
+                <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                  {link.ref}
+                </span>
+                <LuArrowUpRight
+                  size={14}
+                  className="text-muted-foreground transition-transform group-hover:-translate-y-px group-hover:translate-x-px group-hover:text-foreground"
+                />
+              </LoadingLink>
+            ) : (
+              <Tooltip key={link.href}>
+                <TooltipTrigger asChild>
+                  <span
+                    aria-disabled
+                    tabIndex={0}
+                    className="inline-flex cursor-help items-center gap-2 rounded-full border border-dashed border-border/70 bg-muted/20 py-1 pl-3 pr-2 text-sm text-muted-foreground opacity-70 backdrop-blur"
+                  >
+                    <span>{link.label}</span>
+                    <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px]">
+                      {link.ref}
+                    </span>
+                    <LuLock size={12} />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-62.5 p-3 text-center">
+                  <p className="text-xs leading-relaxed">
+                    {mt("DatabaseIncapability")}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            ),
+          )}
+        </TooltipProvider>
       </motion.div>
     </div>
   );

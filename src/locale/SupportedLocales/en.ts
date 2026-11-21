@@ -120,10 +120,9 @@ export const en: SystemLanguage = {
       ComingSoon: "Coming soon",
       QuickAccess: "Jump in",
       QuickLinks: {
-        Fatiha: "Al-Fatiha",
-        AyatAlKursi: "Ayat al-Kursi",
-        Ikhlas: "Al-Ikhlas",
-        Roots: "Word roots",
+        Quran: "Quran",
+        Bible: "Bible",
+        Tanakh: "Tanakh",
       },
       IslamCard: {
         Title: "Islam",

@@ -124,10 +124,9 @@ export type SystemLanguage = {
       ComingSoon: string;
       QuickAccess: string;
       QuickLinks: {
-        Fatiha: string;
-        AyatAlKursi: string;
-        Ikhlas: string;
-        Roots: string;
+        Quran: string;
+        Bible: string;
+        Tanakh: string;
       };
       IslamCard: {
         Title: string;

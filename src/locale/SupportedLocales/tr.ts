@@ -125,10 +125,9 @@ export const tr: SystemLanguage = {
       ComingSoon: "Yakında",
       QuickAccess: "Hızlı erişim",
       QuickLinks: {
-        Fatiha: "Fâtiha",
-        AyatAlKursi: "Âyete'l-Kürsî",
-        Ikhlas: "İhlâs",
-        Roots: "Kelime kökleri",
+        Quran: "Kur'an",
+        Bible: "Kitab-ı Mukaddes",
+        Tanakh: "Tanah",
       },
       IslamCard: {
         Title: "İslam",
