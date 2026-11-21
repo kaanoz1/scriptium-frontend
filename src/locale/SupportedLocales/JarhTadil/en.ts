@@ -15,7 +15,7 @@ export const enJarhTadil = {
     Open: "Open",
     Sciences: {
       ArabicOnly: {
-        Title: "Arabic Jarh wa Ta'dil Corpus",
+        Title: "Arabic Only Jarh wa Ta'dil Corpus",
         NativeTitle: "الجرح والتعديل",
         Description:
           "About 50,000 narrators and 127,000 statements by over 1,000 critics, in the original Arabic.",
@@ -23,7 +23,8 @@ export const enJarhTadil = {
       Translated: {
         Title: "Translated Works",
         NativeTitle: "الكتب المترجمة",
-        Description: "Works of narrator criticism together with translations into other languages.",
+        Description:
+          "Works of narrator criticism together with translations into other languages.",
       },
     },
   },
@@ -44,8 +45,16 @@ export const enJarhTadil = {
     TopNarrators: "Narrators with the most hadiths",
     TopScholars: "Critics with the most statements",
     Explore: {
-      Narrators: { Title: "Narrators", Description: "{count} narrators with grades, dates, teachers and students." },
-      Scholars: { Title: "Critics", Description: "{count} scholars of jarh wa ta'dil and everything they said about narrators." },
+      Narrators: {
+        Title: "Narrators",
+        Description:
+          "{count} narrators with grades, dates, teachers and students.",
+      },
+      Scholars: {
+        Title: "Critics",
+        Description:
+          "{count} scholars of jarh wa ta'dil and everything they said about narrators.",
+      },
     },
   },
 };
